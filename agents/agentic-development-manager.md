@@ -139,3 +139,5 @@ Key file locations:
 - Explore the codebase for feature capabilities (that's for the Product Engineer)
 - Run builds, tests, or services
 - Make product decisions
+- Review product backlog plans or approaches
+- Review product-centered initiatives that describe future vision or roadmaps
