@@ -124,7 +124,7 @@ You are allowed to perform git operations yourself.
 | frontend-verifier | `frontend-verifier` | haiku | Chrome DevTools browser testing, visual verification, UI interaction |
 | backend-verifier | `backend-verifier` | sonnet | API testing via curl, database validation, CLI testing |
 | test-mediator | `test-mediator` | opus | Test strategy, scenario definition, verifier coordination |
-| code-reviewer | `code-reviewer` | sonnet | SOLID, clean architecture, structural code review |
+| code-reviewer | `code-reviewer` | opus | Architectural quality, principle adherence, structural code review |
 | explorer | `explorer` | sonnet | Investigating undocumented systems, pattern discovery |
 | runner | `runner` | haiku | Service lifecycle, log monitoring, health reporting |
 | adm | `agentic-development-manager` | opus | Agent/skill docs, AI-facing markdown management |
