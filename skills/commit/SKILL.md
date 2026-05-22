@@ -1,6 +1,6 @@
 ---
 description: Commit all changes in the current worktree with a conventional commit message summarizing the work
-argument-hint: [amend]
+argument-hint: "[amend]"
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
@@ -21,6 +21,20 @@ git diff --cached --stat
 git diff --cached
 git log --oneline -5
 ```
+
+### 2a. ADM review gate for agent-facing config
+
+If the staged diff touches any of these (run `git diff --cached --name-only` to check):
+
+- `.claude/` (any path)
+- `agents/` or `agents/**/*.md`
+- `skills/` or `skills/**/SKILL.md`
+- Any `CLAUDE.md` (root or nested)
+- Any `ai/**/*.md`
+
+…then **before** writing the commit message, **ask the user once**: "This commit touches agent-facing config. Want me to run the `agentic-development-manager` review first?" If they say yes, spawn the ADM with the staged diff as input; relay findings; let them decide whether to fix-then-commit or commit-as-is. This gate is documented in `winter-workflow:/index.md` ("ADM review for agent-facing configuration"). Do not auto-spawn — the user is in the loop.
+
+If the diff is product/backlog content (under `winter-product:/backlog/`, `winter-product:/work/`, or a project repo's `ai/` docs that describe future vision/roadmaps), the ADM convention explicitly does **not** apply — skip the prompt.
 
 ## 3. Load Commit Conventions
 

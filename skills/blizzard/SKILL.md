@@ -173,7 +173,7 @@ Agent(
     Files: alpha/my-app/src/api/health.controller.ts
     Follow the existing controller pattern in the same directory.
     Report back when done with a summary of changes.
-    Activity log: winter-product:/plans/api-health/blizzard/developer.md
+    Activity log: winter-product:/work/api-health/blizzard/developer.md
     — write timestamped entries as you work."
 )
 ```
@@ -196,15 +196,17 @@ Every blizzard session produces a trail of documentation so the user can underst
 
 ### Documentation Location
 
-The documentation root depends on whether the blizzard was started for a plan, a TODO, or ad-hoc work. This is determined by what was explicitly stated when the blizzard was started — don't search for matching plans or TODOs.
+The documentation root depends on whether the blizzard was started for a refined work item, an open backlog idea/todo, or ad-hoc work. This is determined by what was explicitly stated when the blizzard was started — don't search for matching items.
 
 | Work Type | Documentation Root |
 |-----------|-------------------|
-| **Plan** | `winter-product:/plans/<plan-name>/blizzard/` |
-| **TODO** | `winter-product:/todos/<todo-name>/blizzard/` |
+| **Work item** (refined; lives at `winter-product:/work/<name>/`) | `winter-product:/work/<name>/blizzard/` |
+| **Open backlog item** (still in `winter-product:/backlog/`, e.g. `.idea.md` / `.todo.md`) | `winter-product:/work/<name>/blizzard/` (promote it first via `/wp-refine <name>` if not already promoted) |
 | **Ad-hoc** | `winter-product:/ad-hoc/<team-name>/blizzard/` |
 
-If the blizzard was started with a plan or TODO name (e.g., via `/ws-work <name>` or explicitly stated by the user), use that. Otherwise it's ad-hoc. Create the `blizzard/` subdirectory if it doesn't exist.
+If the blizzard was started with a work-item name (e.g., via `/ws-work <name>` or explicitly stated by the user), use the work-item path. Otherwise it's ad-hoc. Create the `blizzard/` subdirectory if it doesn't exist.
+
+(The earlier `plans/`, `todos/`, and `ad-hoc/` top-level layout was replaced by the single `backlog/` + `work/` model in `winter-product`. See `winter-product:/ai/workflow.md` for the lifecycle.)
 
 ### Agent Activity Logs
 

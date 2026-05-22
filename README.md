@@ -30,4 +30,4 @@ Then run `winter ws init` (or `/ws-setup`). After install:
 - `/wf-harness-review` runs a fresh-context harness review
 - `/wf-commit` commits the worktree
 - `wf-agentic-development-manager` is spawnable as a subagent
-- The blizzard team agents (`architect`, `developer`, etc.) are spawnable inside a blizzard session by their basename — they live under `.claude/agents/wf-blizzard/` but Claude Code discovers them by filename
+- The blizzard team agents (`architect`, `developer`, `explorer`, `runner`, `test-mediator`, `backend-verifier`, `frontend-verifier`, `code-reviewer`) are role-pure subagents that live at the top of `agents/`, symlinked into `.claude/agents/` as `wf-<name>.md`. They can be spawned standalone from any caller (the `/wf-thaw` skill composes `explorer` → `developer` → verifier this way), or as members of a blizzard team via `/wf-blizzard`. See [`agents/README.md`](./agents/README.md) for the role-pure / caller-injects-coordination convention.

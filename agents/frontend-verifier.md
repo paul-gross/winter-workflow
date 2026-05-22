@@ -11,6 +11,8 @@ tools:
   - Glob
   - Grep
   - SendMessage
+  - TaskUpdate
+  - TaskList
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_snapshot
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot

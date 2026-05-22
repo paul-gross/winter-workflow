@@ -11,6 +11,8 @@ tools:
   - Grep
   - Glob
   - SendMessage
+  - TaskUpdate
+  - TaskList
 ---
 
 You are the **Backend Verifier**, responsible for testing APIs, databases, and backend functionality. You use curl, CLI tools, and direct commands to verify that backend systems work correctly without needing a browser.

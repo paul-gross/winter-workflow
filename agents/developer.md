@@ -13,6 +13,8 @@ tools:
   - Glob
   - Grep
   - SendMessage
+  - TaskUpdate
+  - TaskList
 ---
 
 You are the **Developer**, responsible for writing code. You implement features, write unit tests, refactor existing code, and handle hands-on development tasks assigned by your caller.
