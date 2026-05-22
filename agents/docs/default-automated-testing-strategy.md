@@ -1,6 +1,6 @@
 # Default Automated Testing Strategy
 
-This document is used by the blizzard test-mediator agent during the **Automated Testing Strategy Bootstrap Workflow**. When a project has no documented automated testing strategy, the test-mediator proposes these defaults.
+This document is used by the `test-mediator` agent during the **Automated Testing Strategy Bootstrap Workflow**. When a project has no documented automated testing strategy, the test-mediator proposes these defaults.
 
 The user may accept these as-is, modify them, or specify an entirely different approach.
 
@@ -41,8 +41,8 @@ The project's automated tests should follow the classic test pyramid: many fast,
 End-to-end tests are the most valuable and the most difficult to maintain in local, ephemeral environments where agents are working. Acknowledge this reality:
 
 - **E2E suites are fragile in agent workflows** — Services need to be running, ports need to be available, databases need to be seeded, and timing issues are common. Agents working in feature worktrees may have different port configurations or partial service availability.
-- **This is not a hard requirement** — If the project already has a working E2E suite that runs locally, continue supporting it and add to it when writing new features that warrant E2E coverage. If the project doesn't have E2E tests, don't force them — the lower pyramid layers plus runtime verification by blizzard verifier agents provide adequate coverage.
-- **Prefer runtime verification over formal E2E suites when agents are testing** — The blizzard's frontend-verifier and backend-verifier agents perform what is effectively manual E2E testing (start services, interact, verify). This is often more practical in ephemeral environments than maintaining a persistent E2E test suite.
+- **This is not a hard requirement** — If the project already has a working E2E suite that runs locally, continue supporting it and add to it when writing new features that warrant E2E coverage. If the project doesn't have E2E tests, don't force them — the lower pyramid layers plus runtime verification by verifier agents provide adequate coverage.
+- **Prefer runtime verification over formal E2E suites when agents are testing** — The `frontend-verifier` and `backend-verifier` agents perform what is effectively manual E2E testing (start services, interact, verify). This is often more practical in ephemeral environments than maintaining a persistent E2E test suite.
 - **If E2E exists, keep it green** — Don't let existing E2E tests rot. If a change breaks an E2E test, fix it. If an E2E test is flaky, either stabilize it or remove it — flaky tests are worse than no tests because they erode trust in the suite.
 
 ## Which Layer to Prioritize
@@ -51,5 +51,5 @@ When time or scope is limited, prioritize in this order:
 
 1. **Unit tests for new business logic** — Cheap to write, fast to run, highest signal-to-noise ratio
 2. **Integration tests for new component boundaries** — Catches wiring bugs that unit tests miss
-3. **Runtime verification by blizzard agents** — Covers the E2E gap without the maintenance burden of a formal suite
+3. **Runtime verification by verifier agents** — Covers the E2E gap without the maintenance burden of a formal suite
 4. **E2E tests for critical paths** — Only if the project supports them and the path is high-value

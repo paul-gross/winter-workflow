@@ -1,6 +1,6 @@
 # Default Test Strategy
 
-This document is used by the blizzard test-mediator agent during the **Test Strategy Bootstrap Workflow**. When a project has no documented test strategy, the test-mediator proposes these defaults. Each element is explained for agent consumption with concrete guidance on how to apply it.
+This document is used by the `test-mediator` agent during the **Test Strategy Bootstrap Workflow**. When a project has no documented test strategy, the test-mediator proposes these defaults. Each element is explained for agent consumption with concrete guidance on how to apply it.
 
 The user may accept these as-is, modify them, or specify an entirely different strategy.
 

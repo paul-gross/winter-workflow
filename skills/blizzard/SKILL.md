@@ -121,7 +121,7 @@ You are allowed to perform git operations yourself.
 |------|------------------------------|-------|---------|
 | architect | `architect` | opus | Design, interfaces, dependencies, architectural oversight |
 | developer | `developer` | sonnet | Code implementation, unit tests, bug fixes, refactoring |
-| frontend-verifier | `frontend-verifier` | haiku | Chrome DevTools browser testing, visual verification, UI interaction |
+| frontend-verifier | `frontend-verifier` | sonnet | Chrome DevTools browser testing, visual verification, UI interaction |
 | backend-verifier | `backend-verifier` | sonnet | API testing via curl, database validation, CLI testing |
 | test-mediator | `test-mediator` | opus | Test strategy, scenario definition, verifier coordination |
 | code-reviewer | `code-reviewer` | opus | Architectural quality, principle adherence, structural code review |
@@ -136,20 +136,39 @@ You may spawn multiple teammates of the same type if the workload justifies it (
 **Critical**: Always spawn teammates from the workspace root directory. Subagents inherit your working directory — if you spawn from a project subdirectory, the teammate loses access to the workspace CLAUDE.md, agents, and skills.
 
 When spawning a teammate, always include in the prompt:
-1. **Clear task context**: What to do and why
-2. **Relevant file paths**: Where to look and which worktree to work in
-3. **Constraints**: What NOT to do, what to prioritize
-4. **Reporting expectations**: What to report back and to whom
-5. **Activity log path**: Where to write their activity log (see Session Documentation)
+1. **Team-coordination preamble** (see below): How the teammate participates in the team
+2. **Clear task context**: What to do and why
+3. **Relevant file paths**: Where to look and which worktree to work in
+4. **Constraints**: What NOT to do, what to prioritize
+5. **Reporting expectations**: What to report back and to whom
+6. **Activity log path**: Where to write their activity log (see Session Documentation)
 
-Example:
+### Team-coordination preamble
+
+The teammate agents under `agents/` are role-pure and general-purpose — they no longer pre-bake team-coordination behavior. **You** are responsible for injecting the coordination context at spawn time. Prepend the following block (verbatim, adjusted only for the teammate's role) to every spawn prompt:
+
+```
+You are operating as a teammate in a blizzard team session led by the snowflake.
+- Check TaskList after completing each task to find available work
+- Claim unassigned tasks relevant to your role via TaskUpdate
+- Report progress and completion to the snowflake via SendMessage
+- When the snowflake tells you work is complete, finish any in-progress task,
+  report final status, and stop
+```
+
+Only `test-mediator` actively calls `TaskCreate` itself (to dispatch verification scenarios to the verifiers). Every other teammate only consumes tasks the snowflake created — they don't need to create tasks themselves, and their `tools:` frontmatter reflects that.
+
+### Example
+
 ```
 Agent(
   subagent_type: "developer",
   team_name: "<your-team-name>",
   name: "developer",
   model: "sonnet-4-6",
-  prompt: "Implement the new health-check endpoint in the API service.
+  prompt: "<team-coordination preamble from above>
+
+    Implement the new health-check endpoint in the API service.
     Worktree: alpha/
     Files: alpha/my-app/src/api/health.controller.ts
     Follow the existing controller pattern in the same directory.
@@ -158,6 +177,8 @@ Agent(
     — write timestamped entries as you work."
 )
 ```
+
+(Inline the preamble verbatim when constructing the actual spawn — the `<team-coordination preamble from above>` placeholder is editorial shorthand for this document, not a literal string the agent will interpret.)
 
 ## Workspace Rules
 

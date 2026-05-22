@@ -1,6 +1,6 @@
 # Default Test Data Strategy
 
-This document is used by the blizzard test-mediator agent during the **Test Data Strategy Bootstrap Workflow**. When a project has no documented test data strategy, the test-mediator proposes these defaults.
+This document is used by the `test-mediator` agent during the **Test Data Strategy Bootstrap Workflow**. When a project has no documented test data strategy, the test-mediator proposes these defaults.
 
 The user may accept these as-is, modify them, or specify an entirely different approach.
 
