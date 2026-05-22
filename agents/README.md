@@ -26,5 +26,17 @@ Concretely:
 - Agents do not include `TaskList`/`TaskUpdate` instructions by default. Where coordination tools appear in the `tools:` frontmatter, they're listed because some caller (today, `/blizzard`) genuinely needs them.
 - Skills that compose multiple agents are expected to inject a short **coordination preamble** at the top of each spawn prompt explaining how the agent should participate (claim tasks, report back, when to stop).
 
-The `/blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `/cold-review` does with `code-reviewer`).
+The `/blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `/wf-cold-review` does with `code-reviewer`).
+
+## Worked examples (non-blizzard callers)
+
+Non-blizzard skills compose these role-pure agents without spinning up a team. Each one shows how a different coordination shape stays compatible with the convention above.
+
+| Skill | Agent(s) composed | Coordination shape |
+|-------|-------------------|--------------------|
+| [`/wf-cold-review`](../skills/cold-review/SKILL.md) | `code-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
+| [`/wf-thaw`](../skills/thaw/SKILL.md) | `explorer` → `developer` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
+| [`/wf-harness-review`](../skills/harness-review/SKILL.md) | `harness-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff plus harness/transcripts and reports |
+
+`/wf-harness-review` is the same composition shape as `/wf-cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching `/wf-blizzard` or the other composed skills.
 
