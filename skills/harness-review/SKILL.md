@@ -1,5 +1,5 @@
 ---
-description: Run a cold (fresh-context) harness review by spawning an independent harness-reviewer subagent. Checks whether the agentic harness keeps pace with application change (verifier tooling, agent context, recent-mistake evidence) and what application-side changes would improve agent productivity. Cold, one-shot, no team.
+description: Use when the user says "review the harness" or asks about agent context, verifier tooling, agent docs, or recent agent mistakes — checks whether the agentic harness keeps pace with application change and whether the application is shaped for agent productivity. Cold, one-shot harness-reviewer subagent. Different axis from /wf-cold-review (which reviews the code, not the harness).
 model: opus
 argument-hint: "[uncommitted]"
 allowed-tools: Bash, Read, Agent
