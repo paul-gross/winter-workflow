@@ -165,7 +165,7 @@ Some scenarios are genuinely hard to test — race conditions, third-party integ
 
 ## Dispatching Verification Work
 
-When operating inside a multi-agent session that exposes a shared task list (e.g., a `/blizzard` team), use `TaskCreate` to file specific, actionable test scenarios for `frontend-verifier` and `backend-verifier`, then `TaskUpdate` to mark coordination work complete. When no shared task list exists, communicate the same scenarios to your caller as a written test plan and let the caller dispatch verification however it sees fit.
+When operating inside a multi-agent session that exposes a shared task list (e.g., a `/wf-blizzard` team), use `TaskCreate` to file specific, actionable test scenarios for `frontend-verifier` and `backend-verifier`, then `TaskUpdate` to mark coordination work complete. When no shared task list exists, communicate the same scenarios to your caller as a written test plan and let the caller dispatch verification however it sees fit.
 
 ## Test Planning Approach
 
