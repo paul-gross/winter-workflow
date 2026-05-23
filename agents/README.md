@@ -28,6 +28,20 @@ Concretely:
 
 The `/blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `/wf-cold-review` does with `code-reviewer`).
 
+## Convention: tool grant vs. preamble
+
+Each agent's `tools:` frontmatter is the **permissive** set — every tool the agent is allowed to use across all callers. The spawning skill's preamble is the **authoritative contract** for any given run, and may forbid a subset of those tools when the invocation mode demands it. When the two disagree, the preamble wins.
+
+This split exists because the same agent definition is reused across very different coordination shapes. The `developer` agent ships with `SendMessage`, `TaskUpdate`, and `TaskList` in its tool list because `/wf-blizzard` genuinely needs them — the lead claims tasks from a shared list and teammates report back via `SendMessage`. The same agent is also spawned one-shot by `/wf-thaw` with a preamble that explicitly forbids those same tools, because no shared task list exists in that mode.
+
+Worked example — `/wf-thaw`'s preamble narrows the grant for one-shot runs:
+
+> You are operating as a one-shot agent spawned by the `/wf-thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
+
+The `developer` (or `explorer`, or a verifier) agent reads this and ignores its task tools for the duration of the call. The tools stay in the grant so `/wf-blizzard` can use them; the preamble is what scopes any one run.
+
+If you add a new skill that composes these agents, decide which tools its mode allows and document the restrictions in your preamble. The agent definitions themselves stay stable.
+
 ## Worked examples (non-blizzard callers)
 
 Non-blizzard skills compose these role-pure agents without spinning up a team. Each one shows how a different coordination shape stays compatible with the convention above.
