@@ -28,13 +28,18 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 | `style` | Code style / formatting changes |
 | `ai` | AI agent workflow improvements |
 
-### Product branch types
+### Product-backlog types
+
+These types apply only when the workspace ships product-backlog
+content under `winter-product/backlog/` and `winter-product/work/`
+(or an equivalent backlog layout). Skip them if the workspace doesn't
+manage a product backlog.
 
 | Type | When to Use |
 |------|-------------|
-| `plan` | New plan or plan updates |
-| `feat` | Archiving a completed plan |
-| `todo` | Creating a TODO |
+| `product(<name>)` | Any change to a `.idea.md` or `.work.md` item — creating, refining, promoting to work, or adding a technical approach. Scope is the kebab-case item name. |
+| `todo(<name>)` | Any change to a `.todo.md` item — creating, editing, or promoting. Scope is the kebab-case TODO name. |
+| `feat` | Archiving a completed work item or TODO (the archive move ships completed functionality, not backlog content). |
 
 ## Body
 
