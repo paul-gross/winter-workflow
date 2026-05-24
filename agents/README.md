@@ -11,6 +11,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 | `developer.md` | Code implementation, unit tests, refactoring |
 | `explorer.md` | Investigates undocumented systems, writes AI-centric docs |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
+| `harness-reviewer.md` | Application↔harness seam review against a diff |
 | `runner.md` | Service lifecycle and log monitoring |
 | `test-mediator.md` | Test strategy, scenario design, verifier dispatch |
 
