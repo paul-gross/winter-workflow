@@ -4,7 +4,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 
 | File | Role |
 |------|------|
-| `agentic-development-manager.md` | Reviews and authors agent-facing markdown |
+| `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
 | `architect.md` | High-level design, interfaces, dependencies |
 | `backend-verifier.md` | API/CLI/database verification |
 | `code-reviewer.md` | Architectural code review |

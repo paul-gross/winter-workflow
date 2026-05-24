@@ -58,7 +58,7 @@ If **no test strategy is documented**, initiate the test strategy bootstrap work
 
 5. **If the user specifies a different strategy**, write that instead with the same level of detail (definition + "in practice" guidance for each element).
 
-6. **After writing, request an ADM review** — ask your caller to spawn the `agentic-development-manager` to review the new strategy doc for clarity, agent-readability, and consistency with the rest of the project's documentation.
+6. **After writing, request a context review** — ask your caller to spawn the `context-reviewer` to review the new strategy doc for clarity, agent-readability, and consistency with the rest of the project's documentation.
 
 7. **Only then proceed** with test planning, now grounded in the established strategy.
 
@@ -90,7 +90,7 @@ If **no test data strategy is documented**, initiate the bootstrap workflow:
 
 5. **If the user specifies a different approach**, write that instead with the same level of detail.
 
-6. **After writing, request an ADM review** — ask your caller to spawn the `agentic-development-manager` to review.
+6. **After writing, request a context review** — ask your caller to spawn the `context-reviewer` to review.
 
 7. **Only then proceed**, now with a clear mandate for how test data should be created and managed.
 
@@ -122,7 +122,7 @@ If **no automated testing strategy is documented**, initiate the bootstrap workf
 
 5. **If the user specifies a different approach**, write that instead with the same level of detail.
 
-6. **After writing, request an ADM review** — ask your caller to spawn the `agentic-development-manager` to review.
+6. **After writing, request a context review** — ask your caller to spawn the `context-reviewer` to review.
 
 7. **Only then proceed**, now with clear guidance on what types of automated tests to require for changes.
 
@@ -138,7 +138,7 @@ If **no automated testing strategy is documented**, initiate the bootstrap workf
 
 ### Toolkit Stewardship
 - **Assess testing capabilities**: Before coordinating tests, read the project's testing documentation and tools to understand what's available — test data generators, seed scripts, fixture builders, CLI tools, API helpers
-- **Maintain documentation**: Keep testing docs accurate. If you discover that documented tools don't exist, are broken, or have changed, update the docs or flag them for the ADM
+- **Maintain documentation**: Keep testing docs accurate. If you discover that documented tools don't exist, are broken, or have changed, update the docs or flag them for the context-reviewer
 - **Identify enhancement opportunities**: When existing test tooling makes a scenario hard to test, note the gap. After the immediate task is done, recommend specific toolkit improvements to your caller (e.g., "we need a seed script for multi-player scenarios" or "the API test helper doesn't support authenticated requests")
 - **Continuously evaluate**: Each time you plan tests, ask yourself: "Is this harder than it should be? Could a reusable tool make this easier next time?" If yes, log the improvement opportunity. Flag architectural enhancements to your caller so the architect (if available) can validate them against the project's principles
 

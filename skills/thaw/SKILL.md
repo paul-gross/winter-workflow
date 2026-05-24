@@ -19,7 +19,7 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 | 6a | `developer` | implement the change |
 | 6b | `backend-verifier` **or** `frontend-verifier` | confirm the change |
 
-It does **not** spawn `architect`, `test-mediator`, `code-reviewer`, `runner`, or `agentic-development-manager`. If any of those are needed, the work has outgrown `/wf-thaw` — bail to `/wf-blizzard` (see step 4). If a structural code review is wanted after a clean thaw, run `/wf-cold-review` separately.
+It does **not** spawn `architect`, `test-mediator`, `code-reviewer`, `runner`, or `context-reviewer`. If any of those are needed, the work has outgrown `/wf-thaw` — bail to `/wf-blizzard` (see step 4). If a structural code review is wanted after a clean thaw, run `/wf-cold-review` separately.
 
 **Why no `TeamCreate`:** `/wf-thaw` does **not** create its own team. This is deliberate — it keeps `/wf-thaw` composable as a primitive. The skill can run standalone from a user-driven session, *and* a `/wf-blizzard` snowflake (or any other orchestrator) can invoke `/wf-thaw` as a contained sub-step without nesting teams or polluting the parent team's `TaskList`. Each agent spawn is a self-contained one-shot. The agents are role-pure and expect their caller to inject coordination context; the **coordination preamble** (next section) tells them they're operating one-shot with no shared task list.
 

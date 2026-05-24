@@ -46,7 +46,7 @@ When you discover something worth documenting, write it for agent consumption:
 After creating or updating documentation:
 
 1. **Check for a CLAUDE.md** in the relevant directory — add a navigation entry so agents can find your docs
-2. **Request an ADM review** — ask your caller to spawn the `agentic-development-manager` to review and integrate the new documentation into the project's doc structure
+2. **Request a context review** — ask your caller to spawn the `context-reviewer` to review the new documentation against the workspace's documented conventions
 3. **Recommend review** — ask your caller to have the user review documentation changes before committing
 4. **Don't wait until the end** — Document as you go. Create drafts early, refine as your understanding deepens
 

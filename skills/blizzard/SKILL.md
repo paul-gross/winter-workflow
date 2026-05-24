@@ -107,9 +107,10 @@ Match the task to the right team composition. Always prefer the smallest team th
 - **Phase 4 — Review**: Present the completed, verified changes to the user for final review before committing.
 
 ### Exploration / Documentation
-**Team**: explorer, optionally agentic-development-manager
+**Team**: explorer, optionally context-reviewer, optionally harness-reviewer
 - Spawn explorer to investigate the area
-- If documentation should be created, spawn ADM after explorer reports
+- If documentation should be created, the explorer writes it; spawn context-reviewer after to review the new docs against the workspace's documented conventions
+- If the exploration touches the seam between the application and the agentic harness (verifier helpers, agent context, conventions that should keep pace with the change), spawn harness-reviewer for an independent read
 
 ### Git Management
 **Handle directly** — no teammates needed for commits, branches, merges, rebases.
@@ -127,7 +128,8 @@ You are allowed to perform git operations yourself.
 | code-reviewer | `code-reviewer` | opus | Architectural quality, principle adherence, structural code review |
 | explorer | `explorer` | sonnet | Investigating undocumented systems, pattern discovery |
 | runner | `runner` | haiku | Service lifecycle, log monitoring, health reporting |
-| adm | `agentic-development-manager` | opus | Agent/skill docs, AI-facing markdown management |
+| context-reviewer | `context-reviewer` | opus | Reviews agent/skill docs and AI-facing markdown against documented conventions |
+| harness-reviewer | `harness-reviewer` | opus | Reviews the application↔harness seam against a diff (verifier helpers, agent context, conventions, pluggability) |
 
 You may spawn multiple teammates of the same type if the workload justifies it (e.g., two developers working on different modules). Give them distinct names like `developer-api` and `developer-ui`.
 

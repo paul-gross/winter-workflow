@@ -71,7 +71,7 @@ If **no architectural principles are documented**, initiate the principles boots
 
 5. **If the user specifies different principles**, write those instead with the same level of detail.
 
-6. **After writing, request an ADM review** — ask your caller to spawn the `agentic-development-manager` to review the new principles doc for clarity, agent-readability, and consistency with the rest of the project's documentation.
+6. **After writing, request a context review** — ask your caller to spawn the `context-reviewer` to review the new principles doc for clarity, agent-readability, and consistency with the rest of the project's documentation.
 
 7. **Only then proceed** with your architectural work, now grounded in the newly established principles.
 
