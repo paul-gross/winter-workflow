@@ -1,6 +1,6 @@
 # winter-workflow
 
-A [winter](https://codeberg.org/pgross/winter) extension that adds an opinionated agentic workflow to a winter workspace.
+A [winter](https://github.com/paul-gross/winter) extension that adds an opinionated agentic workflow to a winter workspace.
 
 ## Features
 
@@ -21,7 +21,7 @@ Add to the workspace's `.winter/config.toml`:
 ```toml
 [[standalone_repository]]
 name = "winter-workflow"
-url = "git@codeberg.org:pgross/winter-workflow.git"
+url = "git@github.com:paul-gross/winter-workflow.git"
 ```
 
 Then run `winter ws init` (or `/ws-setup`). After install:
