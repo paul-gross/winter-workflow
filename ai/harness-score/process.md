@@ -80,13 +80,7 @@ If no prior report exists, the report has no deltas section — note "baseline r
 
 ### 7. Render the HTML report
 
-Follow [`../llm-html-output.md`](../llm-html-output.md) for every requirement (self-contained, theme-aware, semantic, deterministic, metadata, naming). The report must include, in this order:
-
-1. **`<header>`** — title (`Harness score — <project>`), target path, generation date, rubric version, prior-report date (or "baseline run; no prior report").
-2. **Profile summary table** — one row per dimension: dimension name, stage, delta (or `—` on a baseline run). Use textual cues (`↑`/`↓`/`=`) in addition to color so a B/W printer keeps the meaning.
-3. **Per-dimension detail** — one `<section>` per dimension with stage, evidence list (file paths as visible text), rationale, and next-stage suggestion.
-4. **Deltas section** — when applicable: a table of per-dimension stage movement, then a list of stale evidence citations.
-5. **`<footer>`** — generator string `winter-workflow/harness-score`, rubric version (also used as the skill version for v1), generation date, target.
+Render the report following [`./report.md`](./report.md) — the harness-score HTML guide, which applies the generic standard in [`../llm-html-output.md`](../llm-html-output.md) and adds the harness specifics (Tailwind config, cluster colors, score-color bands, and the sidebar / profile-table / per-dimension-card structure).
 
 Write to `$report_dir/<date_stamp>-<project>.html`.
 
