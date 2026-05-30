@@ -1,11 +1,12 @@
 # Pre-push review
 
-Run an LLM-guided review over the un-pushed range before pushing completed work. Fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer` — then synthesizes the findings into a single summary for the caller. Which reviewers spawn depends on what surfaces the project actually has: a project with no agentic harness gets no `harness-reviewer`, a project with no public documentation gets no `documentation-reviewer`, and so on (see step 3).
+Run an LLM-guided review over the un-pushed change-set before pushing completed work. The change-set is every repo in the feature env with commits ahead of its upstream — `/wf-pre-push` reviews them **together**, not one repo at a time. It fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer`, **one per axis, each spanning every in-scope repo** — then synthesizes the findings into a single summary for the caller, including a cross-repo consistency pass. Which reviewers spawn depends on what surfaces the in-scope repos actually have: an env with no agentic harness anywhere gets no `harness-reviewer`, none with public docs gets no `documentation-reviewer`, and so on (see step 3).
 
-`/wf-pre-push` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but differs in two ways:
+`/wf-pre-push` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but differs in three ways:
 
-- **Scope is fixed to the un-pushed range** (`<base>..HEAD`, where `<base>` is `origin/master` or its equivalent). The point is to gate the push, so the range is whatever the push would actually deliver — not branch-vs-base of an arbitrary diverged history, and never uncommitted work (you don't push uncommitted work).
-- **Multiple reviewers in parallel**, fanned out from one entry point. `/wf-cold-review` and `/wf-harness-review` are single-axis; `/wf-pre-push` covers the full review surface in one round-trip — but only the axes the project has.
+- **Scope is the un-pushed change-set across the env** — every repo with commits ahead of upstream, each reviewed over its own `<base>...HEAD` (where `<base>` is `origin/master` or its equivalent). The point is to gate the push, so the set is whatever `winter ws push` would actually deliver — not branch-vs-base of an arbitrary diverged history, and never uncommitted work (you don't push uncommitted work). Run from a standalone repo, or in an env where only one repo is ahead, it gates that single repo exactly as before.
+- **Multiple reviewers in parallel**, fanned out from one entry point. `/wf-cold-review` and `/wf-harness-review` are single-axis; `/wf-pre-push` covers the full review surface in one round-trip — but only the axes the in-scope repos have.
+- **A cross-repo consistency pass** in synthesis (step 5). Because each axis reviewer holds the whole change-set, `/wf-pre-push` surfaces a change in one repo that contradicts another — a removed command still referenced in a sibling's docs — as a single finding instead of letting it fall between two repo-scoped runs that never meet.
 
 ## Mode
 
@@ -24,45 +25,34 @@ Determined from `$ARGUMENTS`:
 - `$ARGUMENTS` is `blocking` → blocking
 - Anything else → tell the user the valid forms and stop
 
-### 2. Resolve the un-pushed range
+### 2. Discover the un-pushed change-set
 
-Detect the repository's main branch ref. Try in order, use the first that exists; call the result `<base>`:
+Follow `winter-workflow:/ai/changeset-scope.md` in **unpushed** mode to detect the feature env and list the in-scope repos — every worktree `winter ws push` would push (non-pinned: `tracking_ahead > 0` or `ahead > 0`; pinned: `tracking_ahead > 0`), read from `winter ws status <env> --json` rather than re-derived with hand-rolled `git rev-list`. For each in-scope repo, resolve its base ref (`origin/<main>` via the ladder in the shared doc, run inside that worktree). The result is a set of `(repo, worktree-path, base-ref)` entries; each reviewer reviews each repo over `<base>...HEAD`.
 
-```bash
-git rev-parse --verify origin/master 2>/dev/null \
-  || git rev-parse --verify origin/main 2>/dev/null \
-  || git rev-parse --verify master 2>/dev/null \
-  || git rev-parse --verify main
-```
+- **Zero repos in scope** (nothing ahead of upstream) → report "nothing to review; nothing is ahead of upstream" and stop. Do not spawn reviewers.
+- **Not in a feature env, or exactly one repo in scope** → single-repo mode: gate that one repo over its `<base>...HEAD`, no cross-repo pass.
+- **Two or more repos in scope** → review them together; each axis reviewer spans all of them, and step 5 adds the cross-repo consistency pass.
 
-Confirm there is something to review:
+### 3. Classify the change-set and its repos
 
-```bash
-git diff --quiet <base>...HEAD
-```
+A reviewer is only worth spawning when **some in-scope repo** actually contains the surface it reviews. Spawning a `documentation-reviewer` when no in-scope repo has public docs, or a `harness-reviewer` when none has an agentic harness, burns wall time to produce "nothing in my lane." So this step has two parts: **what the in-scope repos have** (probe each) and **what the change-set touches** (the union of the per-repo diffs).
 
-Exit 0 means the branch has no commits beyond `<base>` — report "nothing to review; branch is at base" and stop. Do not spawn reviewers on an empty range.
-
-### 3. Classify the diff and the project
-
-A reviewer is only worth spawning when the project actually contains the surface it reviews. Spawning a `documentation-reviewer` at a project with no public docs, or a `harness-reviewer` at a project with no agentic harness, burns wall time to produce "nothing in my lane." So this step has two parts: **what the project has** (probe once) and **what the range touches**.
-
-First, see what the range touches:
+First, see what the change-set touches — union the name-only diffs across the in-scope repos (run in each worktree):
 
 ```bash
 git diff --name-only <base>...HEAD
 ```
 
-Then decide each reviewer:
+Then decide each reviewer against the union — spawn it if **any** in-scope repo satisfies its trigger:
 
-- **`code-reviewer` — spawn whenever the range changes code.** Any code change wants a structural read. (A docs-only range can skip it.)
-- **`harness-reviewer` — spawn only if the project has an agentic-harness surface.** Evidence: agent definitions (`agents/*.md`, `.claude/agents/`), skills, verifier/test scaffolds, harness conventions, any `CLAUDE.md`, an `ai/` tree. A project with none of these has no application↔harness seam to review — skip it.
-- **`context-reviewer` — spawn only if the project has agent-facing markdown AND the range touches it.** The canonical trigger paths (`.claude/`, `agents/`, `skills/**/SKILL.md`, any `CLAUDE.md`, any `ai/**/*.md`) live in [`../commit/SKILL.md`](../commit/SKILL.md) under step 3 — apply the same classifier here. If the project has no agent-facing markdown at all, skip. Product/backlog content (future vision, roadmaps, open backlog items) is excluded per the same convention.
-- **`documentation-reviewer` — spawn only if the project has external-facing public documentation AND the range touches code or docs that documentation covers.** Public documentation is what a human adopter/end-user reads: a `docs/` content tree with a site-generator config (`astro.config.*` + Starlight, `docusaurus.config.*`, `mkdocs.yml`, `book.toml`, VitePress), a separate docs-site repo, user/adopter guides, or the user-facing portion of a public `README.md`. It is **not** the agent-facing `ai/` tree or `CLAUDE.md` — those belong to `context-reviewer`. If the project ships no public documentation, skip the reviewer.
+- **`code-reviewer` — spawn whenever the change-set changes code** in any repo. Any code change wants a structural read. (A docs-only change-set can skip it.)
+- **`harness-reviewer` — spawn if any in-scope repo has an agentic-harness surface.** Evidence: agent definitions (`agents/*.md`, `.claude/agents/`), skills, verifier/test scaffolds, harness conventions, any `CLAUDE.md`, an `ai/` tree. If no in-scope repo has any of these, there is no application↔harness seam to review — skip it.
+- **`context-reviewer` — spawn if any in-scope repo has agent-facing markdown AND the change-set touches it.** The canonical trigger paths (`.claude/`, `agents/`, `skills/**/SKILL.md`, any `CLAUDE.md`, any `ai/**/*.md`) live in `winter-workflow:/skills/commit/SKILL.md` under step 3 — apply the same classifier here. If no in-scope repo has agent-facing markdown, skip. Product/backlog content (future vision, roadmaps, open backlog items) is excluded per the same convention.
+- **`documentation-reviewer` — spawn if any in-scope repo has external-facing public documentation AND the change-set touches code or docs that documentation covers.** Public documentation is what a human adopter/end-user reads: a `docs/` content tree with a site-generator config (`astro.config.*` + Starlight, `docusaurus.config.*`, `mkdocs.yml`, `book.toml`, VitePress), a separate docs-site repo, user/adopter guides, or the user-facing portion of a public `README.md`. It is **not** the agent-facing `ai/` tree or `CLAUDE.md` — those belong to `context-reviewer`. If no in-scope repo ships public documentation, skip the reviewer.
 
-Probe for the project's surfaces with cheap checks before deciding — e.g. `ls docs/ ai/ agents/ .claude/ 2>/dev/null`, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it.
+Probe each in-scope repo's surfaces with cheap checks before deciding — e.g. `ls docs/ ai/ agents/ .claude/ 2>/dev/null` in each worktree, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it. A surface in **any** in-scope repo qualifies its reviewer — a docs-only repo paired with a code-only repo in the same change-set spawns both `documentation-reviewer` and `code-reviewer`.
 
-Record which reviewers will be spawned and why the others were skipped. Tell the caller in one short line (e.g., "Spawning code-reviewer + documentation-reviewer over 7 files; no harness/agent-facing surface in this project…") before issuing the spawns.
+Record which reviewers will be spawned and why the others were skipped. Tell the caller in one short line (e.g., "Spawning code-reviewer + context-reviewer over 9 files across `alpha/winter` + `alpha/winter-docs`; no public-docs surface in scope…") before issuing the spawns.
 
 ### 4. Spawn the reviewers in parallel
 
@@ -80,16 +70,17 @@ Each prompt is inlined to keep step 4 self-contained — no cross-file step-numb
 
 Inline body:
 
-> **Scope**: branch-vs-base.
-> **Base**: `<base>` (substitute the ref resolved in step 2).
-> **Repository path**: the current working directory.
+> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
+> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
 >
-> Read the diff yourself:
+> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
 >
 > ```
 > git diff <base>...HEAD --stat
 > git diff <base>...HEAD
 > ```
+>
+> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a broken caller, dead reference, or stale mirror in another — as a single finding.
 >
 > Read the changed files and surrounding code for context (existing patterns, conventions). Eagerly load project documentation relevant to code review — coding standards, patterns, architecture, in-flight initiatives. Review against documented standards if present; fall back to your own judgment if not.
 >
@@ -106,11 +97,10 @@ Inline body:
 
 Inline body:
 
-> **Scope**: branch-vs-base.
-> **Base**: `<base>`.
-> **Repository path**: the current working directory.
+> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
+> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
 >
-> Read the diff yourself:
+> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
 >
 > ```
 > git diff <base>...HEAD --stat
@@ -118,9 +108,11 @@ Inline body:
 > git log --oneline <base>..HEAD
 > ```
 >
+> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a harness change in one repo (a renamed command, a removed convention) that leaves agent docs, verifier scaffolds, or `CLAUDE.md` in another repo stale — as a single finding.
+>
 > Follow the *Mining mistake evidence* section of your agent body for the full procedure (encoded-cwd derivation, mtime + filename-overlap filters, failure signals, graceful fallback). Caller-supplied context:
 >
-> - **CWDs to enumerate** for transcripts: the workspace root, the worktree path under review, and the project source checkout. Pass each candidate through the encoded-cwd transform (`/` → `-`); skip those without a directory in `~/.claude/projects/`.
+> - **CWDs to enumerate** for transcripts: the workspace root, **every in-scope worktree path**, and each one's project source checkout. Pass each candidate through the encoded-cwd transform (`/` → `-`); skip those without a directory in `~/.claude/projects/`.
 > - **Time window** for both git history and transcripts: the diff's age (since the base commit).
 >
 > Documentation to load eagerly: workspace `CLAUDE.md` and nested `CLAUDE.md` files, `ai/` directories (workspace and per-project/per-extension), `agents/README.md` and adjacent agent definitions, relevant `SKILL.md` files, `CONTRIBUTING.md` / `ARCHITECTURE.md`.
@@ -139,16 +131,17 @@ Inline body:
 
 Inline body:
 
-> **Scope**: branch-vs-base.
-> **Base**: `<base>`.
-> **Repository path**: the current working directory.
+> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
+> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
 >
-> Read the diff yourself:
+> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
 >
 > ```
 > git diff <base>...HEAD --stat
 > git diff <base>...HEAD
 > ```
+>
+> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a contradicting reference, dead link, or stale mirror in another — as a single finding.
 >
 > Load workspace `CLAUDE.md` and nested `CLAUDE.md` files, any harness conventions for agent-facing markdown the workspace exposes, and any `ai/` docs that govern the touched files.
 >
@@ -165,16 +158,17 @@ Inline body:
 
 Inline body:
 
-> **Scope**: branch-vs-base.
-> **Base**: `<base>`.
-> **Repository path**: the current working directory.
+> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
+> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
 >
-> Read the diff yourself:
+> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
 >
 > ```
 > git diff <base>...HEAD --stat
 > git diff <base>...HEAD
 > ```
+>
+> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a contradicting reference, dead link, or stale mirror in another — as a single finding.
 >
 > You review **external-facing public documentation only** — the docs a human adopter or end-user reads to learn and use this project: a rendered documentation site and its source content tree, user/adopter guides, the user-facing reference (CLI/API/config pages), and the user-facing portions of a public `README.md`. You do **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness-specific markdown (that's `harness-reviewer`), or source code (that's `code-reviewer`). Read code only to judge whether a public doc still describes it accurately.
 >
@@ -193,21 +187,26 @@ Inline body:
 
 Once every spawned reviewer has reported back, produce **one consolidated summary** for the caller. Do **not** paste the reviewer reports verbatim — synthesize.
 
+**Cross-repo consistency pass** (change-sets spanning two or more repos only). Before writing the summary, scan the reviewers' findings and the change-set for contradictions *between* repos — a command, flag, convention, or symbol changed in one repo and left stale in another's docs, mirror, or caller. Each axis reviewer holds the whole change-set and should already flag these within its lane; this pass consolidates them and catches any that span axes (e.g. `code-reviewer` saw the removal, `documentation-reviewer` saw the stale mention). Promote each confirmed cross-repo contradiction to a single `## cross-repo` finding that names both repos. Single-repo change-sets skip this pass entirely.
+
 Output shape:
 
 ```
-## Pre-push review: <range>
+## Pre-push review: env `<env>` — <repo>@<commits>[, <repo>@<commits>]   (single repo: <base>...HEAD)
 
 Reviewers: code-reviewer[, harness-reviewer][, context-reviewer][, documentation-reviewer]
-Files: <N> changed, <M> commits
+Files: <N> changed across <R> repos, <M> commits
+
+## cross-repo
+- (code-reviewer + documentation-reviewer) <contradiction naming both repos>
 
 ## must-fix
-- (code-reviewer) <finding>
-- (harness-reviewer) <finding>
+- (code-reviewer) <repo>: <finding>
+- (harness-reviewer) <repo>: <finding>
 
 ## consider
-- (code-reviewer) <finding>
-- (context-reviewer) <finding>
+- (code-reviewer) <repo>: <finding>
+- (context-reviewer) <repo>: <finding>
 
 ## clean
 - <reviewer that reported clean — one line each>
@@ -216,9 +215,10 @@ Files: <N> changed, <M> commits
 Rules for the summary:
 
 - Cap at roughly 25 lines. If the findings exceed that, list the headlines and offer to relay the full report from a specific reviewer on request.
-- Attribute every finding to its reviewer in parentheses — the caller needs to know which axis raised what.
+- Attribute every finding to its reviewer in parentheses — the caller needs to know which axis raised what. When the change-set spans multiple repos, prefix each finding with its repo so the caller can locate it.
+- Lead with `## cross-repo` when present — a contradiction between repos is the failure mode this skill exists to catch, so it goes first. Omit the section for single-repo change-sets and when none is found.
 - Sort within each section by reviewer in this order: code-reviewer, harness-reviewer, context-reviewer, documentation-reviewer (matches the spawn order so the caller can scan predictably). Skip the ones that weren't spawned.
-- If a reviewer found nothing, list it under `## Clean` rather than omitting it — absence of a section is ambiguous, presence in `## Clean` is signal. List reviewers that were **not spawned** (no matching project surface) on one line under the `Reviewers:` header, not in `## Clean` — "not run" and "ran clean" are different signals.
+- If a reviewer found nothing, list it under `## clean` rather than omitting it — absence of a section is ambiguous, presence in `## clean` is signal. List reviewers that were **not spawned** (no matching surface in any in-scope repo) on one line under the `Reviewers:` header, not in `## clean` — "not run" and "ran clean" are different signals.
 
 ### 6. Decide
 
@@ -236,7 +236,9 @@ In **neither** mode does `/wf-pre-push` invoke `git push`, `/ws-push`, or any ot
 
 The review axes — code structure, application↔harness seam, agent-facing markdown, external-facing public documentation — are complementary. A clean code review can still ship stale agent docs; a clean context review can still ship a broken abstraction; a clean code-and-context review can still ship a public doc that now lies to adopters. Running the applicable axes before push catches the full surface in one round-trip instead of several sequential invocations, and the parallel fan-out keeps wall time bounded by the slowest reviewer rather than the sum.
 
-The fan-out is conditional, not fixed: each reviewer is spawned only when the project carries the surface it reviews (step 3). A library with no docs site and no agentic harness gets a code review and nothing else — the skill does not manufacture lanes the project doesn't have.
+The same logic extends across repos. A logical change in this workspace often spans several repos in one env — a command in one, its docs in another. Reviewing each repo in isolation lets a contradiction between them (removed in repo A, still referenced in repo B) fall between two runs that never meet. Spanning every axis reviewer across the whole change-set, plus the cross-repo consistency pass in step 5, closes that gap: one reviewer per axis holds the entire change at once.
+
+The fan-out is conditional, not fixed: each reviewer is spawned only when some in-scope repo carries the surface it reviews (step 3). An env of libraries with no docs site and no agentic harness gets a code review and nothing else — the skill does not manufacture lanes the change-set doesn't have.
 
 ## Why no team
 
