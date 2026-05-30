@@ -1,0 +1,81 @@
+---
+description: Use when the user says "review the docs" or asks whether external-facing public documentation is accurate, current, or complete for a change — checks the user/adopter-facing docs (a rendered docs site, guides, the user-facing README) against the code they describe. Cold, one-shot documentation-reviewer subagent. Different axis from /wf-cold-review (code) and /wf-harness-review (the harness); explicitly NOT agent-facing markdown (that's context-reviewer).
+model: opus
+argument-hint: "[uncommitted]"
+allowed-tools: Bash, Read, Agent
+---
+
+# Documentation Review
+
+Run a **cold** documentation review — an independent `documentation-reviewer` subagent evaluates the changes with **zero prior conversation context**. "Cold" means fresh eyes: the reviewer hasn't seen your design discussion, your prior attempts, or your justifications. It reads the diff, the public documentation, and the project's documentation conventions on its own terms.
+
+`/wf-documentation-review` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*: external-facing **public** documentation — the docs a human adopter or end-user reads. It does **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness markdown (`harness-reviewer`), or code (`code-reviewer`). Run it when a change may have left a user-facing doc stale, wrong, or missing.
+
+## Scope
+
+Determined from `$ARGUMENTS`:
+
+| Argument | Scope |
+|----------|-------|
+| _(none, default)_ | **Branch vs. base** — all commits on the current branch since it diverged from the repository's main branch |
+| `uncommitted` | **Uncommitted changes** — staged + unstaged dirty local changes only |
+
+## Steps
+
+### 1. Determine scope
+
+- `$ARGUMENTS` empty → branch-vs-base mode (default)
+- `$ARGUMENTS` is `uncommitted` → uncommitted mode
+- Anything else → tell the user the valid forms and stop
+
+### 2. Resolve scope parameters
+
+**Branch-vs-base mode (default):** detect the repository's main branch ref. Try in order, use the first that exists; call the result `<base>`.
+
+```bash
+git rev-parse --verify origin/master 2>/dev/null \
+  || git rev-parse --verify origin/main 2>/dev/null \
+  || git rev-parse --verify master 2>/dev/null \
+  || git rev-parse --verify main
+```
+
+**Uncommitted mode:** nothing to resolve.
+
+### 3. Confirm there's something to review
+
+State check only — do not consume diff output here; the reviewer will pull the diff itself.
+
+- Branch-vs-base: `git diff --quiet <base>...HEAD` — exit 0 means no commits on the branch; report "no changes to review" and stop.
+- Uncommitted: `git diff --quiet HEAD` — exit 0 means clean working tree; report "no changes to review" and stop.
+
+### 4. Spawn the reviewer
+
+Use `Agent` to spawn `documentation-reviewer` with a **self-contained** prompt. The reviewer has no memory of this session — every fact it needs must be in the prompt.
+
+The prompt must contain:
+
+1. **Framing**: "This is a one-shot standalone documentation review. Read the diff and the public documentation; report categorized findings; and stop. There is no team coordinating you — do not attempt task coordination, messaging, or follow-on work."
+2. **Scope**: which mode (branch-vs-base vs. uncommitted), the base ref if applicable, and the repository path (CWD).
+3. **The diff commands to run** so the reviewer reads the diff itself:
+   - Branch-vs-base: `git diff <base>...HEAD --stat` for the file overview, then `git diff <base>...HEAD` for the full diff.
+   - Uncommitted: `git diff HEAD --stat` then `git diff HEAD`.
+4. **Review instructions**: locate the project's external-facing public documentation and discover its documentation conventions (do not assume them); if a "docs reflect this change" invariant is documented, review against it and cite it by path. Walk your four axes from `agents/documentation-reviewer.md` — accuracy/currency, completeness for the audience, single-source-of-truth, clarity/navigation. Read code only to judge whether a public doc still describes it accurately. Stay out of agent-facing markdown, harness markdown, and code review — route those to the responsible reviewer in a `notes` line. Skip an axis silently if there are no findings. Be specific: page/section, the code symbol or canonical source it concerns, concrete direction. No rewrites.
+5. **Output format**: categorized findings.
+   - `## must-fix` — a public doc now wrong against the diff, a user-facing capability the diff adds with no public-doc coverage, or a doc that has diverged from a canonical source it copied.
+   - `## consider` — non-blocking clarity/completeness/cross-link suggestions.
+   - `## notes` — brief acknowledgments + any out-of-scope routing.
+   - If the diff changes nothing a public doc covers, one sentence is the whole report. If the project ships no public documentation, the reviewer says so and stops.
+
+Spawn in the foreground — you need the findings to relay them.
+
+### 5. Relay findings
+
+Present the reviewer's report to the user as-is, with a one-line preamble noting the scope reviewed (e.g., "Cold documentation review of 7 files changed on `<branch>` vs. `<base>` in `<repo-path>`"). Do not editorialize or argue with findings — the user decides what to act on.
+
+## Why "cold"
+
+A reviewer that sat in on the design discussion absorbs the author's framing and tends to assume the docs already say what the author meant. A cold reviewer reads only what's on the page against what's in the code — which is exactly the perspective that catches a doc still describing a removed flag or a feature that shipped with no user-facing page.
+
+## Why no team
+
+`/wf-documentation-review` is deliberately one-shot, mirroring `/wf-cold-review` and `/wf-harness-review`. The reviewer is a role-pure agent (see [`../../agents/README.md`](../../agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.

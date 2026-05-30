@@ -1,5 +1,5 @@
 ---
-description: Use before pushing completed work to surface review findings over the un-pushed range. Fans out code-reviewer, harness-reviewer, and (conditionally) context-reviewer in parallel against origin/master..HEAD, then synthesizes a single advisory summary. Run before `git push` or `/ws-push`.
+description: Use before pushing completed work to surface review findings over the un-pushed range. Fans out code-reviewer plus, conditionally on the project's surfaces, harness-reviewer, context-reviewer, and documentation-reviewer in parallel against origin/master..HEAD, then synthesizes a single advisory summary. Run before `git push` or `/ws-push`.
 model: opus
 argument-hint: "[blocking]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion

@@ -1,0 +1,81 @@
+---
+description: Use when the user says "review the agent docs/context" or asks whether agents, skills, commands, CLAUDE.md, or ai/ docs follow the workspace's documented conventions — checks agent-facing markdown for clarity, single-source-of-truth, and non-duplication. Cold, one-shot context-reviewer subagent. Different axis from /wf-cold-review (code) and /wf-harness-review (the harness seam); explicitly NOT external-facing public documentation (that's documentation-reviewer).
+model: opus
+argument-hint: "[uncommitted]"
+allowed-tools: Bash, Read, Agent
+---
+
+# Context Review
+
+Run a **cold** context review — an independent `context-reviewer` subagent evaluates the changes with **zero prior conversation context**. "Cold" means fresh eyes: the reviewer hasn't seen your design discussion, your prior attempts, or your justifications. It reads the diff and the documented conventions on its own terms.
+
+`/wf-context-review` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*: agent-facing markdown — agents, skills, commands, `CLAUDE.md` files, and `ai/` docs — against the workspace's documented conventions for clarity, single-source-of-truth, and non-duplication. It does **not** review code (`code-reviewer`), the application↔harness seam (`harness-reviewer`), or external-facing public documentation (`documentation-reviewer`).
+
+## Scope
+
+Determined from `$ARGUMENTS`:
+
+| Argument | Scope |
+|----------|-------|
+| _(none, default)_ | **Branch vs. base** — all commits on the current branch since it diverged from the repository's main branch |
+| `uncommitted` | **Uncommitted changes** — staged + unstaged dirty local changes only |
+
+## Steps
+
+### 1. Determine scope
+
+- `$ARGUMENTS` empty → branch-vs-base mode (default)
+- `$ARGUMENTS` is `uncommitted` → uncommitted mode
+- Anything else → tell the user the valid forms and stop
+
+### 2. Resolve scope parameters
+
+**Branch-vs-base mode (default):** detect the repository's main branch ref. Try in order, use the first that exists; call the result `<base>`.
+
+```bash
+git rev-parse --verify origin/master 2>/dev/null \
+  || git rev-parse --verify origin/main 2>/dev/null \
+  || git rev-parse --verify master 2>/dev/null \
+  || git rev-parse --verify main
+```
+
+**Uncommitted mode:** nothing to resolve.
+
+### 3. Confirm there's something to review
+
+State check only — do not consume diff output here; the reviewer will pull the diff itself.
+
+- Branch-vs-base: `git diff --quiet <base>...HEAD` — exit 0 means no commits on the branch; report "no changes to review" and stop.
+- Uncommitted: `git diff --quiet HEAD` — exit 0 means clean working tree; report "no changes to review" and stop.
+
+### 4. Spawn the reviewer
+
+Use `Agent` to spawn `context-reviewer` with a **self-contained** prompt. The reviewer has no memory of this session — every fact it needs must be in the prompt.
+
+The prompt must contain:
+
+1. **Framing**: "This is a one-shot standalone context review. Read the diff and the documented conventions; report categorized findings; and stop. There is no team coordinating you — do not attempt task coordination, messaging, or follow-on work."
+2. **Scope**: which mode (branch-vs-base vs. uncommitted), the base ref if applicable, and the repository path (CWD).
+3. **The diff commands to run** so the reviewer reads the diff itself:
+   - Branch-vs-base: `git diff <base>...HEAD --stat` for the file overview, then `git diff <base>...HEAD` for the full diff.
+   - Uncommitted: `git diff HEAD --stat` then `git diff HEAD`.
+4. **Review instructions**: load workspace `CLAUDE.md` and nested `CLAUDE.md` files, and the harness conventions for agent-facing markdown the workspace exposes (e.g. `winter-harness:/harness/`), plus any `ai/` docs that govern the touched files. Check the changes against documented conventions — naming and prefixes (`ws-` vs `wf-`, agent/skill names), path notation (`workspace:`, `<extension>:`), voice and imperative style, frontmatter correctness, freshness of cross-references (broken links, stale anchors), and single-source-of-truth / non-duplication against existing peers. Be specific: file, line, convention violated, suggested direction. No rewrites.
+5. **Output format**: categorized findings.
+   - `## must-fix` — conflicting information, broken references, frontmatter errors, duplication that will drift.
+   - `## consider` — non-blocking clarity/consistency suggestions.
+   - `## notes` — brief acknowledgments + any out-of-scope routing.
+   - If the agent-facing markdown is clean, one sentence is the whole report.
+
+Spawn in the foreground — you need the findings to relay them.
+
+### 5. Relay findings
+
+Present the reviewer's report to the user as-is, with a one-line preamble noting the scope reviewed (e.g., "Cold context review of 4 agent-facing files changed on `<branch>` vs. `<base>` in `<repo-path>`"). Do not editorialize or argue with findings — the user decides what to act on.
+
+## Why "cold"
+
+A reviewer that sat in on the design discussion absorbs the author's framing and reads the doc as the author meant it. A cold reviewer reads only what's on the page against the documented conventions — which is exactly the perspective that catches an unclear instruction, a duplicated rule, or a stale cross-reference.
+
+## Why no team
+
+`/wf-context-review` is deliberately one-shot, mirroring `/wf-cold-review` and `/wf-harness-review`. The reviewer is a role-pure agent (see [`../../agents/README.md`](../../agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.

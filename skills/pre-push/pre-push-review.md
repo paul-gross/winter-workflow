@@ -1,11 +1,11 @@
 # Pre-push review
 
-Run an LLM-guided review over the un-pushed range before pushing completed work. Spawns `code-reviewer`, `harness-reviewer`, and (conditionally) `context-reviewer` in parallel as one-shot subagents, then synthesizes the findings into a single summary for the caller.
+Run an LLM-guided review over the un-pushed range before pushing completed work. Fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer` — then synthesizes the findings into a single summary for the caller. Which reviewers spawn depends on what surfaces the project actually has: a project with no agentic harness gets no `harness-reviewer`, a project with no public documentation gets no `documentation-reviewer`, and so on (see step 3).
 
 `/wf-pre-push` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but differs in two ways:
 
 - **Scope is fixed to the un-pushed range** (`<base>..HEAD`, where `<base>` is `origin/master` or its equivalent). The point is to gate the push, so the range is whatever the push would actually deliver — not branch-vs-base of an arbitrary diverged history, and never uncommitted work (you don't push uncommitted work).
-- **Multiple reviewers in parallel**, fanned out from one entry point. `/wf-cold-review` and `/wf-harness-review` are single-axis; `/wf-pre-push` covers the full review surface in one round-trip.
+- **Multiple reviewers in parallel**, fanned out from one entry point. `/wf-cold-review` and `/wf-harness-review` are single-axis; `/wf-pre-push` covers the full review surface in one round-trip — but only the axes the project has.
 
 ## Mode
 
@@ -43,19 +43,26 @@ git diff --quiet <base>...HEAD
 
 Exit 0 means the branch has no commits beyond `<base>` — report "nothing to review; branch is at base" and stop. Do not spawn reviewers on an empty range.
 
-### 3. Classify the diff
+### 3. Classify the diff and the project
 
-Decide which reviewers to spawn based on what files the range touches:
+A reviewer is only worth spawning when the project actually contains the surface it reviews. Spawning a `documentation-reviewer` at a project with no public docs, or a `harness-reviewer` at a project with no agentic harness, burns wall time to produce "nothing in my lane." So this step has two parts: **what the project has** (probe once) and **what the range touches**.
+
+First, see what the range touches:
 
 ```bash
 git diff --name-only <base>...HEAD
 ```
 
-- **Always spawn** `code-reviewer` — any change wants a structural read.
-- **Always spawn** `harness-reviewer` — any change might affect the application↔harness seam.
-- **Conditionally spawn** `context-reviewer` if the range touches agent-facing markdown. The canonical list of paths that trigger this gate (`.claude/`, `agents/`, `skills/**/SKILL.md`, any `CLAUDE.md`, any `ai/**/*.md`) lives in [`../commit/SKILL.md`](../commit/SKILL.md) under step 3 — apply the same classifier here. Product/backlog content (future vision, roadmaps, open backlog items) is excluded per the same convention.
+Then decide each reviewer:
 
-Record which reviewers will be spawned. Tell the caller in one short line (e.g., "Spawning code-reviewer + harness-reviewer + context-reviewer over 7 files…") before issuing the spawns.
+- **`code-reviewer` — spawn whenever the range changes code.** Any code change wants a structural read. (A docs-only range can skip it.)
+- **`harness-reviewer` — spawn only if the project has an agentic-harness surface.** Evidence: agent definitions (`agents/*.md`, `.claude/agents/`), skills, verifier/test scaffolds, harness conventions, any `CLAUDE.md`, an `ai/` tree. A project with none of these has no application↔harness seam to review — skip it.
+- **`context-reviewer` — spawn only if the project has agent-facing markdown AND the range touches it.** The canonical trigger paths (`.claude/`, `agents/`, `skills/**/SKILL.md`, any `CLAUDE.md`, any `ai/**/*.md`) live in [`../commit/SKILL.md`](../commit/SKILL.md) under step 3 — apply the same classifier here. If the project has no agent-facing markdown at all, skip. Product/backlog content (future vision, roadmaps, open backlog items) is excluded per the same convention.
+- **`documentation-reviewer` — spawn only if the project has external-facing public documentation AND the range touches code or docs that documentation covers.** Public documentation is what a human adopter/end-user reads: a `docs/` content tree with a site-generator config (`astro.config.*` + Starlight, `docusaurus.config.*`, `mkdocs.yml`, `book.toml`, VitePress), a separate docs-site repo, user/adopter guides, or the user-facing portion of a public `README.md`. It is **not** the agent-facing `ai/` tree or `CLAUDE.md` — those belong to `context-reviewer`. If the project ships no public documentation, skip the reviewer.
+
+Probe for the project's surfaces with cheap checks before deciding — e.g. `ls docs/ ai/ agents/ .claude/ 2>/dev/null`, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it.
+
+Record which reviewers will be spawned and why the others were skipped. Tell the caller in one short line (e.g., "Spawning code-reviewer + documentation-reviewer over 7 files; no harness/agent-facing surface in this project…") before issuing the spawns.
 
 ### 4. Spawn the reviewers in parallel
 
@@ -154,16 +161,44 @@ Inline body:
 >
 > If the agent-facing markdown is clean, one sentence is the whole report.
 
+#### documentation-reviewer (`subagent_type: documentation-reviewer`, only if classified in step 3)
+
+Inline body:
+
+> **Scope**: branch-vs-base.
+> **Base**: `<base>`.
+> **Repository path**: the current working directory.
+>
+> Read the diff yourself:
+>
+> ```
+> git diff <base>...HEAD --stat
+> git diff <base>...HEAD
+> ```
+>
+> You review **external-facing public documentation only** — the docs a human adopter or end-user reads to learn and use this project: a rendered documentation site and its source content tree, user/adopter guides, the user-facing reference (CLI/API/config pages), and the user-facing portions of a public `README.md`. You do **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness-specific markdown (that's `harness-reviewer`), or source code (that's `code-reviewer`). Read code only to judge whether a public doc still describes it accurately.
+>
+> Locate the project's public documentation and discover its documentation conventions (check `ai/`, `CONTRIBUTING.md`, any doc-authoring guide) — do not assume them. If a "docs reflect this change" invariant is documented, review against it and cite it by path; otherwise use general doc-quality judgment and say no convention is documented.
+>
+> Walk your four axes against the diff — accuracy/currency (does a public doc now describe removed or renamed behavior?), completeness (did the diff add a user-facing capability with no public-doc coverage?), single-source-of-truth (does a public doc reference the canonical source rather than hard-copy detail that drifts?), and clarity/navigation (broken links, dead anchors, orphaned pages). Skip an axis silently if there are no findings. Be specific: page/section, the code symbol or canonical source it concerns, concrete direction. No rewrites.
+>
+> Output format — categorized findings:
+> - `## must-fix` — a public doc now wrong against the diff, a user-facing capability with no public-doc coverage, or a doc that has diverged from a canonical source it copied
+> - `## consider` — non-blocking clarity/completeness/cross-link suggestions
+> - `## notes` — brief acknowledgments + any out-of-scope routing
+>
+> If the diff changes nothing a public doc covers, one sentence is the whole report. If the project ships no public documentation, say so and stop.
+
 ### 5. Synthesize findings
 
-Once every spawned reviewer has reported back, produce **one consolidated summary** for the caller. Do **not** paste all three reports verbatim — synthesize.
+Once every spawned reviewer has reported back, produce **one consolidated summary** for the caller. Do **not** paste the reviewer reports verbatim — synthesize.
 
 Output shape:
 
 ```
 ## Pre-push review: <range>
 
-Reviewers: code-reviewer, harness-reviewer[, context-reviewer]
+Reviewers: code-reviewer[, harness-reviewer][, context-reviewer][, documentation-reviewer]
 Files: <N> changed, <M> commits
 
 ## must-fix
@@ -182,8 +217,8 @@ Rules for the summary:
 
 - Cap at roughly 25 lines. If the findings exceed that, list the headlines and offer to relay the full report from a specific reviewer on request.
 - Attribute every finding to its reviewer in parentheses — the caller needs to know which axis raised what.
-- Sort within each section by reviewer in this order: code-reviewer, harness-reviewer, context-reviewer (matches the spawn order so the caller can scan predictably).
-- If a reviewer found nothing, list it under `## Clean` rather than omitting it — absence of a section is ambiguous, presence in `## Clean` is signal.
+- Sort within each section by reviewer in this order: code-reviewer, harness-reviewer, context-reviewer, documentation-reviewer (matches the spawn order so the caller can scan predictably). Skip the ones that weren't spawned.
+- If a reviewer found nothing, list it under `## Clean` rather than omitting it — absence of a section is ambiguous, presence in `## Clean` is signal. List reviewers that were **not spawned** (no matching project surface) on one line under the `Reviewers:` header, not in `## Clean` — "not run" and "ran clean" are different signals.
 
 ### 6. Decide
 
@@ -197,9 +232,11 @@ Rules for the summary:
 
 In **neither** mode does `/wf-pre-push` invoke `git push`, `/ws-push`, or any other delivery action. The push step is decoupled by design — see "Why no automatic push" below.
 
-## Why one entry point with three reviewers
+## Why one entry point, several reviewers
 
-The three review axes — code structure, application↔harness seam, agent-facing markdown — are complementary. A clean code review can still ship stale agent docs; a clean context review can still ship a broken abstraction. Running all three before push catches the full surface in one round-trip instead of three sequential invocations, and the parallel fan-out keeps wall time bounded by the slowest reviewer rather than the sum.
+The review axes — code structure, application↔harness seam, agent-facing markdown, external-facing public documentation — are complementary. A clean code review can still ship stale agent docs; a clean context review can still ship a broken abstraction; a clean code-and-context review can still ship a public doc that now lies to adopters. Running the applicable axes before push catches the full surface in one round-trip instead of several sequential invocations, and the parallel fan-out keeps wall time bounded by the slowest reviewer rather than the sum.
+
+The fan-out is conditional, not fixed: each reviewer is spawned only when the project carries the surface it reviews (step 3). A library with no docs site and no agentic harness gets a code review and nothing else — the skill does not manufacture lanes the project doesn't have.
 
 ## Why no team
 
@@ -211,4 +248,4 @@ Coupling `/wf-pre-push` to `/ws-push` would invert the dependency direction. `/w
 
 ## Why "cold"
 
-Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a cold reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `/wf-pre-push` preserves it for all three axes simultaneously.
+Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a cold reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `/wf-pre-push` preserves it across every axis it runs.

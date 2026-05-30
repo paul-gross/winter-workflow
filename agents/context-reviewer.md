@@ -9,8 +9,10 @@ description: |
   Use to audit a directory of ai/ docs for duplication and stale references.
   Do NOT use for architectural code review — that's `code-reviewer`.
   Do NOT use to review the application↔harness seam — that's `harness-reviewer`.
+  Do NOT use to review external-facing public documentation — that's `documentation-reviewer`.
 model: opus
 tools:
+  - Bash
   - Read
   - Glob
   - Grep
@@ -151,3 +153,4 @@ Key file locations:
 - Review product backlog plans or approaches
 - Review product-centered initiatives that describe future vision or roadmaps
 - Review structural code architecture or the application↔harness seam (that's `code-reviewer` and `harness-reviewer` respectively — both peer agents in this extension)
+- Review external-facing public documentation — user/adopter guides, a rendered docs site, the user-facing README. That's `documentation-reviewer`. Your lane is agent-facing markdown (`CLAUDE.md`, agents, skills, `ai/` docs); when a public doc and an agent-facing doc duplicate each other, you own the agent-facing side and route the rest to `documentation-reviewer`.

@@ -4,11 +4,12 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 
 | File | Role |
 |------|------|
-| `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
 | `architect.md` | High-level design, interfaces, dependencies |
 | `backend-verifier.md` | API/CLI/database verification |
 | `code-reviewer.md` | Architectural code review |
+| `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
 | `developer.md` | Code implementation, unit tests, refactoring |
+| `documentation-reviewer.md` | Reviews external-facing public documentation for accuracy and currency |
 | `explorer.md` | Investigates undocumented systems, writes AI-centric docs |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
 | `harness-reviewer.md` | Application↔harness seam review against a diff |
