@@ -25,3 +25,7 @@ We continuously refine the workspace to push toward AI-native functionality in a
 We embrace agent autonomy. Agents write the code, test the application themselves, review their own work, and retrospect on their own inefficiencies. The harness exists to make that possible.
 
 **Application architecture** and the **agentic harness** are the two largest dimensions of agent productivity — we strive to maximize both.
+
+## Skills, agents, and commands
+
+This extension installs the `/wf-*` skills described in the [README](./README.md) Features section. The role-pure subagents it provides — `architect`, `developer`, `code-reviewer`, `context-reviewer`, `harness-reviewer`, `documentation-reviewer`, `explorer`, `frontend-verifier`, `backend-verifier`, `runner`, and `test-mediator` — are symlinked as `wf-<name>` and spawnable standalone or as blizzard teammates. See [`agents/README.md`](./agents/README.md) for the full roster and the role-pure / caller-injects-coordination convention.
