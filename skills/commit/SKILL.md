@@ -62,7 +62,7 @@ Use the format from the conventions loaded in step 4. Example:
 git commit -m "$(cat <<'EOF'
 <commit message adhering to project's commit standards>
 
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

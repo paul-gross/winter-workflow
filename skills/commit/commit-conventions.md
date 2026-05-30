@@ -9,7 +9,7 @@ This is the fallback convention used when no project-specific `CONTRIBUTING.md` 
 
 <optional body>
 
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 **The first line (type, scope, description) must be all lowercase.**
@@ -52,5 +52,5 @@ For non-trivial changes, include a body that explains:
 Always end with a co-author line:
 
 ```
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```

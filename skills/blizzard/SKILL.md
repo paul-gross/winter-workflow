@@ -167,7 +167,7 @@ Agent(
   subagent_type: "developer",
   team_name: "<your-team-name>",
   name: "developer",
-  model: "sonnet-4-6",
+  model: "sonnet",
   prompt: "<team-coordination preamble from above>
 
     Implement the new health-check endpoint in the API service.
@@ -208,7 +208,7 @@ The documentation root depends on whether the blizzard was started for a refined
 
 If the blizzard was started with a work-item name (e.g., via `/ws-work <name>` or explicitly stated by the user), use the work-item path. Otherwise it's ad-hoc. Create the `blizzard/` subdirectory if it doesn't exist.
 
-(The earlier `plans/`, `todos/`, and `ad-hoc/` top-level layout was replaced by the single `backlog/` + `work/` model in `winter-product`. See `winter-product:/ai/workflow.md` for the lifecycle.)
+(See `winter-product:/ai/workflow.md` for the `backlog/` → `work/` lifecycle these paths follow.)
 
 ### Agent Activity Logs
 
