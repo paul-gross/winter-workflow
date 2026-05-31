@@ -109,10 +109,27 @@ assert_fail("no-frontmatter", "missing or empty YAML frontmatter")
 assert_fail("allowed-tools-instead", "the grant is unintended")
 assert_warn("allowed-tools-dead", "ignored on agents")
 
+# Parser robustness — author-written frontmatter that YAML accepts must not
+# false-fail, and malformed values must not pass silently.
+assert_pass("trailing-comment-ok", FIXTURES / "trailing-comment-ok")
+assert_pass("trailing-comment-wildcard", FIXTURES / "trailing-comment-wildcard")
+assert_pass("model-space-before-colon", FIXTURES / "model-space-before-colon")
+assert_fail("unterminated-flow", "tools: must be a non-empty list")
+assert_fail("empty-block-item", "tools: empty list")
+assert_fail("comment-only-bullet", "tools: empty list")
+
 # The real shipped agents must all pass — the lint is only useful if green
 # against master. Scoping at the repo root also confirms the `fixtures/` prune
 # keeps the broken fixtures above from leaking into a real run.
 assert_pass("agents (real)", REPO_ROOT)
+
+# `winter lint --changed` over a changed *fixture file* (named directly, not
+# walked) must not flag it — the fixtures are this lint's own test data, not
+# real agents. Proves the path-based prune in _collect_agent_files.
+assert_pass(
+    "changed fixture file",
+    FIXTURES / "missing-tools" / "agents" / "a.md",
+)
 
 print()
 if failures:

@@ -63,7 +63,7 @@ PRUNE_DIRS = frozenset(
     {".git", ".venv", "node_modules", "__pycache__", ".mypy_cache", ".ruff_cache", "fixtures"}
 )
 
-_KEY_RE = re.compile(r"^([A-Za-z0-9_-]+):(.*)$")
+_KEY_RE = re.compile(r"^([A-Za-z0-9_-]+)[ \t]*:(.*)$")
 
 
 @dataclass(frozen=True)
@@ -131,6 +131,37 @@ def _strip_quotes(s: str) -> str:
     return s
 
 
+def _comment_index(s: str) -> int | None:
+    """Index of the first `#` that starts a YAML comment — at the start of the
+    string or preceded by whitespace — else None."""
+    for i, ch in enumerate(s):
+        if ch == "#" and (i == 0 or s[i - 1] in " \t"):
+            return i
+    return None
+
+
+def _strip_inline_comment(value: str) -> str:
+    """Drop an unquoted trailing YAML comment from an inline scalar.
+
+    YAML treats ` #...` (whitespace + hash) as a comment, so `model: opus # x`
+    and `tools: * # all` carry a value of `opus` / `*`, not the literal text.
+    A `#` inside a leading quoted span is kept verbatim (`"foo # bar"`).
+
+    Lossy by design: a value that legitimately contains ` #` is shortened. That
+    is safe only because callers test a value's *presence*, never read it back
+    as content — keep that true if you add a caller."""
+    s = value.strip()
+    if s[:1] in ("'", '"'):
+        end = s.find(s[0], 1)
+        if end != -1:
+            tail = s[end + 1 :]
+            cut = _comment_index(tail)
+            return (s[: end + 1] + (tail[:cut] if cut is not None else tail)).strip()
+        return s  # unterminated quote — leave as-is
+    cut = _comment_index(s)
+    return (s[:cut] if cut is not None else s).strip()
+
+
 def _frontmatter_lines(text: str) -> list[str] | None:
     """The YAML lines between the leading pair of `---` fences, or None if the
     file does not open with a frontmatter fence."""
@@ -154,7 +185,7 @@ def _top_level_blocks(lines: list[str]) -> dict[str, dict]:
             m = _KEY_RE.match(line)
             if m:
                 cur = m.group(1)
-                blocks[cur] = {"inline": m.group(2).strip(), "body": []}
+                blocks[cur] = {"inline": _strip_inline_comment(m.group(2)), "body": []}
             else:
                 cur = None
             continue
@@ -191,18 +222,27 @@ def _check_tools(block: dict | None) -> str | None:
     if block is None:
         return f"tools: missing ({rule})"
     inline = block["inline"]
+    empty_list = 'tools: empty list (must list at least one tool, or be "*")'
     if inline == "":
-        # Expect a block sequence in the body.
-        if any(l.lstrip().startswith("- ") for l in block["body"]):
+        # Expect a block sequence in the body: `- item` lines with content.
+        dashes = [
+            _strip_inline_comment(l.lstrip()[1:])
+            for l in block["body"]
+            if l.lstrip() == "-" or l.lstrip().startswith("- ")
+        ]
+        if any(dashes):
             return None
+        if dashes:  # only empty bullets (`-` / `- `) — present but no items
+            return empty_list
         return f"tools: missing ({rule})"
     if _strip_quotes(inline) == "*":
         return None
     if inline.startswith("["):  # flow sequence
-        inner = inline[1:-1] if inline.endswith("]") else inline[1:]
-        items = [x for x in (_strip_quotes(p).strip() for p in inner.split(",")) if x]
+        if not inline.endswith("]"):
+            return f"tools: {rule}"  # unterminated `[` — malformed
+        items = [x for x in (_strip_quotes(p).strip() for p in inline[1:-1].split(",")) if x]
         if not items:
-            return 'tools: empty list (must list at least one tool, or be "*")'
+            return empty_list
         return None
     return f"tools: {rule}"  # a bare scalar like `tools: Read`
 
@@ -243,9 +283,7 @@ def _frontmatter_findings(file: Path, rel: str) -> list[Finding]:
 def _tools_findings(blocks: dict[str, dict], rel: str) -> list[Finding]:
     """Validate the `tools` grant and guard the `allowed-tools` footgun.
 
-    `allowed-tools` is ignored by Claude Code on an agent. When it stands in for
-    a missing `tools` the grant is effectively unintended (a `fail`); when it
-    merely sits beside a valid `tools` it is dead noise (a `warn`).
+    See the module docstring's "KEY NAME" note for the fail-vs-warn rationale.
     """
     tools_block = blocks.get("tools")
     has_allowed = "allowed-tools" in blocks
@@ -296,7 +334,13 @@ def _collect_agent_files(paths: list[Path]) -> list[Path]:
 
     for p in paths:
         if p.is_file():
-            add(p)
+            # A file named directly in scope (e.g. `winter lint --changed` over a
+            # changed file) bypasses the walk-time PRUNE_DIRS, so apply the prune
+            # to its own path components here. This keeps the lint's own broken
+            # fixtures out of a real run, while the test harness still reaches
+            # them by scoping the fixture *directory* (walked, not named).
+            if not any(part in PRUNE_DIRS for part in p.parts):
+                add(p)
             continue
         for dirpath, dirnames, filenames in os.walk(p):
             dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]
