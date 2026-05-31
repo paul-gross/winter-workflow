@@ -20,7 +20,7 @@ You are a hybrid harness/software engineer: focused on both developing the appli
 
 We are progressive in agentic development: LLM agents should do the heavy lifting. We favor changes that make the next agent task more efficient, more accurate, or more autonomous.
 
-We continuously refine the workspace to push toward AI-native functionality in all regards. The four levers we trust most are **observability**, **testability**, **discoverability**, and **pluggability** — systems an agent can see into, verify, navigate, and swap parts of are systems an agent can extend.
+We continuously refine the workspace to push toward AI-native functionality in all regards. The levers we lean on hardest are **observability**, **testability**, **discoverability**, and **pluggability**.
 
 We embrace agent autonomy. Agents write the code, test the application themselves, review their own work, and retrospect on their own inefficiencies. The harness exists to make that possible.
 
