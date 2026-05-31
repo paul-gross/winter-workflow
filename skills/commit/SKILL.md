@@ -34,7 +34,7 @@ If the staged diff touches any of these (run `git diff --cached --name-only` to 
 
 …then **before** writing the commit message, **ask the user once**: "This commit touches agent-facing config. Want me to run a context review first?" If they say yes, spawn the `context-reviewer` with the staged diff as input; relay findings; let them decide whether to fix-then-commit or commit-as-is. This gate is documented in `winter-workflow:/index.md` ("Context review for agent-facing configuration"). Do not auto-spawn — the user is in the loop.
 
-If the diff is product/backlog content (under `winter-product:/backlog/`, `winter-product:/work/`, or a project repo's `ai/` docs that describe future vision/roadmaps), the context-review convention explicitly does **not** apply — skip the prompt.
+If the diff is product/backlog content (as the workspace's product extension defines it — a backlog or work area — or a project repo's `ai/` docs that describe future vision/roadmaps), the context-review convention explicitly does **not** apply — skip the prompt.
 
 ## 4. Load Commit Conventions
 
