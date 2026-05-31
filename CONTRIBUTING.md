@@ -12,9 +12,19 @@ Conventional Commits with a scope:
 - Scope: repo name or subsystem (e.g. `winter-workflow`, `agents`, `skills`)
 - The `/wf-commit` skill (shipped by this repo) generates commits in this format
 
-## Pre-commit checks
+## Pre-push checks
 
-None. No linters, formatters, or tests are wired in.
+Run before pushing to `master`:
+
+- `winter lint winter-workflow` — runs this module's contributed checks. The
+  agent-frontmatter check (`scripts/lint-agents.py`, wired via the `lint` field
+  in `winter-ext.toml`) validates that every `agents/*.md` declares a non-empty
+  `description`, a `tools` grant (non-empty list or the literal `*`), and a
+  `model` of `haiku`, `sonnet`, or `opus`, failing with the file and offending
+  key. The lint ships only through `winter lint` — there is no standalone task
+  runner.
+- `python3 tests/test_lint_agents.py` — exercises the check against the broken
+  fixtures under `tests/fixtures/` (stdlib only, no dependencies).
 
 ## Delivery
 

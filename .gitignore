@@ -1,0 +1,4 @@
+# Python bytecode caches — produced when the agent-frontmatter lint
+# (scripts/lint-agents.py) and its test are imported or run.
+__pycache__/
+*.py[cod]
