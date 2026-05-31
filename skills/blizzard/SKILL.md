@@ -20,6 +20,7 @@ allowed-tools:
   - ExitPlanMode
   - EnterWorktree
   - ExitWorktree
+  - Skill
 argument-hint: "[task description]"
 ---
 
@@ -48,8 +49,9 @@ You exist to **orchestrate a team of agents and manage their context**. You redu
 4. **Spawn the minimum teammates needed** via Agent with the team_name from step 3
 5. **Create and assign tasks** via TaskCreate and TaskUpdate
 6. **Coordinate** — monitor progress, unblock teammates, route follow-ups
-7. **Retrospective** — before shutting down, orchestrate the retrospective (see Session Documentation)
-8. **Shutdown** — after the retrospective is written, message all teammates that work is complete and they should stop, then call TeamDelete
+7. **Pre-push review** — when the work is complete and verified, before pushing, run the pre-push review (see Pre-push review) and surface its findings
+8. **Retrospective** — before shutting down, orchestrate the retrospective (see Session Documentation)
+9. **Shutdown** — after the retrospective is written, message all teammates that work is complete and they should stop, then call TeamDelete
 
 ## Testing Requirement
 
@@ -84,6 +86,10 @@ The core execution cycle for any code change is: **develop → verify → review
 - **Verifier can't reach service**: Confirm with the runner that services are actually healthy before re-running verification. If the runner confirms health, the verifier may have the wrong URL/port — check and correct the task description.
 - **Flaky test results**: If a scenario passes on retry without code changes, note it but don't block on it. If it fails consistently, route to the developer.
 - **Repeated failures (3+ cycles on the same issue)**: Stop looping. Summarize what's been tried, what keeps failing, and escalate to the user. The user may have context the team doesn't.
+
+## Pre-push review
+
+When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `/pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. The user decides whether to address findings (route to a `developer`), push, or stop.
 
 ## Workflow Patterns
 
@@ -175,7 +181,7 @@ Agent(
     Files: alpha/my-app/src/api/health.controller.ts
     Follow the existing controller pattern in the same directory.
     Report back when done with a summary of changes.
-    Activity log: winter-product:/work/api-health/blizzard/developer.md
+    Activity log: <documentation-root>/developer.md
     — write timestamped entries as you work."
 )
 ```
@@ -198,17 +204,7 @@ Every blizzard session produces a trail of documentation so the user can underst
 
 ### Documentation Location
 
-The documentation root depends on whether the blizzard was started for a refined work item, an open backlog idea/todo, or ad-hoc work. This is determined by what was explicitly stated when the blizzard was started — don't search for matching items.
-
-| Work Type | Documentation Root |
-|-----------|-------------------|
-| **Work item** (refined; lives at `winter-product:/work/<name>/`) | `winter-product:/work/<name>/blizzard/` |
-| **Open backlog item** (still in `winter-product:/backlog/`, e.g. `.idea.md` / `.todo.md`) | `winter-product:/work/<name>/blizzard/` (promote it first via `/wp-refine <name>` if not already promoted) |
-| **Ad-hoc** | `winter-product:/ad-hoc/<team-name>/blizzard/` |
-
-If the blizzard was started with a work-item name (e.g., via `/ws-work <name>` or explicitly stated by the user), use the work-item path. Otherwise it's ad-hoc. Create the `blizzard/` subdirectory if it doesn't exist.
-
-(See `winter-product:/ai/workflow.md` for the `backlog/` → `work/` lifecycle these paths follow.)
+Follow the workspace's planning-framework conventions: if the blizzard was started for a refined work item with its own directory (via `/ws-work <name>` or stated by the user), write a `blizzard/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `~/.claude/winter/workflows/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the team name). Decide from how the blizzard was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
 
 ### Agent Activity Logs
 
