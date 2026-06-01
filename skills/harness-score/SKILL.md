@@ -1,6 +1,5 @@
 ---
 description: "Score a codebase against the harness model maturity matrix. Produces an HTML report at ~/.claude/winter/harness-scores/YYYY-MM-DD-<project>.html with per-dimension stages (1-5), evidence citations, and (if prior reports exist) a delta section comparing against the most recent score. Use weekly to track progress or divergence."
-model: opus
 allowed-tools: Bash, Read, Glob, Grep, Write, Agent
 ---
 

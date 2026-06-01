@@ -1,6 +1,5 @@
 ---
 description: Use when the user says "review the agent docs/context" or asks whether agents, skills, commands, CLAUDE.md, or ai/ docs follow the workspace's documented conventions — checks agent-facing markdown for clarity, single-source-of-truth, and non-duplication. Cold, one-shot context-reviewer subagent. Different axis from /wf-cold-review (code) and /wf-harness-review (the harness seam); explicitly NOT external-facing public documentation (that's documentation-reviewer).
-model: opus
 argument-hint: "[uncommitted]"
 allowed-tools: Bash, Read, Agent
 ---

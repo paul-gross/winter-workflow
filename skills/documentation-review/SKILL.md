@@ -1,6 +1,5 @@
 ---
 description: Use when the user says "review the docs" or asks whether external-facing public documentation is accurate, current, or complete for a change — checks the user/adopter-facing docs (a rendered docs site, guides, the user-facing README) against the code they describe. Cold, one-shot documentation-reviewer subagent. Different axis from /wf-cold-review (code) and /wf-harness-review (the harness); explicitly NOT agent-facing markdown (that's context-reviewer).
-model: opus
 argument-hint: "[uncommitted]"
 allowed-tools: Bash, Read, Agent
 ---

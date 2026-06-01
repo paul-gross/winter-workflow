@@ -1,6 +1,5 @@
 ---
 description: Start a blizzard — transform this session into the snowflake team lead that coordinates specialized teammates for development work
-model: opus
 allowed-tools:
   - Bash
   - Read
