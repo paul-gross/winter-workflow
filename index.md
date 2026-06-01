@@ -29,3 +29,12 @@ We embrace agent autonomy. Agents write the code, test the application themselve
 ## Skills, agents, and commands
 
 This extension installs the `/wf-*` skills described in the [README](./README.md) Features section. The role-pure subagents it provides — `architect`, `developer`, `code-reviewer`, `context-reviewer`, `harness-reviewer`, `documentation-reviewer`, `explorer`, `frontend-verifier`, `backend-verifier`, `runner`, and `test-mediator` — are symlinked as `wf-<name>` and spawnable standalone or as blizzard teammates. See [`agents/README.md`](./agents/README.md) for the full roster and the role-pure / caller-injects-coordination convention.
+
+### Choosing a build skill
+
+Route by the shape of the work before invoking a build skill — the [README](./README.md) feature entries describe what each one does:
+
+- **Planned or phased work** — a mid-sized feature with a plan and/or acceptance criteria, workable as-is, or a discrete phase of a larger plan → strongly prefer **`/wf-glacier`**.
+- **Ad hoc work** — unplanned, unphased instructions fed in conversationally ("build me this specific thing right now") → default to delegation via the standing foreman, **`/wf-delegate`**.
+
+Across these skills, reach for **Sonnet `developer` subagents** often: `developer` is the workhorse implementation role, and Sonnet is the right default tier for routine implementation — reserve more capable tiers for orchestration and judgment.
