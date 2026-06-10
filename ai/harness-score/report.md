@@ -55,4 +55,4 @@ In order, inside the generic app shell (sticky sidebar + content column):
 3. **Profile summary table** — one row per dimension: name, cluster, stage, delta (`—` on a baseline run). Keep the textual `↑`/`↓`/`=` cue alongside color. Put the "no overall stage" disclaimer in a callout.
 4. **Per-dimension detail** — one card per dimension, `id="dN"`, with the cluster `border-l-<key>` accent. Header is a flexbox: dimension title + cluster tag on the left; on the right the large score (colored per the band table) with the stage-name label beneath. Body: evidence list (file paths as visible code text), rationale, and the next-stage suggestion in a callout.
 5. **Deltas section** — when a prior report exists: a table of per-dimension stage movement, then a list of stale evidence citations.
-6. **`<footer>`** — generator `winter-workflow/harness-score`, rubric version, generation date, target.
+6. **`<footer>`** — generator `winter-workflow/harness-score`, rubric version, generation date, target. <!-- winter-lint:example -->

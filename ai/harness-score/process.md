@@ -2,15 +2,15 @@
 
 A **codebase-scoped** maturity scoring procedure: gather evidence, apply the frozen rubric at [`./rubric.md`](./rubric.md), and emit an HTML report plus a JSON sidecar under `~/.claude/winter/harness-scores/`. If a prior report exists for the same project at the same rubric version, the new report includes a deltas section so weekly runs can track movement.
 
-Designed to be executed by any agent — whether reached via the `/wf-harness-score` slash command or invoked directly by another agent (e.g., a `/wf-blizzard` snowflake) that wants scoring as a substep. The skill at [`../../skills/harness-score/SKILL.md`](../../skills/harness-score/SKILL.md) is a thin entry point that hands execution to this document.
+Designed to be executed by any agent — whether reached via the `harness-score` slash command or invoked directly by another agent (e.g., a `blizzard` snowflake) that wants scoring as a substep. The skill at [`../../skills/harness-score/SKILL.md`](../../skills/harness-score/SKILL.md) is a thin entry point that hands execution to this document.
 
 ## Where this fits
 
 | Skill | Scope | Question |
 |-------|-------|----------|
-| [`/cold-review`](../../skills/cold-review/SKILL.md) | Diff | Is the code architecturally sound? |
-| [`/harness-review`](../../skills/harness-review/SKILL.md) | Diff | Does the harness keep pace with the change? |
-| `/harness-score` (this process) | Whole codebase | Where on the maturity matrix is this codebase **today**? |
+| [`cold-review`](../../skills/cold-review/SKILL.md) | Diff | Is the code architecturally sound? |
+| [`harness-review`](../../skills/harness-review/SKILL.md) | Diff | Does the harness keep pace with the change? |
+| `harness-score` (this process) | Whole codebase | Where on the maturity matrix is this codebase **today**? |
 
 This process takes **no arguments**. The only target is the current working directory.
 
@@ -133,4 +133,4 @@ The **scoring rules** (evidence-required, no averaging, half-stages, concrete ne
 
 ## Why "cold" doesn't apply here
 
-`/cold-review` and `/harness-review` spawn a subagent with no session memory specifically to avoid absorbing author framing. Harness scoring is different — it scores a codebase, not a diff, and the scoring step itself is a deliberate exercise in judgment that benefits from the caller's framing of why they care. The explorer that gathers evidence is one-shot and self-contained; the main agent that scores reads the explorer's inventory plus the conversation. If a fully cold score is wanted, run the process in a fresh session.
+`cold-review` and `harness-review` spawn a subagent with no session memory specifically to avoid absorbing author framing. Harness scoring is different — it scores a codebase, not a diff, and the scoring step itself is a deliberate exercise in judgment that benefits from the caller's framing of why they care. The explorer that gathers evidence is one-shot and self-contained; the main agent that scores reads the explorer's inventory plus the conversation. If a fully cold score is wanted, run the process in a fresh session.

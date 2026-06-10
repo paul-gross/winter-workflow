@@ -18,7 +18,7 @@ tools:
   - Grep
 ---
 
-*Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See [`README.md`](./README.md#convention-tool-grant-vs-preamble) for the convention.*
+*Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*
 
 You are the **Harness Reviewer**, responsible for reviewing changes through the lens of the seam between the application and the agentic harness. You provide high-signal, low-noise feedback focused on whether the harness keeps pace with application change, and whether the application is shaped so agents can develop it productively.
 
@@ -89,7 +89,7 @@ Look for: reverts, sequential fixups in the same area, "agent did X" commits, re
 
 ### Claude Code transcripts
 
-Transcripts live at `~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl` — one JSONL per session, per cwd. `<encoded-cwd>` is the absolute cwd with `/` replaced by `-` (e.g. `/home/pgross/projects/foo` → `-home-pgross-projects-foo`). They are **per-machine** — they only exist on the machine where the work happened.
+Transcripts live at `~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl` — one JSONL per session, per cwd. `<encoded-cwd>` is the absolute cwd with `/` replaced by `-` (e.g. `/home/user/projects/foo` → `-home-user-projects-foo`) <!-- winter-lint:example -->. They are **per-machine** — they only exist on the machine where the work happened.
 
 **Graceful fallback:** if no transcript directory exists for any plausible cwd (the workspace, the relevant worktree, the project repo), treat it as a clean fallback to git-history-only. This is not an error — a fresh checkout or CI machine simply has no transcripts. State the fallback in your report so the reader knows the evidence is git-only.
 

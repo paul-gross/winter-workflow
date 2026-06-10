@@ -1,16 +1,16 @@
 ---
-description: Make a small, focused change to existing code — bug fix, tweak, adjustment, regression repair. Explorer investigates, developer changes, verifier confirms, in a tight loop with a hard iteration cap. Use for narrow, localized work on code that already exists; route net-new features, multi-module refactors, and design-level work to /wf-blizzard.
+description: Make a small, focused change to existing code — bug fix, tweak, adjustment, regression repair. Explorer investigates, developer changes, verifier confirms, in a tight loop with a hard iteration cap. Use for narrow, localized work on code that already exists; route net-new features, multi-module refactors, and design-level work to the blizzard skill.
 argument-hint: "[change description]"
 allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 ---
 
 # Thaw
 
-`/wf-thaw` makes **small, focused changes to existing code** — fix a bug, tweak a behavior, adjust an existing function, restore a regression. It composes `explorer` → `developer` → `verifier` into a tight investigate-change-verify loop, without spinning up the full `/wf-blizzard` machinery.
+`thaw` makes **small, focused changes to existing code** — fix a bug, tweak a behavior, adjust an existing function, restore a regression. It composes `explorer` → `developer` → `verifier` into a tight investigate-change-verify loop, without spinning up the full `blizzard` machinery.
 
 ## Scope
 
-`/wf-thaw` composes three role-pure agents (see [`../../agents/README.md`](../../agents/README.md)) in one-shot mode:
+`thaw` composes three role-pure agents (see [`winter-workflow:/agents/README.md`](winter-workflow:/agents/README.md)) in one-shot mode:
 
 | Step | Agent | Purpose |
 |------|-------|---------|
@@ -18,15 +18,15 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 | 6a | `developer` | implement the change |
 | 6b | `backend-verifier` **or** `frontend-verifier` | confirm the change |
 
-It does **not** spawn `architect`, `test-mediator`, `code-reviewer`, `runner`, or `context-reviewer`. If any of those are needed, the work has outgrown `/wf-thaw` — bail to `/wf-blizzard` (see step 4). If a structural code review is wanted after a clean thaw, run `/wf-cold-review` separately.
+It does **not** spawn `architect`, `test-mediator`, `code-reviewer`, `runner`, or `context-reviewer`. If any of those are needed, the work has outgrown `thaw` — bail to `blizzard` (see step 4). If a structural code review is wanted after a clean thaw, run `cold-review` separately.
 
-**Why no `TeamCreate`:** `/wf-thaw` does **not** create its own team. This is deliberate — it keeps `/wf-thaw` composable as a primitive. The skill can run standalone from a user-driven session, *and* a `/wf-blizzard` snowflake (or any other orchestrator) can invoke `/wf-thaw` as a contained sub-step without nesting teams or polluting the parent team's `TaskList`. Each agent spawn is a self-contained one-shot. The agents are role-pure and expect their caller to inject coordination context; the **coordination preamble** (next section) tells them they're operating one-shot with no shared task list.
+**Why no `TeamCreate`:** `thaw` does **not** create its own team. This is deliberate — it keeps `thaw` composable as a primitive. The skill can run standalone from a user-driven session, *and* a `blizzard` snowflake (or any other orchestrator) can invoke `thaw` as a contained sub-step without nesting teams or polluting the parent team's `TaskList`. Each agent spawn is a self-contained one-shot. The agents are role-pure and expect their caller to inject coordination context; the **coordination preamble** (next section) tells them they're operating one-shot with no shared task list.
 
 ## Coordination preamble (shared)
 
-Every `/wf-thaw` spawn prompt must begin with this preamble, prepended verbatim before the role-specific task content. It tells the role-pure agent how to participate in a `/wf-thaw` invocation (no team, no shared `TaskList`, report inline):
+Every `thaw` spawn prompt must begin with this preamble, prepended verbatim before the role-specific task content. It tells the role-pure agent how to participate in a `thaw` invocation (no team, no shared `TaskList`, report inline):
 
-> You are operating as a one-shot agent spawned by the `/wf-thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
+> You are operating as a one-shot agent spawned by the `thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
 
 The steps below reference this section as **"the coordination preamble"**; do not paraphrase — paste it verbatim.
 
@@ -59,7 +59,7 @@ The prompt must include:
 1. **The coordination preamble** (verbatim, see above).
 2. **Change request**: the 1-2 sentence description from step 1.
 3. **Worktree path**: absolute path; instruction to investigate there.
-4. **What to do**: read relevant code, logs, and tests; locate where the change belongs; for bug-shaped requests, trace to a root cause; for tweak-shaped requests, identify the existing code to adjust. Keep this investigation tight — `/wf-thaw` is for small, localized work, so the explorer should not produce broader documentation as a side effect of this call.
+4. **What to do**: read relevant code, logs, and tests; locate where the change belongs; for bug-shaped requests, trace to a root cause; for tweak-shaped requests, identify the existing code to adjust. Keep this investigation tight — `thaw` is for small, localized work, so the explorer should not produce broader documentation as a side effect of this call.
 5. **What to return**:
    - **Location** — specific file + line(s) where the change belongs (the defect's site for bugs, the existing code being adjusted for tweaks).
    - **Change sketch** — the smallest edit that achieves the goal (a few lines, a single function, etc.).
@@ -69,7 +69,7 @@ The prompt must include:
 
 ### 4. Bail-out check
 
-`/wf-thaw` bails to `/wf-blizzard` when **any** of these are true:
+`thaw` bails to `blizzard` when **any** of these are true:
 
 - The explorer's scope estimate is `bigger-than-a-thaw`.
 - The change sketch implies architectural change, refactor, or root-cause work.
@@ -79,7 +79,7 @@ On bail:
 
 - Stop. Do not spawn further agents.
 - Present the investigation (and, for cap-hit, the iteration trace per step 6c) to the user verbatim.
-- Recommend `/wf-blizzard <change-description>`.
+- Recommend escalating to the `blizzard` skill with the same change description.
 - Exit.
 
 This is the single canonical bail-out — earlier and later sections reference back here.
@@ -121,7 +121,7 @@ Foreground `Agent` call (`subagent_type: backend-verifier` or `frontend-verifier
    - On `fail`: status/output observed, what was expected, any console/log excerpts, a diagnosis hint if obvious.
    - On `pass`: a one-line confirmation of what was checked.
 
-If the verifier reports **"service not reachable"** or similar environment failure (services not running, port not open), stop the loop and tell the user — `/wf-thaw` does not start services. Suggest they run `./up` (or the project's equivalent per `workspace:/ai/project/workflow.md`) and re-invoke.
+If the verifier reports **"service not reachable"** or similar environment failure (services not running, port not open), stop the loop and tell the user — `thaw` does not start services. Suggest they run `./up` (or the project's equivalent per `workspace:/ai/project/workflow.md`) and re-invoke.
 
 #### 6c. Branch on verdict
 
@@ -140,8 +140,8 @@ On pass, summarize to the user in 3-5 bullets:
 - **Location**: the explorer's finding (file + line).
 - **Implementation**: files + line ranges changed.
 - **Verified**: what smoke check passed.
-- **Not committed** — the user decides when to commit (suggest `/wf-commit`).
+- **Not committed** — the user decides when to commit (suggest `commit`).
 
 ## Why the loop is capped
 
-A `/wf-thaw` that hasn't resolved in three dev→verify cycles is no longer a thaw — the investigation was wrong, the change is bigger than the explorer estimated, or the work item is masking a deeper issue. Bail per step 4 rather than burning context in a stuck loop.
+A `thaw` that hasn't resolved in three dev→verify cycles is no longer a thaw — the investigation was wrong, the change is bigger than the explorer estimated, or the work item is masking a deeper issue. Bail per step 4 rather than burning context in a stuck loop.

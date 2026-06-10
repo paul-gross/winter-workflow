@@ -31,7 +31,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### Product-backlog types
 
 These types apply only when the workspace ships product-backlog
-content under `winter-product/backlog/` and `winter-product/work/`
+content under `winter-product:/backlog/` and `winter-product:/work/`
 (or an equivalent backlog layout). Skip them if the workspace doesn't
 manage a product backlog.
 

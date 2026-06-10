@@ -81,7 +81,7 @@ You track target→teammate assignment **in your own context** — there is no o
 | Target | Teammate | Task | Files / area | Status |
 |--------|----------|------|--------------|--------|
 | beta (env) | `beta-dev` | fix login timeout | `beta/<repo>/auth/*` | running |
-| winter-cli (standalone) | `winter-cli-dev` | add `--json` flag | `winter-cli/cli/...` | queued |
+| winter-cli (standalone) | `winter-cli-dev` | add `--json` flag | `winter-cli/cli/...` | queued | <!-- winter-lint:example -->
 | workspace | `workspace-dev` | update an `ai/` doc | `ai/...` | running |
 
 - **Name teammates `<target>-<role>`, target first** — `beta-dev`, `alpha-fe`, `winter-cli-dev`. Target first so the working tree is the first thing you read; use a short role tag (`dev`, `fe`, `be`, `review`, `explore`, `arch`, `test`, `run`). The `name` is just the display label — the spawn's `subagent_type` still uses the full role (`developer`, `frontend-verifier`, …).
@@ -106,7 +106,7 @@ When in doubt about overlap, **queue** — a false serialize costs latency; a fa
 
 **Always spawn from the workspace root** so teammates inherit workspace `CLAUDE.md`, agents, and skills. Reuse the **role-pure agents** the extension ships — do not redefine roles. See [`winter-workflow:/agents/README.md`](winter-workflow:/agents/README.md) for the roster and the caller-injects-coordination convention; the agent bodies describe *what the role does*, and **you** inject *how it participates here* via the preamble below.
 
-Spawn with **`run_in_background: true`** so dispatching never blocks the conversation. Every spawn prompt carries, in order:
+Spawn with **`run_in_background: true`** so dispatching never blocks the conversation, and **always pass `model` explicitly**, matching the role's `model:` frontmatter in its agent definition — agent teams are experimental, and passing it guarantees the intended tier regardless of how definition-model resolution behaves in any given build. Every spawn prompt carries, in order:
 
 1. The **coordination preamble** (verbatim, below).
 2. The **target pin**: target name + absolute path, and the hard rule never to leave it.

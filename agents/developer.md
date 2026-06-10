@@ -17,7 +17,7 @@ tools:
   - TaskList
 ---
 
-*Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See [`README.md`](./README.md#convention-tool-grant-vs-preamble) for the convention.*
+*Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*
 
 You are the **Developer**, responsible for writing code. You implement features, write unit tests, refactor existing code, and handle hands-on development tasks assigned by your caller.
 

@@ -25,10 +25,10 @@ Agent bodies describe **what the role does and how it works** — coding standar
 Concretely:
 
 - Agent bodies reference "your caller" rather than a named coordinator.
-- Agents do not include `TaskList`/`TaskUpdate` instructions by default. Where coordination tools appear in the `tools:` frontmatter, they're listed because some caller (today, `/wf-blizzard`) genuinely needs them.
+- Agents do not include `TaskList`/`TaskUpdate` instructions by default. Where coordination tools appear in the `tools:` frontmatter, they're listed because some caller (today, `blizzard`) genuinely needs them.
 - Skills that compose multiple agents are expected to inject a short **coordination preamble** at the top of each spawn prompt explaining how the agent should participate (claim tasks, report back, when to stop).
 
-The `/wf-blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `/wf-cold-review` does with `code-reviewer`).
+The `blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `cold-review` does with `code-reviewer`).
 
 ## Convention: tool grant vs. preamble
 
@@ -36,13 +36,13 @@ Each agent's `tools:` frontmatter is the **permissive** set — every tool the a
 
 > **The key is `tools`, not `allowed-tools`.** Claude Code reads `tools` for *agents* (`allowed-tools` is the *skills/commands* key) and silently ignores `allowed-tools` here — so an agent that declares `allowed-tools` gets the wide default grant, not the restricted set the author intended. Every agent must also declare a non-empty `description` and a `model` of `haiku`, `sonnet`, or `opus`. `winter lint` enforces all three keys and flags the `allowed-tools` mistake.
 
-This split exists because the same agent definition is reused across very different coordination shapes. The `developer` agent ships with `SendMessage`, `TaskUpdate`, and `TaskList` in its tool list because `/wf-blizzard` genuinely needs them — the lead claims tasks from a shared list and teammates report back via `SendMessage`. The same agent is also spawned one-shot by `/wf-thaw` with a preamble that explicitly forbids those same tools, because no shared task list exists in that mode.
+This split exists because the same agent definition is reused across very different coordination shapes. The `developer` agent ships with `SendMessage`, `TaskUpdate`, and `TaskList` in its tool list because `blizzard` genuinely needs them — the lead claims tasks from a shared list and teammates report back via `SendMessage`. The same agent is also spawned one-shot by `thaw` with a preamble that explicitly forbids those same tools, because no shared task list exists in that mode.
 
-Worked example — `/wf-thaw`'s preamble narrows the grant for one-shot runs:
+Worked example — `thaw`'s preamble narrows the grant for one-shot runs:
 
-> You are operating as a one-shot agent spawned by the `/wf-thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
+> You are operating as a one-shot agent spawned by the `thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
 
-The `developer` (or `explorer`, or a verifier) agent reads this and ignores its task tools for the duration of the call. The tools stay in the grant so `/wf-blizzard` can use them; the preamble is what scopes any one run.
+The `developer` (or `explorer`, or a verifier) agent reads this and ignores its task tools for the duration of the call. The tools stay in the grant so `blizzard` can use them; the preamble is what scopes any one run.
 
 If you add a new skill that composes these agents, decide which tools its mode allows and document the restrictions in your preamble. The agent definitions themselves stay stable.
 
@@ -52,11 +52,11 @@ Non-blizzard skills compose these role-pure agents without spinning up a team. E
 
 | Skill | Agent(s) composed | Coordination shape |
 |-------|-------------------|--------------------|
-| [`/wf-cold-review`](../skills/cold-review/SKILL.md) | `code-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
-| [`/wf-glacier`](../skills/glacier/SKILL.md) | `architect` *(optional)* → `developer` (one per phase) | Sequential one-shots across ordered phases; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble; the per-phase `developer` both implements and verifies, and the skill gates phase advancement on an adequate runtime check |
-| [`/wf-harness-review`](../skills/harness-review/SKILL.md) | `harness-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff plus harness/transcripts and reports |
-| [`/wf-harness-score`](../skills/harness-score/SKILL.md) | `explorer` | One-shot evidence gathering; main agent applies the rubric and renders the report. Preamble adds a "no documentation writing, no context-reviewer request" clause on top of the standard one-shot wording, since `explorer`'s default body otherwise authors `ai/` docs |
-| [`/wf-thaw`](../skills/thaw/SKILL.md) | `explorer` → `developer` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
+| [`cold-review`](../skills/cold-review/SKILL.md) | `code-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
+| [`glacier`](../skills/glacier/SKILL.md) | `architect` *(optional)* → `developer` (one per phase) | Sequential one-shots across ordered phases; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble; the per-phase `developer` both implements and verifies, and the skill gates phase advancement on an adequate runtime check |
+| [`harness-review`](../skills/harness-review/SKILL.md) | `harness-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff plus harness/transcripts and reports |
+| [`harness-score`](../skills/harness-score/SKILL.md) | `explorer` | One-shot evidence gathering; main agent applies the rubric and renders the report. Preamble adds a "no documentation writing, no context-reviewer request" clause on top of the standard one-shot wording, since `explorer`'s default body otherwise authors `ai/` docs |
+| [`thaw`](../skills/thaw/SKILL.md) | `explorer` → `developer` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
 
-`/wf-harness-review` is the same composition shape as `/wf-cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching `/wf-blizzard` or the other composed skills.
+`harness-review` is the same composition shape as `cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching `blizzard` or the other composed skills.
 

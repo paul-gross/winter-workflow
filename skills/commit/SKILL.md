@@ -24,24 +24,18 @@ git log --oneline -5
 
 ## 3. Context review gate for agent-facing config
 
-If the staged diff touches any of these (run `git diff --cached --name-only` to check):
+Run `git diff --cached --name-only` and classify the staged paths against the trigger list in `winter-workflow:/ai/agent-facing-paths.md`.
 
-- `.claude/` (any path)
-- `agents/` or `agents/**/*.md`
-- `skills/` or `skills/**/SKILL.md`
-- Any `CLAUDE.md` (root or nested)
-- Any `ai/**/*.md`
+If the diff touches agent-facing markdown, **before** writing the commit message, **ask the user once**: "This commit touches agent-facing config. Want me to run a context review first?" If they say yes, spawn the `context-reviewer` with the staged diff as input; relay findings; let them decide whether to fix-then-commit or commit-as-is. This gate is documented in `winter-workflow:/index.md` ("Context review for agent-facing configuration"). Do not auto-spawn — the user is in the loop.
 
-…then **before** writing the commit message, **ask the user once**: "This commit touches agent-facing config. Want me to run a context review first?" If they say yes, spawn the `context-reviewer` with the staged diff as input; relay findings; let them decide whether to fix-then-commit or commit-as-is. This gate is documented in `winter-workflow:/index.md` ("Context review for agent-facing configuration"). Do not auto-spawn — the user is in the loop.
-
-If the diff is product/backlog content (as the workspace's product extension defines it — a backlog or work area — or a project repo's `ai/` docs that describe future vision/roadmaps), the context-review convention explicitly does **not** apply — skip the prompt.
+If the diff is product/backlog content, the classifier's exclusion applies — skip the prompt.
 
 ## 4. Load Commit Conventions
 
 Check for project-specific commit conventions in this order (use the first one found):
 
 1. `CONTRIBUTING.md` in the current worktree root
-2. `./ai/project/contributing.md` (project-specific workspace config)
+2. `workspace:/ai/project/contributing.md` (project-specific workspace config)
 3. [commit-conventions.md](./commit-conventions.md) (workspace default fallback)
 
 ## 5. Write the Commit Message

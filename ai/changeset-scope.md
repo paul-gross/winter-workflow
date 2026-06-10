@@ -1,6 +1,6 @@
 # Change-set scope — reviewing a feature env as one change
 
-A logical change in this workspace often spans **several repos in one feature env** — a `winter-cli` command and the `ai/` reference that documents it, a convention and its mirror downstream. The `/wf-*` review skills review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
+A logical change in this workspace often spans **several repos in one feature env** — a `winter-cli` command and the `ai/` reference that documents it, a convention and its mirror downstream. This extension's review skills review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
 
 This doc is the single source for that discovery. The review skills reference it; do not re-derive the steps in each skill.
 
@@ -48,7 +48,7 @@ Select the in-scope set by the skill's mode:
 |------|-----------------------|--------------------|
 | **branch-vs-base** (single-axis skills, default) | `ahead > 0` | `origin/<main>` |
 | **uncommitted** (single-axis skills, `uncommitted` arg) | `dirty_count > 0` | working tree vs `HEAD` |
-| **unpushed** (`/wf-pre-push`) | non-pinned: `tracking_ahead > 0` **or** `ahead > 0`; pinned: `tracking_ahead > 0` | `origin/<main>` |
+| **unpushed** (`pre-push`) | non-pinned: `tracking_ahead > 0` **or** `ahead > 0`; pinned: `tracking_ahead > 0` | `origin/<main>` |
 
 The **unpushed** predicate is exactly what `winter ws push` would push — it mirrors `_has_commits_to_push` in `workspace:/projects/winter/tools/winter-cli/src/winter_cli/modules/workspace/workspace_push_service.py`. Reuse that computation through `winter ws status --json`; if the push rule changes, that file is the source of truth to re-check.
 
@@ -71,4 +71,4 @@ Different repos may resolve to different base refs; resolve per repo, never assu
 
 If the in-scope set has **0 repos**, there is nothing to review — report it and stop. If it has **exactly 1 repo**, there is no cross-repo dimension: review that one repo exactly as the single-repo path, with no union framing and no cross-repo consistency pass.
 
-Only when **≥2 repos** are in scope does the change-set span the env: hand the union to one reviewer per axis, and (for `/wf-pre-push`) run the cross-repo consistency pass.
+Only when **≥2 repos** are in scope does the change-set span the env: hand the union to one reviewer per axis, and (for `pre-push`) run the cross-repo consistency pass.

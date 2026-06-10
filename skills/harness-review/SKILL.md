@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the harness" or asks about agent context, verifier tooling, agent docs, or recent agent mistakes — checks whether the agentic harness keeps pace with application change and whether the application is shaped for agent productivity. Cold, one-shot harness-reviewer subagent. Different axis from /wf-cold-review (which reviews the code, not the harness).
+description: Use when the user says "review the harness" or asks about agent context, verifier tooling, agent docs, or recent agent mistakes — checks whether the agentic harness keeps pace with application change and whether the application is shaped for agent productivity. Cold, one-shot harness-reviewer subagent. Different axis from the cold-review skill (which reviews the code, not the harness).
 argument-hint: "[uncommitted]"
 allowed-tools: Bash, Read, Agent
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Agent
 
 Run a **cold** harness review — an independent `harness-reviewer` subagent evaluates the changes with **zero prior conversation context**. "Cold" means fresh eyes: the reviewer hasn't seen your design discussion, your prior attempts, or your justifications. It reads the diff, the harness, and the documentation on its own terms.
 
-`/wf-harness-review` mirrors `/wf-cold-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*. Where `/wf-cold-review` asks "is the code architecturally sound?", `/wf-harness-review` asks "does the harness keep pace with the change, and is the application shaped so agents can develop it productively?". Run both for full coverage; run this one when you specifically care about the application↔harness seam.
+`harness-review` mirrors `cold-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*. Where `cold-review` asks "is the code architecturally sound?", `harness-review` asks "does the harness keep pace with the change, and is the application shaped so agents can develop it productively?". Run both for full coverage; run this one when you specifically care about the application↔harness seam.
 
 The unit of review is the **change-set**, which may span several repos in one feature env — for example, a CLI command in one repo and the agent docs that describe it in another. The skill discovers every in-scope repo and spawns **one** reviewer over the union of their diffs — never one reviewer per repo. Run from a standalone repo, or in an env where only one repo changed, it reviews that single repo exactly as before.
 
@@ -72,4 +72,4 @@ A reviewer that sat in on the design discussion absorbs the author's framing. A 
 
 ## Why no team
 
-`/wf-harness-review` is deliberately one-shot, mirroring `/wf-cold-review`. The reviewer is a role-pure agent (see [`../../agents/README.md`](../../agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.
+`harness-review` is deliberately one-shot, mirroring `cold-review`. The reviewer is a role-pure agent (see [`winter-workflow:/agents/README.md`](winter-workflow:/agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.

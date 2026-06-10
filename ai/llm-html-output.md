@@ -1,6 +1,6 @@
 # HTML output standard for winter-workflow skills
 
-Requirements any `winter-workflow` skill must satisfy when emitting an HTML report. The first consumer is `/harness-score`; future report-emitting skills extend the same baseline rather than reinvent it.
+Requirements any `winter-workflow` skill must satisfy when emitting an HTML report. The first consumer is `harness-score`; future report-emitting skills extend the same baseline rather than reinvent it.
 
 The goal is reports that **render anywhere, look right in any theme, diff cleanly across runs, and stay readable when printed or pasted into a ticket**. Treat this document as a contract, not a style guide — every requirement below has a verifier-friendly check.
 

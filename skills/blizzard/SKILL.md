@@ -88,7 +88,7 @@ The core execution cycle for any code change is: **develop → verify → review
 
 ## Pre-push review
 
-When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `/pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. The user decides whether to address findings (route to a `developer`), push, or stop.
+When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. The user decides whether to address findings (route to a `developer`), push, or stop.
 
 ## Workflow Patterns
 
@@ -135,6 +135,9 @@ You are allowed to perform git operations yourself.
 | runner | `runner` | haiku | Service lifecycle, log monitoring, health reporting |
 | context-reviewer | `context-reviewer` | opus | Reviews agent/skill docs and AI-facing markdown against documented conventions |
 | harness-reviewer | `harness-reviewer` | opus | Reviews the application↔harness seam against a diff (verifier helpers, agent context, conventions, pluggability) |
+| documentation-reviewer | `documentation-reviewer` | opus | Reviews external-facing public documentation (guides, docs site, user-facing README) against the code it documents |
+
+**Always pass `model` explicitly when spawning a teammate.** Agent teams are experimental and definition-model resolution has not been reliable across builds — passing it guarantees the intended tier regardless. The Model column mirrors each agent definition's frontmatter — if a definition's model changes, update this table in the same commit.
 
 You may spawn multiple teammates of the same type if the workload justifies it (e.g., two developers working on different modules). Give them distinct names like `developer-api` and `developer-ui`.
 
@@ -191,11 +194,11 @@ Agent(
 
 These rules are non-negotiable:
 
-- **Never work in project/ directly** — use feature worktrees for all code changes
+- **Never work in source checkouts (`projects/`) directly** — use feature worktrees for all code changes
 - **Feature worktrees use Greek letter names** (alpha, beta, gamma, delta, etc.)
 - Include full workspace-root-relative paths in every task description (e.g., `alpha/my-app/src/...`) — teammates must never `cd` into project directories
 - You may handle git operations (commits, pushes, branch management) directly
-- Read `workspace:CLAUDE.md` for full workspace conventions
+- Read `workspace:/CLAUDE.md` for full workspace conventions
 
 ## Session Documentation
 

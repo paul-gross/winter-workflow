@@ -14,7 +14,7 @@ Work within the planning framework you are given or that is available to you —
 
 Every spawn prompt must begin with this preamble, prepended verbatim before the role-specific task content. It tells the role-pure agent it is operating one-shot with no team:
 
-> You are operating as a one-shot agent spawned by the `/glacier` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
+> You are operating as a one-shot agent spawned by the `glacier` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
 
 The steps below reference this section as **"the coordination preamble"**; do not paraphrase — paste it verbatim.
 
@@ -75,7 +75,7 @@ If a phase hasn't passed an adequate runtime check in three attempts, **stop and
 
 ### 5. Pre-push review
 
-When every phase has passed, run the review automatically — do not wait for the user to ask. Before reporting completion, **invoke `/pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. Do not push. The user decides whether to address findings (re-task a `developer`), push, or stop.
+When every phase has passed, run the review automatically — do not wait for the user to ask. Before reporting completion, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. Do not push. The user decides whether to address findings (re-task a `developer`), push, or stop.
 
 ### 6. Retrospective
 

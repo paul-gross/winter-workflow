@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the docs" or asks whether external-facing public documentation is accurate, current, or complete for a change — checks the user/adopter-facing docs (a rendered docs site, guides, the user-facing README) against the code they describe. Cold, one-shot documentation-reviewer subagent. Different axis from /wf-cold-review (code) and /wf-harness-review (the harness); explicitly NOT agent-facing markdown (that's context-reviewer).
+description: Use when the user says "review the docs" or asks whether external-facing public documentation is accurate, current, or complete for a change — checks the user/adopter-facing docs (a rendered docs site, guides, the user-facing README) against the code they describe. Cold, one-shot documentation-reviewer subagent. Different axis from the cold-review skill (code) and the harness-review skill (the harness); explicitly NOT agent-facing markdown (that's context-reviewer).
 argument-hint: "[uncommitted]"
 allowed-tools: Bash, Read, Agent
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Agent
 
 Run a **cold** documentation review — an independent `documentation-reviewer` subagent evaluates the changes with **zero prior conversation context**. "Cold" means fresh eyes: the reviewer hasn't seen your design discussion, your prior attempts, or your justifications. It reads the diff, the public documentation, and the project's documentation conventions on its own terms.
 
-`/wf-documentation-review` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*: external-facing **public** documentation — the docs a human adopter or end-user reads. It does **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness markdown (`harness-reviewer`), or code (`code-reviewer`). Run it when a change may have left a user-facing doc stale, wrong, or missing.
+`documentation-review` mirrors `cold-review` and `harness-review` in shape (cold, one-shot, no team) but reviews a *different concern axis*: external-facing **public** documentation — the docs a human adopter or end-user reads. It does **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness markdown (`harness-reviewer`), or code (`code-reviewer`). Run it when a change may have left a user-facing doc stale, wrong, or missing.
 
 The unit of review is the **change-set**, which may span several repos in one feature env — for example, a CLI command changed in one repo and its user-facing reference page in a separate docs repo. The skill discovers every in-scope repo and spawns **one** reviewer over the union of their diffs — never one reviewer per repo. Run from a standalone repo, or in an env where only one repo changed, it reviews that single repo exactly as before.
 
@@ -67,4 +67,4 @@ A reviewer that sat in on the design discussion absorbs the author's framing and
 
 ## Why no team
 
-`/wf-documentation-review` is deliberately one-shot, mirroring `/wf-cold-review` and `/wf-harness-review`. The reviewer is a role-pure agent (see [`../../agents/README.md`](../../agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.
+`documentation-review` is deliberately one-shot, mirroring `cold-review` and `harness-review`. The reviewer is a role-pure agent (see [`winter-workflow:/agents/README.md`](winter-workflow:/agents/README.md)) and the skill injects no coordination context — there is no shared `TaskList`, no peers, no follow-on. This keeps it composable: a user can invoke it directly, a blizzard snowflake can invoke it as a contained sub-step, and the reviewer never tries to coordinate work it isn't responsible for.

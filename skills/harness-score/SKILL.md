@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Glob, Grep, Write, Agent
 
 # Harness Score
 
-`/wf-harness-score` is the user-invocable entry point for the **codebase-scoped** maturity scoring procedure documented at `winter-workflow:/ai/harness-score/process.md`. The procedure lives in `ai/` so other agents (e.g., a `/wf-blizzard` snowflake doing a multi-step initiative) can `Read` and execute it as a substep without going through this slash command.
+`harness-score` is the user-invocable entry point for the **codebase-scoped** maturity scoring procedure documented at `winter-workflow:/ai/harness-score/process.md`. The procedure lives in `ai/` so other agents (e.g., a `blizzard` snowflake doing a multi-step initiative) can `Read` and execute it as a substep without going through this slash command.
 
 ## Execute
 

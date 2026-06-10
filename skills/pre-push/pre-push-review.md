@@ -1,12 +1,12 @@
 # Pre-push review
 
-Run an LLM-guided review over the un-pushed change-set before pushing completed work. The change-set is every repo in the feature env with commits ahead of its upstream — `/wf-pre-push` reviews them **together**, not one repo at a time. It fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer`, **one per axis, each spanning every in-scope repo** — then synthesizes the findings into a single summary for the caller, including a cross-repo consistency pass. Which reviewers spawn depends on what surfaces the in-scope repos actually have: an env with no agentic harness anywhere gets no `harness-reviewer`, none with public docs gets no `documentation-reviewer`, and so on (see step 3).
+Run an LLM-guided review over the un-pushed change-set before pushing completed work. The change-set is every repo in the feature env with commits ahead of its upstream — `pre-push` reviews them **together**, not one repo at a time. It fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer`, **one per axis, each spanning every in-scope repo** — then synthesizes the findings into a single summary for the caller, including a cross-repo consistency pass. Which reviewers spawn depends on what surfaces the in-scope repos actually have: an env with no agentic harness anywhere gets no `harness-reviewer`, none with public docs gets no `documentation-reviewer`, and so on (see step 3).
 
-`/wf-pre-push` mirrors `/wf-cold-review` and `/wf-harness-review` in shape (cold, one-shot, no team) but differs in three ways:
+`pre-push` mirrors `cold-review` and `harness-review` in shape (cold, one-shot, no team) but differs in three ways:
 
 - **Scope is the un-pushed change-set across the env** — every repo with commits ahead of upstream, each reviewed over its own `<base>...HEAD` (where `<base>` is `origin/master` or its equivalent). The point is to gate the push, so the set is whatever `winter ws push` would actually deliver — not branch-vs-base of an arbitrary diverged history, and never uncommitted work (you don't push uncommitted work). Run from a standalone repo, or in an env where only one repo is ahead, it gates that single repo exactly as before.
-- **Multiple reviewers in parallel**, fanned out from one entry point. `/wf-cold-review` and `/wf-harness-review` are single-axis; `/wf-pre-push` covers the full review surface in one round-trip — but only the axes the in-scope repos have.
-- **A cross-repo consistency pass** in synthesis (step 5). Because each axis reviewer holds the whole change-set, `/wf-pre-push` surfaces a change in one repo that contradicts another — a removed command still referenced in a sibling's docs — as a single finding instead of letting it fall between two repo-scoped runs that never meet.
+- **Multiple reviewers in parallel**, fanned out from one entry point. `cold-review` and `harness-review` are single-axis; `pre-push` covers the full review surface in one round-trip — but only the axes the in-scope repos have.
+- **A cross-repo consistency pass** in synthesis (step 5). Because each axis reviewer holds the whole change-set, `pre-push` surfaces a change in one repo that contradicts another — a removed command still referenced in a sibling's docs — as a single finding instead of letting it fall between two repo-scoped runs that never meet.
 
 ## Mode
 
@@ -47,7 +47,7 @@ Then decide each reviewer against the union — spawn it if **any** in-scope rep
 
 - **`code-reviewer` — spawn whenever the change-set changes code** in any repo. Any code change wants a structural read. (A docs-only change-set can skip it.)
 - **`harness-reviewer` — spawn if any in-scope repo has an agentic-harness surface.** Evidence: agent definitions (`agents/*.md`, `.claude/agents/`), skills, verifier/test scaffolds, harness conventions, any `CLAUDE.md`, an `ai/` tree. If no in-scope repo has any of these, there is no application↔harness seam to review — skip it.
-- **`context-reviewer` — spawn if any in-scope repo has agent-facing markdown AND the change-set touches it.** The canonical trigger paths (`.claude/`, `agents/`, `skills/**/SKILL.md`, any `CLAUDE.md`, any `ai/**/*.md`) live in `winter-workflow:/skills/commit/SKILL.md` under step 3 — apply the same classifier here. If no in-scope repo has agent-facing markdown, skip. Product/backlog content (future vision, roadmaps, open backlog items) is excluded per the same convention.
+- **`context-reviewer` — spawn if any in-scope repo has agent-facing markdown AND the change-set touches it.** Apply the canonical classifier at `winter-workflow:/ai/agent-facing-paths.md` (it also defines the product/backlog exclusion). If no in-scope repo has agent-facing markdown, skip.
 - **`documentation-reviewer` — spawn if any in-scope repo has external-facing public documentation AND the change-set touches code or docs that documentation covers.** Public documentation is what a human adopter/end-user reads: a `docs/` content tree with a site-generator config (`astro.config.*` + Starlight, `docusaurus.config.*`, `mkdocs.yml`, `book.toml`, VitePress), a separate docs-site repo, user/adopter guides, or the user-facing portion of a public `README.md`. It is **not** the agent-facing `ai/` tree or `CLAUDE.md` — those belong to `context-reviewer`. If no in-scope repo ships public documentation, skip the reviewer.
 
 Probe each in-scope repo's surfaces with cheap checks before deciding — e.g. `ls docs/ ai/ agents/ .claude/ 2>/dev/null` in each worktree, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it. A surface in **any** in-scope repo qualifies its reviewer — a docs-only repo paired with a code-only repo in the same change-set spawns both `documentation-reviewer` and `code-reviewer`.
@@ -62,7 +62,7 @@ Each reviewer is one-shot, role-pure, and receives a **self-contained** prompt. 
 
 Use the canonical preamble at the top of every spawn prompt, then attach the per-reviewer body documented below:
 
-> This is a one-shot standalone review spawned by `/wf-pre-push`. Read the diff and the relevant context, report categorized findings, and stop. There is no team coordinating you — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your report is done, stop.
+> This is a one-shot standalone review spawned by `pre-push`. Read the diff and the relevant context, report categorized findings, and stop. There is no team coordinating you — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your report is done, stop.
 
 Each prompt is inlined to keep step 4 self-contained — no cross-file step-number references, no competing preambles. If the sibling skills' prompt shapes evolve, update the inlined bodies here to stay aligned.
 
@@ -224,13 +224,13 @@ Rules for the summary:
 
 **Advisory mode** (default): ask the caller once via `AskUserQuestion` with three options:
 
-- **Acknowledge findings; caller pushes manually** — `/wf-pre-push` does not invoke push. This option just confirms the caller has read the findings and intends to push regardless. Push remains the caller's responsibility (raw `git push` or `/ws-push`).
+- **Acknowledge findings; caller pushes manually** — `pre-push` does not invoke push. This option just confirms the caller has read the findings and intends to push regardless. Push remains the caller's responsibility (raw `git push` or `/ws-push`).
 - **Address findings first** — stop; return control so the findings can be fixed before re-running.
 - **Show full reports** — relay each reviewer's raw report (sectioned by reviewer name), then re-prompt with the same three options.
 
-**Blocking mode**: present the summary and stop. Do not prompt. The caller must invoke `/wf-pre-push` again after addressing findings, or push without it if they want to bypass. Blocking mode exists for callers (or routines) that want a hard gate without an interactive prompt.
+**Blocking mode**: present the summary and stop. Do not prompt. The caller must invoke `pre-push` again after addressing findings, or push without it if they want to bypass. Blocking mode exists for callers (or routines) that want a hard gate without an interactive prompt.
 
-In **neither** mode does `/wf-pre-push` invoke `git push`, `/ws-push`, or any other delivery action. The push step is decoupled by design — see "Why no automatic push" below.
+In **neither** mode does `pre-push` invoke `git push`, `/ws-push`, or any other delivery action. The push step is decoupled by design — see "Why no automatic push" below.
 
 ## Why one entry point, several reviewers
 
@@ -242,12 +242,12 @@ The fan-out is conditional, not fixed: each reviewer is spawned only when some i
 
 ## Why no team
 
-Like `/wf-cold-review` and `/wf-harness-review`, `/wf-pre-push` is deliberately team-less. Each reviewer is a role-pure one-shot. No shared `TaskList`, no peers, no follow-on. This keeps `/wf-pre-push` composable: a user can invoke it directly, a `/wf-blizzard` snowflake can invoke it as a contained pre-push step without nesting teams, and the reviewers never try to coordinate work they aren't responsible for.
+Like `cold-review` and `harness-review`, `pre-push` is deliberately team-less. Each reviewer is a role-pure one-shot. No shared `TaskList`, no peers, no follow-on. This keeps `pre-push` composable: a user can invoke it directly, a `blizzard` snowflake can invoke it as a contained pre-push step without nesting teams, and the reviewers never try to coordinate work they aren't responsible for.
 
 ## Why no automatic push
 
-Coupling `/wf-pre-push` to `/ws-push` would invert the dependency direction. `/ws-push` lives in winter core (workspace `.claude/skills/`); `/wf-pre-push` lives in `winter-workflow` (an extension). Workflow can depend on core; core cannot depend on extensions. Keeping the two skills decoupled preserves that arrow — invoke `/wf-pre-push` for review, then `/ws-push` (or raw `git push`) to deliver. Callers who want a one-shot "review then push" flow can chain them themselves.
+Coupling `pre-push` to `/ws-push` would invert the dependency direction. `/ws-push` lives in winter core (workspace `.claude/skills/`); `pre-push` lives in `winter-workflow` (an extension). Workflow can depend on core; core cannot depend on extensions. Keeping the two skills decoupled preserves that arrow — invoke `pre-push` for review, then `/ws-push` (or raw `git push`) to deliver. Callers who want a one-shot "review then push" flow can chain them themselves.
 
 ## Why "cold"
 
-Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a cold reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `/wf-pre-push` preserves it across every axis it runs.
+Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a cold reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `pre-push` preserves it across every axis it runs.
