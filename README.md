@@ -15,6 +15,8 @@ A [winter](https://github.com/paul-gross/winter) extension that adds an opiniona
 
 ### Review
 
+The four single-axis review skills below and `/wf-pre-push` share one **review engine** — [`ai/review.md`](ai/review.md) — the single source for the scope vocabulary, how the change-set is discovered across a feature env, the reviewer prompt scaffold, the explicit-and-overridable model, and inline-vs-subagent execution. Beyond the default branch-vs-base and `uncommitted` diffs it adds explicit `<ref|range>` and `<paths>` scopes, and the skills are thin pointers at it — so the harness can run an ad-hoc micro-review by following the engine directly, no skill load required.
+
 - **Cold review** (`/wf-cold-review`) — independent code review by a fresh-context `code-reviewer` subagent with zero prior conversation history. Like the other `/wf-*` review skills, it reviews the whole **change-set**: in a feature env, it discovers every in-scope repo and hands one reviewer the union of their diffs, so a change spanning multiple repos is reviewed as one. A standalone repo, or an env where only one repo changed, is reviewed exactly as a single repo.
 - **Context review** (`/wf-context-review`) — independent review of agent-facing markdown (agents, skills, `CLAUDE.md`, `ai/` docs) against the workspace's documented conventions for clarity, single-source-of-truth, and non-duplication. Cold, one-shot `context-reviewer` subagent; complements `/wf-cold-review` and `/wf-harness-review`.
 - **Context Reviewer** (`context-reviewer` subagent) — reviews agent-facing markdown (agents, skills, CLAUDE.md, `ai/` docs) against the workspace's documented conventions for clarity, single-source-of-truth, and non-duplication. Review-only; paired with `harness-reviewer`.

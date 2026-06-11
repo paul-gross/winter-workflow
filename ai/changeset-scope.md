@@ -2,7 +2,7 @@
 
 A logical change in this workspace often spans **several repos in one feature env** — a `winter-cli` command and the `ai/` reference that documents it, a convention and its mirror downstream. This extension's review skills review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
 
-This doc is the single source for that discovery. The review skills reference it; do not re-derive the steps in each skill.
+This doc is the single source for that discovery, which the review engine ([`./review.md`](./review.md)) and `pre-push` reference; do not re-derive the steps elsewhere. It governs the **env-wide** scopes only — branch-vs-base, uncommitted, and unpushed. The engine's **explicit** scopes (an arbitrary git `<ref|range>` or a `<paths>` set) name their own target in the current repo and skip the env fan-out below.
 
 ## When this applies
 

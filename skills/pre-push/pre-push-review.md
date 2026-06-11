@@ -58,130 +58,17 @@ Record which reviewers will be spawned and why the others were skipped. Tell the
 
 **Critical**: spawn all selected reviewers in a **single message** — multiple `Agent` tool calls in the same assistant turn. They are independent and benefit from concurrent execution. Sequential spawns waste wall time and give the caller a worse experience.
 
-Each reviewer is one-shot, role-pure, and receives a **self-contained** prompt. None of them sees this session's history. All spawns are foreground — you need the findings to synthesize them.
+Each reviewer's prompt is built from the **shared review engine**, `winter-workflow:/ai/review.md` — the same scaffold the single-axis review skills use, so `pre-push` and `cold-review` never drift. For every selected reviewer, follow the engine's **Spawn-prompt scaffold** and append its **per-axis body**, with these `pre-push`-specific bindings:
 
-Use the canonical preamble at the top of every spawn prompt, then attach the per-reviewer body documented below:
+- **Scope** = `unpushed` (the engine scope of that name). The in-scope target set is the `(repo, worktree-path, base-ref)` entries from step 2; each reviewer reads each repo over `<base>...HEAD` and, for ≥2 repos, applies the engine's cross-repo rule.
+- **Execution / model** = the engine default — a cold subagent, with the model passed explicitly per the engine's Model section. All spawns are foreground — you need the findings to synthesize them.
+- **Reviewers** = those selected in step 3:
+  - `subagent_type: code-reviewer` — axis `code`
+  - `subagent_type: harness-reviewer` — axis `harness`
+  - `subagent_type: context-reviewer` — axis `context` (only if classified in step 3)
+  - `subagent_type: documentation-reviewer` — axis `documentation` (only if classified in step 3)
 
-> This is a one-shot standalone review spawned by `pre-push`. Read the diff and the relevant context, report categorized findings, and stop. There is no team coordinating you — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your report is done, stop.
-
-Each prompt is inlined to keep step 4 self-contained — no cross-file step-number references, no competing preambles. If the sibling skills' prompt shapes evolve, update the inlined bodies here to stay aligned.
-
-#### code-reviewer (`subagent_type: code-reviewer`)
-
-Inline body:
-
-> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
-> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
->
-> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
->
-> ```
-> git diff <base>...HEAD --stat
-> git diff <base>...HEAD
-> ```
->
-> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a broken caller, dead reference, or stale mirror in another — as a single finding.
->
-> Read the changed files and surrounding code for context (existing patterns, conventions). Eagerly load project documentation relevant to code review — coding standards, patterns, architecture, in-flight initiatives. Review against documented standards if present; fall back to your own judgment if not.
->
-> Be specific: file, line, principle violated, suggested direction. No rewrites.
->
-> Output format — categorized findings:
-> - `## must-fix` — structural issues, principle violations, dangerous coupling, broken abstractions
-> - `## consider` — non-blocking suggestions
-> - `## notes` — brief acknowledgments of things the code gets right (optional, keep short)
->
-> If the code is clean, one sentence is the whole report.
-
-#### harness-reviewer (`subagent_type: harness-reviewer`)
-
-Inline body:
-
-> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
-> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
->
-> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
->
-> ```
-> git diff <base>...HEAD --stat
-> git diff <base>...HEAD
-> git log --oneline <base>..HEAD
-> ```
->
-> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a harness change in one repo (a renamed command, a removed convention) that leaves agent docs, verifier scaffolds, or `CLAUDE.md` in another repo stale — as a single finding.
->
-> Follow the *Mining mistake evidence* section of your agent body for the full procedure (encoded-cwd derivation, mtime + filename-overlap filters, failure signals, graceful fallback). Caller-supplied context:
->
-> - **CWDs to enumerate** for transcripts: the workspace root, **every in-scope worktree path**, and each one's project source checkout. Pass each candidate through the encoded-cwd transform (`/` → `-`); skip those without a directory in `~/.claude/projects/`.
-> - **Time window** for both git history and transcripts: the diff's age (since the base commit).
->
-> Documentation to load eagerly: workspace `CLAUDE.md` and nested `CLAUDE.md` files, `ai/` directories (workspace and per-project/per-extension), `agents/README.md` and adjacent agent definitions, relevant `SKILL.md` files, `CONTRIBUTING.md` / `ARCHITECTURE.md`.
->
-> Walk both checklists from your agent body — harness-change concerns (verification tooling currency, agent markdown currency, recent-mistake evidence, feedforward/feedback opportunities, new conventions) and application-architecture concerns with agentic ramifications (observability, configurability/pluggability, code architecture, typing/inline comments). Skip an axis silently if there are no findings — do not pad. Be specific: file, line, agent/skill, axis, concrete direction. No rewrites.
->
-> Output format — categorized findings plus an evidence sources footer:
-> - `## must-fix` — concrete harness/application gaps that will produce repeated agent mistakes or block verification
-> - `## consider` — non-blocking agent-productivity suggestions
-> - `## notes` — brief acknowledgments + any out-of-scope routing
-> - `## Evidence sources` — one line for git history (what was searched, what surfaced) and one line for transcripts (paths searched, or "not present, git-history-only")
->
-> If the diff has no agent-seam concerns, one or two sentences is the entire report.
-
-#### context-reviewer (`subagent_type: context-reviewer`, only if classified in step 3)
-
-Inline body:
-
-> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
-> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
->
-> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
->
-> ```
-> git diff <base>...HEAD --stat
-> git diff <base>...HEAD
-> ```
->
-> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a contradicting reference, dead link, or stale mirror in another — as a single finding.
->
-> Load workspace `CLAUDE.md` and nested `CLAUDE.md` files, any harness conventions for agent-facing markdown the workspace exposes, and any `ai/` docs that govern the touched files.
->
-> Check the diff against documented conventions — naming and prefixes (`ws-` vs `wf-`, agent names, skill names), path notation (`workspace:`, `<extension>:`), voice and imperative style, freshness of cross-references (broken links, stale section anchors), and consistency with existing patterns in the same family. Be specific: file, line, convention violated, suggested direction. No rewrites.
->
-> Output format — same categorized shape used by code-reviewer and harness-reviewer:
-> - `## must-fix`
-> - `## consider`
-> - `## notes`
->
-> If the agent-facing markdown is clean, one sentence is the whole report.
-
-#### documentation-reviewer (`subagent_type: documentation-reviewer`, only if classified in step 3)
-
-Inline body:
-
-> **Scope**: the un-pushed change-set, reviewed branch-vs-base per repo.
-> **In-scope repos** (review as one change-set): list each repo from step 2 — its absolute worktree path and base ref. Single-repo mode lists one.
->
-> Read the diff yourself in **each** repo's worktree — `cd` to its path, then:
->
-> ```
-> git diff <base>...HEAD --stat
-> git diff <base>...HEAD
-> ```
->
-> If the change-set spans two or more repos, you hold them all at once: flag any cross-repo contradiction within your axis — a change in one repo that leaves a contradicting reference, dead link, or stale mirror in another — as a single finding.
->
-> You review **external-facing public documentation only** — the docs a human adopter or end-user reads to learn and use this project: a rendered documentation site and its source content tree, user/adopter guides, the user-facing reference (CLI/API/config pages), and the user-facing portions of a public `README.md`. You do **not** review agent-facing markdown (`CLAUDE.md`, `.claude/`, `agents/`, `skills/`, `ai/` — that's `context-reviewer`), harness-specific markdown (that's `harness-reviewer`), or source code (that's `code-reviewer`). Read code only to judge whether a public doc still describes it accurately.
->
-> Locate the project's public documentation and discover its documentation conventions (check `ai/`, `CONTRIBUTING.md`, any doc-authoring guide) — do not assume them. If a "docs reflect this change" invariant is documented, review against it and cite it by path; otherwise use general doc-quality judgment and say no convention is documented.
->
-> Walk your four axes against the diff — accuracy/currency (does a public doc now describe removed or renamed behavior?), completeness (did the diff add a user-facing capability with no public-doc coverage?), single-source-of-truth (does a public doc reference the canonical source rather than hard-copy detail that drifts?), and clarity/navigation (broken links, dead anchors, orphaned pages). Skip an axis silently if there are no findings. Be specific: page/section, the code symbol or canonical source it concerns, concrete direction. No rewrites.
->
-> Output format — categorized findings:
-> - `## must-fix` — a public doc now wrong against the diff, a user-facing capability with no public-doc coverage, or a doc that has diverged from a canonical source it copied
-> - `## consider` — non-blocking clarity/completeness/cross-link suggestions
-> - `## notes` — brief acknowledgments + any out-of-scope routing
->
-> If the diff changes nothing a public doc covers, one sentence is the whole report. If the project ships no public documentation, say so and stop.
+The engine carries the canonical one-shot/no-team preamble, the diff commands, the cross-repo rule, the per-axis bodies (including the harness axis's transcript-mining context and `## Evidence sources` footer), and the `## must-fix` / `## consider` / `## notes` output shape. Do not restate them here — if the scaffold evolves, it evolves once in the engine.
 
 ### 5. Synthesize findings
 

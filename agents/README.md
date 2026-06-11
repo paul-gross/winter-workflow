@@ -60,3 +60,5 @@ Non-blizzard skills compose these role-pure agents without spinning up a team. E
 
 `harness-review` is the same composition shape as `cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching `blizzard` or the other composed skills.
 
+The four single-axis review skills (`cold-review`, `context-review`, `harness-review`, `documentation-review`) and `pre-push` no longer carry their own spawn instructions — they route through the shared engine [`../ai/review.md`](../ai/review.md), which builds every reviewer prompt (the one-shot/no-team preamble, scope, diff commands, per-axis body, output shape) and chooses the model. The role-pure / caller-injects-coordination convention is unchanged: the engine is the caller, and it injects exactly the one-shot, no-team preamble these reviewers expect.
+
