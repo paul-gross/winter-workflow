@@ -51,7 +51,7 @@ For each phase, in order, run up to three attempts:
 Foreground `Agent` call (`subagent_type: developer`). Treat this developer as a full-stack engineer who owns the phase end to end — implementation across whatever the phase touches (backend, frontend, data, CLI) and the runtime verification that it works. Self-contained prompt with:
 
 1. **The coordination preamble** (verbatim).
-2. **Work-target path(s)** (absolute); for runtime verification, the base URL/port from `workspace:/ai/project/workflow.md` or the target's `.winter.env` (ask the user if neither is present).
+2. **Work-target path(s)** (absolute); for runtime verification, the base URL/port from `workspace:/ai/project/setup-tmux.md` or the target's `.winter.env` (ask the user if neither is present).
 3. **Phase goal** — this phase's increment, plus the one-line feature framing for context.
 4. **Plan reference** — the path to `00-plan.md` so the developer can read the full approach.
 5. **Attempt history** — for attempt > 1, the previous report's verification gap or failure verbatim; tell the developer to address it specifically.
@@ -59,7 +59,7 @@ Foreground `Agent` call (`subagent_type: developer`). Treat this developer as a 
 7. **Constraints** — keep the change scoped to this phase; do not start on later phases; do not commit.
 8. **Reporting** — files + line ranges changed; the runtime probe(s) run and their observed output; a one-line verdict.
 
-If services aren't running and the verification needs them, the developer should say so rather than guess — glacier does not start services. Tell the user to run `./up` (or the project equivalent per `workspace:/ai/project/workflow.md`) and re-invoke.
+If services aren't running and the verification needs them, the developer should say so rather than guess — glacier does not start services. Tell the user to run `./up` (or the project equivalent per `workspace:/ai/project/setup-tmux.md`) and re-invoke.
 
 #### 4b. Gate on verification adequacy
 
