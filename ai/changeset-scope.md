@@ -30,29 +30,28 @@ Run the read-only status command and read its JSON directly — do not hand-roll
 winter ws status <name> --json
 ```
 
-Each entry in `repos[]` carries the fields you need. Note the two levels: `branch`, `ahead`, `dirty_count`, `tracking_*`, and `tracking_ref_present` sit at the **entry top level**, while `name`, `pinned`, and the env path are nested under the entry's `worktree` object:
+The argument is a `<env>/<repo>` glob pattern (a bare `<name>` expands to `<name>/*`), so a bare env name scopes to that whole env. When scoped to one env this way, `environments` is a one-element array. Iterate `environments[0].worktrees[]` — each entry is one repo in the env:
 
 | Field | Use |
 |-------|-----|
-| `worktree.repository.name` | repo name |
-| `worktree.repository.pinned` | pinned repos track main, never a feature branch |
-| `worktree.environment.path` | env root; worktree path = `<this>/<repository.name>` |
+| `repo` | repo name |
+| `pinned` | pinned repos track main, never a feature branch |
 | `branch` | the worktree's local branch |
-| `ahead` / `tracking_branch` / `tracking_ahead` | divergence vs `origin/<main>` and vs the tracked upstream |
-| `dirty_count` | uncommitted working-tree files |
+| `ahead` / `upstream` / `tracking_ahead` | divergence vs `origin/<main>` and vs the tracked upstream |
+| `dirty` | uncommitted working-tree files (staged + unstaged + untracked) |
 | `tracking_ref_present` | whether the upstream ref has been fetched |
+
+The worktree filesystem path is not carried as a field; derive it as `<workspace.root_path>/<env.name>/<repo>` — an absolute path the reviewer can `cd` into.
 
 Select the in-scope set by the skill's mode:
 
 | Mode | Repo is in scope when | Per-repo diff base |
 |------|-----------------------|--------------------|
 | **branch-vs-base** (single-axis skills, default) | `ahead > 0` | `origin/<main>` |
-| **uncommitted** (single-axis skills, `uncommitted` arg) | `dirty_count > 0` | working tree vs `HEAD` |
+| **uncommitted** (single-axis skills, `uncommitted` arg) | `dirty > 0` | working tree vs `HEAD` |
 | **unpushed** (`pre-push`) | non-pinned: `tracking_ahead > 0` **or** `ahead > 0`; pinned: `tracking_ahead > 0` | `origin/<main>` |
 
 The **unpushed** predicate is exactly what `winter ws push` would push — it mirrors `_has_commits_to_push` in `workspace:/projects/winter/tools/winter-cli/src/winter_cli/modules/workspace/workspace_push_service.py`. Reuse that computation through `winter ws status --json`; if the push rule changes, that file is the source of truth to re-check.
-
-The worktree path for each in-scope repo is `<worktree.environment.path>/<worktree.repository.name>` — an absolute path the reviewer can `cd` into.
 
 ## Step 3 — Resolve each repo's base ref
 

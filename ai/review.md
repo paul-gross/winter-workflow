@@ -32,7 +32,7 @@ A caller selects scope from `$ARGUMENTS` (or states it directly). The default is
 | Scope | Selector | Discovery | What the reviewer reads |
 |-------|----------|-----------|-------------------------|
 | **branch-vs-base** (default) | _(none)_ | env-wide — `./changeset-scope.md`, repos with `ahead > 0` | per repo: `git diff <base>...HEAD` |
-| **uncommitted** | `uncommitted` | env-wide — `./changeset-scope.md`, repos with `dirty_count > 0` | per repo: `git diff HEAD` |
+| **uncommitted** | `uncommitted` | env-wide — `./changeset-scope.md`, repos with `dirty > 0` | per repo: `git diff HEAD` |
 | **range** | a git ref or range (`main`, `HEAD~3`, `a..b`, `v1..HEAD`) | current repo only | a range with `..`/`...` → use as-is; a single ref → `<ref>...HEAD` (everything since that ref — so `main` → `main...HEAD`, `HEAD~3` → the last 3 commits) |
 | **paths** | one or more existing files/dirs (incl. `<env>:<repo>` / `<extension>:` notation) | current repo only | the **current state** of the named files — no diff |
 | **unpushed** | _(`pre-push` only)_ | env-wide — `./changeset-scope.md`, unpushed predicate | per repo: `git diff <base>...HEAD` |
