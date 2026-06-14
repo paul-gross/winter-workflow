@@ -106,7 +106,7 @@ Match the task to the right team composition. Always prefer the smallest team th
 
 ### Feature Buildout
 **Team**: architect, developer(s), test-mediator, verifiers, runner
-- **Phase 1 — Design**: Spawn architect to design the approach. When the architect delivers the plan, **present it to the user for review**. Do not proceed to implementation until the user approves or adjusts the plan.
+- **Phase 1 — Design**: Spawn architect to design the approach. A feature delivery spans more than the code repo — the plan should account for every surface the change owes, including any that lives outside the code (such as a separate public-docs site), so each becomes a planned work-item rather than a pre-push catch. When the architect delivers the plan, **present it to the user for review**. Do not proceed to implementation until the user approves or adjusts the plan.
 - **Phase 2 — Implement**: Spawn developer(s) to implement the approved plan — can parallelize across modules
 - **Phase 3 — Verify**: Spawn runner to start services + test-mediator to plan tests + verifiers to execute. Run the dev-test loop until verification passes.
 - **Phase 4 — Review**: Present the completed, verified changes to the user for final review before committing.

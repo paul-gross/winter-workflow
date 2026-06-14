@@ -140,6 +140,7 @@ On pass, summarize to the user in 3-5 bullets:
 - **Location**: the explorer's finding (file + line).
 - **Implementation**: files + line ranges changed.
 - **Verified**: what smoke check passed.
+- **Delivery surfaces**: a thaw is still one slice of a feature delivery — which surfaces beyond the code does this change owe, each carried in the same change or a noted N/A.
 - **Not committed** — the user decides when to commit (suggest `commit`).
 
 ## Why the loop is capped

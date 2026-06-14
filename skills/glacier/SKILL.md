@@ -38,7 +38,7 @@ Establish three things before any building:
 
 **Given** the plan is already phased (provided or written that way) — adopt those phases.
 
-**Otherwise** — decompose the plan into ordered phases, each a coherent, independently verifiable increment. **Confirm the phase breakdown with the user** (`AskUserQuestion` or a short numbered list). Write the confirmed phases to `<documentation-root>/00-plan.md` alongside the plan.
+**Otherwise** — decompose the plan into ordered phases, each a coherent, independently verifiable increment. A feature delivery spans more than the code repo — when you break the work down, account for every surface the change owes, including any that lives outside the code (such as a separate public-docs site), so each is a planned phase from the outset rather than a pre-push catch. **Confirm the phase breakdown with the user** (`AskUserQuestion` or a short numbered list). Write the confirmed phases to `<documentation-root>/00-plan.md` alongside the plan.
 
 **Phases execute strictly in order.** A phase starts only after the previous one has passed verification (step 4). Do not reorder or parallelize.
 
