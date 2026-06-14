@@ -9,10 +9,12 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 | `code-reviewer.md` | Architectural code review |
 | `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
 | `developer.md` | Code implementation, unit tests, refactoring |
+| `diff-classifier.md` | Cold, k-voted per-hunk tier classifier for a review manifest |
 | `documentation-reviewer.md` | Reviews external-facing public documentation for accuracy and currency |
 | `explorer.md` | Investigates undocumented systems, writes AI-centric docs |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
 | `harness-reviewer.md` | Application↔harness seam review against a diff |
+| `manifest-auditor.md` | Adversarially refutes a review manifest's cheap-tier claims |
 | `runner.md` | Service lifecycle and log monitoring |
 | `test-mediator.md` | Test strategy, scenario design, verifier dispatch |
 
@@ -55,6 +57,7 @@ Non-blizzard skills compose these role-pure agents without spinning up a team. E
 | [`cold-review`](../skills/cold-review/SKILL.md) | `code-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
 | [`glacier`](../skills/glacier/SKILL.md) | `architect` *(optional)* → `developer` (one per phase) | Sequential one-shots across ordered phases; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble; the per-phase `developer` both implements and verifies, and the skill gates phase advancement on an adequate runtime check |
 | [`harness-review`](../skills/harness-review/SKILL.md) | `harness-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff plus harness/transcripts and reports |
+| [`review-manifest`](../skills/review-manifest/SKILL.md) | `diff-classifier` (k-fan-out) → `manifest-auditor` | One-shot, no team; **k = 3** classifiers spawned in parallel over the same diff (reconciled per hunk, any split fails closed to `novel`), then one auditor refutes the cheap tiers. Each spawn gets the verbatim one-shot/no-team preamble; the classifiers additionally never receive the task prompt (coldness is the point) |
 | [`harness-score`](../skills/harness-score/SKILL.md) | `explorer` | One-shot evidence gathering; main agent applies the rubric and renders the report. Preamble adds a "no documentation writing, no context-reviewer request" clause on top of the standard one-shot wording, since `explorer`'s default body otherwise authors `ai/` docs |
 | [`thaw`](../skills/thaw/SKILL.md) | `explorer` → `developer` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
 

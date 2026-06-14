@@ -57,7 +57,7 @@ Foreground `Agent` call (`subagent_type: developer`). Treat this developer as a 
 5. **Attempt history** — for attempt > 1, the previous report's verification gap or failure verbatim; tell the developer to address it specifically.
 6. **The dual mandate** — implement the phase, **then verify it at runtime**. A green build or typecheck is **not** verification. Run a real runtime probe appropriate to the change: execute the affected test(s), `curl` the endpoint and inspect the response, invoke the CLI and read its output, or load the page. Report exactly **what was run and what was observed**.
 7. **Constraints** — keep the change scoped to this phase; do not start on later phases; do not commit.
-8. **Reporting** — files + line ranges changed; the runtime probe(s) run and their observed output; a one-line verdict.
+8. **Reporting** — files + line ranges changed; the runtime probe(s) run and their observed output; a one-line verdict. **If accumulating a review manifest** (see *Review manifest* below), also have the developer report, for each hunk it authored, a `{tier, claim, intent}` line per [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md) — it knows its own intent, which a cold classifier never could.
 
 If services aren't running and the verification needs them, the developer should say so rather than guess — glacier does not start services. Tell the user to run `./up` (or the project equivalent per `workspace:/ai/project/setup-tmux.md`) and re-invoke.
 
@@ -73,9 +73,19 @@ Read the developer's report and decide whether the verification was a **real run
 
 If a phase hasn't passed an adequate runtime check in three attempts, **stop and escalate to the user**: name the phase, summarize each attempt in one line (what was built, what verification was missing or failed), and ask how to proceed. Do not silently continue to later phases on an unverified one.
 
+### Review manifest (optional — capture intent while building)
+
+When a review manifest is wanted for this feature — the user asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as you build** rather than cold-classifying at the end. The builder knows *why* each hunk exists; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
+
+Follow [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md): each phase's `developer` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 8); after each phase you append those entries to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. You **close** it at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
+
 ### 5. Pre-push review
 
-When every phase has passed, run the review automatically — do not wait for the user to ask. Before reporting completion, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. Do not push. The user decides whether to address findings (re-task a `developer`), push, or stop.
+When every phase has passed, run the review automatically — do not wait for the user to ask. Before reporting completion, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result.
+
+**If you accumulated a review manifest** (above), **close it here**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document — all per [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md) §"Close the manifest". Surface the manifest's `.md` path alongside the pre-push summary, so the user has both the cross-axis findings and the tiered review order.
+
+Do not push. The user decides whether to address findings (re-task a `developer`), push, or stop.
 
 ### 6. Retrospective
 

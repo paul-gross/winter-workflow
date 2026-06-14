@@ -48,10 +48,12 @@ Select the in-scope set by the skill's mode:
 | Mode | Repo is in scope when | Per-repo diff base |
 |------|-----------------------|--------------------|
 | **branch-vs-base** (single-axis skills, default) | `ahead > 0` | `origin/<main>` |
-| **uncommitted** (single-axis skills, `uncommitted` arg) | `dirty > 0` | working tree vs `HEAD` |
+| **uncommitted** (single-axis skills, `uncommitted` arg) | `dirty > 0` | working tree vs `HEAD`, incl. untracked |
 | **unpushed** (`pre-push`) | non-pinned: `tracking_ahead > 0` **or** `ahead > 0`; pinned: `tracking_ahead > 0` | `origin/<main>` |
 
 The **unpushed** predicate is exactly what `winter ws push` would push — it mirrors `_has_commits_to_push` in `workspace:/projects/winter/tools/winter-cli/src/winter_cli/modules/workspace/workspace_push_service.py`. Reuse that computation through `winter ws status --json`; if the push rule changes, that file is the source of truth to re-check.
+
+The **uncommitted** change-set includes **untracked, non-ignored files**, not only tracked modifications: a new file the author has not yet `git add`ed is uncommitted work and must be reviewed, but `git diff HEAD` omits it. A reviewer on the uncommitted scope reads `git diff HEAD` **and** the untracked files (`git ls-files --others --exclude-standard`) — as their current content for a prose review, or as `git diff --no-index /dev/null <file>` whole-file additions where a unified diff is needed (e.g. the review manifest's hunk enumeration; see `winter-workflow:/ai/review-manifest/format.md#computing-diff_sha`). `dirty` already counts untracked files, so the in-scope predicate needs no change.
 
 ## Step 3 — Resolve each repo's base ref
 

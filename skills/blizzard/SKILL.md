@@ -86,9 +86,19 @@ The core execution cycle for any code change is: **develop → verify → review
 - **Flaky test results**: If a scenario passes on retry without code changes, note it but don't block on it. If it fails consistently, route to the developer.
 - **Repeated failures (3+ cycles on the same issue)**: Stop looping. Summarize what's been tried, what keeps failing, and escalate to the user. The user may have context the team doesn't.
 
+## Review manifest (optional — capture intent while building)
+
+When a review manifest is wanted for this work — the user asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as the team builds** rather than cold-classifying at the end. A teammate who wrote a hunk knows *why*; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
+
+Follow [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md): when a `developer` reports completed work in the dev-test-review loop, have it include a `{tier, claim, intent}` line for each hunk it authored; you (the snowflake) append those to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. **Close** it at the pre-push step below. Skip it entirely for a small change that fits in a glance.
+
 ## Pre-push review
 
-When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result. The user decides whether to address findings (route to a `developer`), push, or stop.
+When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result.
+
+**If you accumulated a review manifest** (above), **close it here**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document per [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md) §"Close the manifest". Surface its `.md` path alongside the pre-push summary.
+
+The user decides whether to address findings (route to a `developer`), push, or stop.
 
 ## Workflow Patterns
 

@@ -4,6 +4,10 @@ This is the single source for **how a change-set review runs** in this workspace
 
 The unit of review is the **change-set**, which may span several repos in one feature env. A reviewer holds the whole set at once so a change in one repo that contradicts something left stale in another is caught by the reviewer that sees both. Run from a standalone repo, or in an env where only one repo changed, the change-set is that single repo.
 
+## Reordering attention before a review — the manifest
+
+This engine produces *findings*; it does not shrink the surface a human must read. A [**review manifest**](./review-manifest/index.md) does — it partitions every hunk of the same change-set into verification tiers (`mechanical` / `pattern` / `novel`) and renders a review order that a **human reviewer** reads so full attention lands on the `novel` hunks. It is an **optional preprocessing step**, not a review axis, and its reader is a human first: run [`review-manifest`](../skills/review-manifest/SKILL.md) on a large or mechanical-heavy diff to get a review order — read it to focus your own review, and optionally generate it before a cold review to pre-order that too. On a small diff that fits in a glance, skip it. Advisory; gates nothing.
+
 ## Invoking this doc
 
 Three entry points resolve here. They differ only in which axis (and, for `pre-push`, which axes) they run — the mechanics below are identical:
@@ -74,7 +78,7 @@ Build the reviewer prompt from these axis-independent parts, then append the **p
 
 3. **What to read.** Give the reviewer the commands to gather its own inputs, run in **each** in-scope worktree (`cd` to its path first):
    - branch-vs-base / unpushed: `git diff <base>...HEAD --stat`, then `git diff <base>...HEAD`.
-   - uncommitted: `git diff HEAD --stat`, then `git diff HEAD`.
+   - uncommitted: `git diff HEAD --stat`, then `git diff HEAD`; **also** read the untracked, non-ignored files (`git ls-files --others --exclude-standard`) — they are uncommitted work `git diff HEAD` omits. See [`./changeset-scope.md`](./changeset-scope.md) §uncommitted.
    - range: `git diff <range> --stat`, then `git diff <range>` (with `<range>` resolved per the scope table).
    - paths: enumerate and read the current state of the named files (no diff).
 
@@ -120,6 +124,8 @@ Append exactly one. Each points at the agent definition for the methodology and 
 ## Relay
 
 When the review returns (subagent) or completes (inline), present the report **as-is** with a one-line preamble naming the scope reviewed — e.g. "Cold code review of 7 files on `<branch>` vs. `<base>` in `<repo>`", "Cold context review of 6 files across 2 repos in env `alpha`", "Code review of `HEAD~1` in `<repo>`", or "Context audit of 23 agent-facing files under `<path>`". Do not editorialize or argue with findings — the caller decides what to act on. (`pre-push` synthesizes across axes instead; see its doc.)
+
+**If a [review manifest](./review-manifest/index.md) was generated for this change-set, reconcile it after the review settles.** Two things can invalidate it: (1) the diff changed — fixes were applied in response to findings, or the review prompted edits — so the manifest's `diff_sha` no longer matches and it is now **stale**; regenerate it (`review-manifest`) rather than leave a manifest that describes a diff that no longer exists. (2) A finding contradicts a hunk's tier — the review showed a hunk the manifest called `mechanical` or `pattern` actually carried a decision; **promote those hunks to `novel`** (the same direction the adversarial audit promotes), or regenerate. If neither happened — the review applied no edits and left every cheap-tier classification standing — the manifest still holds; leave it. Never silently keep a manifest the review has outdated; the freshness binding exists precisely so a stale one is caught rather than trusted.
 
 ## Why cold, why no team
 
