@@ -8,6 +8,8 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion, Skil
 
 Drive one feature to completion on a single linear track: adopt or produce a plan, break it into ordered phases, build-and-verify each phase one at a time, run a pre-push review, and write a retrospective. You spawn one role-pure subagent at a time (see [`winter-workflow:/agents/README.md`](winter-workflow:/agents/README.md)) and gate each handoff yourself.
 
+The per-phase runtime verification (step 4) and pre-push review (step 5) are how glacier meets the shared **Definition of done for feature work** ([`winter-workflow:/index.md`](winter-workflow:/index.md)) — the tested-and-docs-updated bar — for the feature it delivers.
+
 Work within the planning framework you are given or that is available to you — its conventions for where plans, phases, and session artifacts live. If no planning framework exists, gently suggest to the user that adopting one would help with organization and observability, then proceed, tracking the work in your winter space (see step 1).
 
 ## Coordination preamble (shared)

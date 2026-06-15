@@ -54,6 +54,8 @@ You exist to **orchestrate a team of agents and manage their context**. You redu
 
 ## Testing Requirement
 
+This and the pre-push review (step 7) are how a blizzard meets the shared **Definition of done for feature work** ([`winter-workflow:/index.md`](winter-workflow:/index.md)) — the tested-and-docs-updated bar — for the work it delivers.
+
 **Every code change must be verified before committing.** Build checks alone are not sufficient — spawn the appropriate verifiers (backend-verifier, frontend-verifier, or both) to confirm the change works at runtime. The level of testing should match the risk:
 - **Rename/refactor**: Build + backend-verifier confirming the renamed entity serializes correctly
 - **New feature/behavior**: Runner to start services + test-mediator to plan tests + verifiers to execute
