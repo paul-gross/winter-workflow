@@ -22,15 +22,7 @@ git diff --cached
 git log --oneline -5
 ```
 
-## 3. Context review gate for agent-facing config
-
-Run `git diff --cached --name-only` and classify the staged paths against the trigger list in `winter-workflow:/ai/agent-facing-paths.md`.
-
-If the diff touches agent-facing markdown, **before** writing the commit message, **ask the user once**: "This commit touches agent-facing config. Want me to run a context review first?" If they say yes, spawn the `context-reviewer` with the staged diff as input; relay findings; let them decide whether to fix-then-commit or commit-as-is. This gate is documented in `winter-workflow:/index.md` ("Context review for agent-facing configuration"). Do not auto-spawn — the user is in the loop.
-
-If the diff is product/backlog content, the classifier's exclusion applies — skip the prompt.
-
-## 4. Load Commit Conventions
+## 3. Load Commit Conventions
 
 Check for project-specific commit conventions in this order (use the first one found):
 
@@ -38,19 +30,19 @@ Check for project-specific commit conventions in this order (use the first one f
 2. `workspace:/ai/project/contributing.md` (project-specific workspace config)
 3. [commit-conventions.md](./commit-conventions.md) (workspace default fallback)
 
-## 5. Write the Commit Message
+## 4. Write the Commit Message
 
-Follow the conventions loaded in step 4. Write a commit message that:
+Follow the conventions loaded in step 3. Write a commit message that:
 - Summarizes what changed and WHY based on the conversation context and the actual diff
 - Uses the format specified by the conventions
 - Includes a body with more detail if the changes are non-trivial
 - Ends with the co-author line
 
-## 6. Commit
+## 5. Commit
 
 Use a HEREDOC to ensure proper formatting:
 
-Use the format from the conventions loaded in step 4. Example:
+Use the format from the conventions loaded in step 3. Example:
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -61,7 +53,7 @@ EOF
 )"
 ```
 
-## 7. If Arguments Include "amend"
+## 6. If Arguments Include "amend"
 
 Instead of creating a new commit, amend the previous commit:
 
@@ -70,7 +62,7 @@ Instead of creating a new commit, amend the previous commit:
 3. Either append additional context to the bottom of the existing message, or rewrite the message entirely if the scope of changes has shifted significantly
 4. Amend: `git commit --amend -m "$(cat <<'EOF' ... EOF )"`
 
-## 8. Verify
+## 7. Verify
 
 ```bash
 git status

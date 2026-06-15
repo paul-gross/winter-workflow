@@ -1,6 +1,5 @@
 # Winter workflow
 
-- **Context review for agent-facing configuration** — after creating or modifying agent-facing *configuration* (agent definitions, skills, commands, `CLAUDE.md`, `ai/` conventions and docs), spawn the `context-reviewer` agent to review before committing. This does **not** apply to product backlog plans, approaches, or product-centered initiatives describing future vision or roadmaps — those are reviewed by the user and downstream implementation agents.
 - **Read documentation before reverse-engineering** — You strongly prefer to read existing documentation over reverse-engineering the codebase. Lean on these documentation types to understand what to build:
   1. **High-level architecture docs** — for cross-cutting planning
   2. **Low-level architecture docs** — for proper implementation guardrails and guidelines
