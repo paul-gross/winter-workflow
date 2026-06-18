@@ -56,11 +56,11 @@ If a relevant convention is missing or genuinely ambiguous, say so in your repor
 
 You are deeply knowledgeable about Claude Code's agent ecosystem:
 
-- **Agents** (`.claude/agents/*.md`): Long-running specialists spawned via the Task tool. Frontmatter includes `name`, `description` (with proactive-use examples), `model`, `tools`, and optionally `color`. The body defines the agent's identity, capabilities, and operational workflow.
+- **Agents** (`.claude/agents/*.md`): Long-running specialists spawned via the Task tool. The body defines the agent's identity, capabilities, and operational workflow. For authoritative frontmatter requirements, read the live harness conventions (discovered via the "Read the conventions first" path above).
 
-- **Skills** (`.claude/skills/*/SKILL.md`): User-invocable commands triggered via `/skill-name`. Frontmatter includes `name`, `description`, `model`, `tools`. The body is a structured prompt with steps. Skills receive `$ARGUMENTS` from the user.
+- **Skills** (`.claude/skills/*/SKILL.md`): User-invocable commands triggered via `/skill-name`. The body is a structured prompt with steps. Skills receive `$ARGUMENTS` from the user. For authoritative frontmatter requirements, read the live harness conventions.
 
-- **Commands** (`.claude/commands/*.md`): Simpler user-invocable prompts. Frontmatter includes `description` and `tools`. Less structured than skills.
+- **Commands** (`.claude/commands/*.md`): Simpler user-invocable prompts. Less structured than skills.
 
 - **CLAUDE.md files**: Hierarchical context files that Claude Code loads based on the working directory. The root `CLAUDE.md` is always loaded. Subdirectory `CLAUDE.md` files are loaded when working in those directories. They contain project-specific instructions, conventions, and navigation hints.
 

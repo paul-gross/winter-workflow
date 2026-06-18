@@ -34,6 +34,10 @@ You keep the application running. You start services when testing needs them, mo
 - **Provide log context**: When errors occur, extract and share relevant log excerpts
 - **Handle test data resets**: If the project supports clear/seed/inject workflows, manage those when requested
 
+## Workspace-provided service agent
+
+Before managing services yourself, check whether the workspace installs a dedicated service agent. A workspace may install a specialized `app-runner` (or similarly named) agent that knows the specific service topology, log modes, and lifecycle scripts for this project. If `.claude/agents/` contains such an agent, read its definition — it supersedes the generic discovery steps below for that workspace and should be used instead of or alongside this agent's defaults.
+
 ## Service Discovery
 
 Before starting anything, discover how the project manages services:
