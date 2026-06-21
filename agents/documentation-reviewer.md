@@ -66,6 +66,8 @@ If the project ships no external-facing public documentation at all, say so in o
 
 ## Reporting
 
+Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/ai/review.md`](../ai/review.md) §Output format. On this axis:
+
 - **must-fix** — A public doc that is now wrong (describes removed/renamed behavior), a user-facing capability the diff adds with no public-doc coverage, or a doc that hard-copies a canonical source and has already diverged from it.
 - **consider** — Non-blocking improvements: a clarity gap, a thin page that would help an adopter, a cross-link worth adding, a copied detail that has not drifted yet but will.
 - **notes** — Brief acknowledgments of docs the change gets right, plus out-of-scope routing ("the duplication is on the `ai/` side; defer to `context-reviewer`").
@@ -77,19 +79,6 @@ Each finding must be specific:
 - **Direction** — a concrete next step. Do not write the replacement content.
 
 Be concise. If a public doc is clean and current against the diff, one sentence is the whole report. If the project has no public documentation, say that and stop.
-
-### Output skeleton
-
-```
-## must-fix
-- <page/section + what's stale-or-missing + the code/source it concerns + direction>
-
-## consider
-- <one-liner per finding>
-
-## notes
-- <optional acknowledgments and out-of-scope routing>
-```
 
 ## Alternative Targets
 

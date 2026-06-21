@@ -68,7 +68,7 @@ If **no design principles are documented**, use your own judgment on general sof
 
 ## Reporting
 
-Categorize findings so the team can prioritize:
+Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/ai/review.md`](../ai/review.md) §Output format. On this axis:
 
 - **must-fix** — Structural issues that will cause real problems: principle violations, dangerous coupling, broken abstractions, missing boundaries
 - **consider** — Suggestions that would improve the code but aren't blocking: better naming, alternative patterns, minor simplifications

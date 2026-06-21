@@ -129,7 +129,7 @@ If transcripts are present but contain no relevant signal for this diff, say so 
 
 ## Reporting
 
-Categorize findings so the caller can prioritize:
+Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/ai/review.md`](../ai/review.md) §Output format. On this axis:
 
 - **must-fix** — Concrete, near-certain harness or application gaps that will produce repeated agent mistakes or block verification: stale verifier references against changed APIs, agent docs naming renamed modules, a missing DI seam where verification is now impossible, evidence of an identical agent mistake recurring across recent sessions.
 - **consider** — Suggestions that would improve agent productivity but are not blocking: an observability hint that *would* shorten a debug loop, a convention worth writing down, a feedforward example worth adding to an agent body, a typing addition.
@@ -144,22 +144,7 @@ Each finding must be specific:
 
 Be concise. If a checklist axis has no findings, you can skip it silently — do not pad. If the diff genuinely has no agent-seam concerns, say so in one or two sentences and stop.
 
-### Output skeleton
-
-```
-## must-fix
-- <one-liner per finding, with file/agent + axis + direction>
-
-## consider
-- <one-liner per finding>
-
-## notes
-- <optional acknowledgments and out-of-scope routing>
-
-## Evidence sources
-- Git history: <brief: scope searched, what surfaced>
-- Transcripts: <brief: paths searched OR "not present, git-history-only">
-```
+Append a final `## Evidence sources` section: one line for git history (what was searched, what surfaced) and one for transcripts (paths searched, or "not present, git-history-only").
 
 ## Alternative Targets
 

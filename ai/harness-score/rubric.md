@@ -17,7 +17,7 @@ Mixing rubric versions invalidates deltas. A score at v1 and a score at v2 canno
 
 Concretely:
 
-- Every harness-score run emits the rubric version in its report (HTML metadata + JSON sidecar) — whether the run was triggered via `/wf-harness-score` or by an agent executing [`./process.md`](./process.md) directly.
+- Every harness-score run emits the rubric version in its report (HTML metadata + JSON sidecar) — whether the run was triggered via the `harness-score` skill or by an agent executing [`./process.md`](./process.md) directly.
 - Delta computation compares the new score only against the **most recent prior report with the same rubric version**. Older reports at a different version are ignored for delta purposes.
 - Edits to this file are deliberate version bumps, not opportunistic improvements. Tightening a stage description, swapping a dimension, or adding diagnostic questions all warrant a `v2` bump and a fresh baseline.
 

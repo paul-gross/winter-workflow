@@ -86,7 +86,11 @@ Build the reviewer prompt from these axis-independent parts, then append the **p
 
 5. **Review instructions.** "Load the documentation relevant to your axis and review against it; fall back to your own judgment where it is silent. Be specific: file, line, the principle/convention at issue, and a concrete direction. No rewrites." Then append the per-axis body.
 
-6. **Output format.** Categorized findings:
+6. **Output format.** See [§Output format](#output-format) below.
+
+### Output format
+
+Categorized findings:
    - `## must-fix` — issues that should block.
    - `## consider` — non-blocking suggestions.
    - `## notes` — brief acknowledgments of what the change gets right + any out-of-scope routing to another axis. Keep short.
