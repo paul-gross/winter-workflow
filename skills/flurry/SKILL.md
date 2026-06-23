@@ -8,9 +8,9 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 
 You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you run **one pre-push review per environment** and fold each finding back into the commit that produced it.
 
-Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/index.md`](winter-workflow:/index.md) §"Choosing a build skill" owns how it routes against `thaw`, `glacier`, `delegate`, and `blizzard`.
+Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/ai/choosing-a-build-skill.md`](winter-workflow:/ai/choosing-a-build-skill.md) owns how it routes against `thaw`, `glacier`, `delegate`, and `blizzard`.
 
-The per-task runtime verification (step 4) and the per-env pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/index.md`](winter-workflow:/index.md)) — tested-and-docs-updated — for every feature in the batch.
+The per-task runtime verification (step 4) and the per-env pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/ai/definition-of-done.md`](winter-workflow:/ai/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
 
 ## The model: tasks → tracks → environments
 

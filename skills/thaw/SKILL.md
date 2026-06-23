@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 
 `thaw` makes **small, focused changes to existing code** — fix a bug, tweak a behavior, adjust an existing function, restore a regression. It composes `explorer` → `developer` → `verifier` into a tight investigate-change-verify loop, without spinning up the full `blizzard` machinery.
 
-The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how thaw meets the shared **Definition of done for feature work** ([`winter-workflow:/index.md`](winter-workflow:/index.md)) — the tested-and-docs-updated bar — for the change it delivers.
+The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how thaw meets the shared **Definition of done for feature work** ([`winter-workflow:/ai/definition-of-done.md`](winter-workflow:/ai/definition-of-done.md)) — the tested-and-docs-updated bar — for the change it delivers.
 
 ## Scope
 
