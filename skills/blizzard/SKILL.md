@@ -218,7 +218,7 @@ Every blizzard session produces a trail of documentation so the user can underst
 
 ### Documentation Location
 
-Follow the workspace's planning-framework conventions: if the blizzard was started for a refined work item with its own directory (via `/ws-work <name>` or stated by the user), write a `blizzard/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `~/.claude/winter/workflows/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the team name). Decide from how the blizzard was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
+Follow the workspace's planning-framework conventions: if the blizzard was started for a refined work item with its own directory (stated by the user), write a `blizzard/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `~/.claude/winter/workflows/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the team name). Decide from how the blizzard was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
 
 ### Agent Activity Logs
 
