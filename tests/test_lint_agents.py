@@ -118,6 +118,12 @@ assert_fail("unterminated-flow", "tools: must be a non-empty list")
 assert_fail("empty-block-item", "tools: empty list")
 assert_fail("comment-only-bullet", "tools: empty list")
 
+# Canonical-schema override block checks.
+assert_pass("valid-override-blocks", FIXTURES / "valid-override-blocks")
+assert_fail("unknown-override-block", "unknown override block")
+assert_fail("override-block-scalar", "must be a YAML mapping")
+assert_fail("override-block-sequence", "must be a YAML mapping")
+
 # The real shipped agents must all pass — the lint is only useful if green
 # against master. Scoping at the repo root also confirms the `fixtures/` prune
 # keeps the broken fixtures above from leaking into a real run.

@@ -31,6 +31,12 @@ tools:
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__handle_dialog
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__list_network_requests
   - mcp__plugin_chrome-devtools-mcp_chrome-devtools__get_network_request
+opencode:
+  permission:
+    bash: allow
+    edit: deny
+codex:
+  sandbox_mode: workspace-write
 ---
 
 *Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*

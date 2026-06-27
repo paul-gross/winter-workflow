@@ -56,6 +56,11 @@ CHECK = "agent-frontmatter"
 MANIFEST = "winter-ext.toml"
 VALID_MODELS = ("haiku", "sonnet", "opus")
 
+# Top-level canonical common keys — anything else at the top level must be a
+# recognised vendor override block (claude / codex / opencode).
+_COMMON_KEYS: frozenset[str] = frozenset({"name", "description", "model", "tools", "allowed-tools"})
+_VALID_OVERRIDE_BLOCKS: frozenset[str] = frozenset({"claude", "codex", "opencode"})
+
 # Directories never worth walking. `fixtures` is pruned so an `--all` / repo
 # scope never descends into this lint's own deliberately-broken test fixtures;
 # the test harness reaches them by pointing the scope *inside* a fixture case.
@@ -247,6 +252,69 @@ def _check_tools(block: dict | None) -> str | None:
     return f"tools: {rule}"  # a bare scalar like `tools: Read`
 
 
+def _override_block_findings(blocks: dict[str, dict], rel: str) -> list[Finding]:
+    """Validate canonical-schema rules for per-vendor override blocks.
+
+    Two checks:
+    1. Any top-level key that is not a common field must be one of the three
+       recognised vendor labels (claude / codex / opencode).  An unknown block
+       name is a ``fail``.
+    2. Every recognised vendor block must be a YAML mapping (not a scalar on
+       the same line, not a sequence/list).  A non-mapping block is a ``fail``.
+    """
+    findings: list[Finding] = []
+    for key, block in blocks.items():
+        if key in _COMMON_KEYS:
+            continue
+        if key not in _VALID_OVERRIDE_BLOCKS:
+            findings.append(
+                Finding(
+                    status="fail",
+                    message=(
+                        f"unknown override block {key!r}: top-level vendor blocks must be "
+                        "one of: claude, codex, opencode"
+                    ),
+                    file=rel,
+                    remediation=(
+                        f"Remove or rename the '{key}:' block to one of: claude, codex, opencode"
+                    ),
+                )
+            )
+            continue
+        # Recognised vendor block — must be a mapping (not a scalar or sequence).
+        inline = block["inline"].strip()
+        body_lines = block["body"]
+        if inline:
+            findings.append(
+                Finding(
+                    status="fail",
+                    message=(
+                        f"{key}: override block must be a YAML mapping, "
+                        f"got a scalar value {inline!r}"
+                    ),
+                    file=rel,
+                    remediation=(
+                        f"Change `{key}: {inline}` to `{key}:` with an indented mapping body."
+                    ),
+                )
+            )
+        elif any(line.lstrip().startswith("- ") for line in body_lines):
+            findings.append(
+                Finding(
+                    status="fail",
+                    message=(
+                        f"{key}: override block must be a YAML mapping, "
+                        "got a sequence (list) value"
+                    ),
+                    file=rel,
+                    remediation=(
+                        f"Change `{key}:` body from list items to key-value pairs."
+                    ),
+                )
+            )
+    return findings
+
+
 def _frontmatter_findings(file: Path, rel: str) -> list[Finding]:
     try:
         text = file.read_text(errors="replace")
@@ -276,6 +344,8 @@ def _frontmatter_findings(file: Path, rel: str) -> list[Finding]:
     model = _check_model(blocks.get("model"))
     if model is not None:
         findings.append(Finding(status="fail", message=model, file=rel))
+
+    findings.extend(_override_block_findings(blocks, rel))
 
     return findings
 

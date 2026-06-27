@@ -13,6 +13,12 @@ tools:
   - SendMessage
   - TaskUpdate
   - TaskList
+opencode:
+  permission:
+    bash: allow
+    edit: deny
+codex:
+  sandbox_mode: workspace-write
 ---
 
 *Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*

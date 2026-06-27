@@ -17,6 +17,11 @@ tools:
   - Glob
   - Grep
   - WebSearch
+opencode:
+  permission:
+    edit: deny
+codex:
+  sandbox_mode: read-only
 ---
 
 *Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*
