@@ -8,9 +8,9 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 
 You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you run **one pre-push review per environment** and fold each finding back into the commit that produced it.
 
-Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/ai/choosing-a-build-skill.md`](winter-workflow:/ai/choosing-a-build-skill.md) owns how it routes against `thaw`, `glacier`, `delegate`, and `blizzard`.
+Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/context/choosing-a-build-skill.md`](winter-workflow:/context/choosing-a-build-skill.md) owns how it routes against `thaw`, `glacier`, `delegate`, and `blizzard`.
 
-The per-task runtime verification (step 4) and the per-env pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/ai/definition-of-done.md`](winter-workflow:/ai/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
+The per-task runtime verification (step 4) and the per-env pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
 
 ## The model: tasks → tracks → environments
 
@@ -69,7 +69,7 @@ You need one environment per concurrent track. Resolve the pool in this order:
 
 - **User-supplied envs** — if the user named environments, use those, one per track. Warn (don't silently proceed) if a named env has a dirty worktree or commits already ahead of upstream — flurry's per-env review and fold assume the env's change-set is **only** this batch's commits.
 - **Otherwise, reuse idle Greek envs first** — read `winter ws status --json` (or `winter ws list`) and pick environments whose worktrees are **clean** (`dirty == 0`) and **not ahead** of upstream. Prefer the conventional order (alpha, beta, gamma, …). An idle env keeps flurry's change-set isolated.
-- **Create the rest** — if there aren't enough idle envs, create fresh ones with `winter ws init <greek>` (next unused Greek letter; `winter ws index <name>` resolves a name's slot). **Confirm with the user before creating any env** (workspace `CLAUDE.md` rule). After `winter ws init`, complete any project-specific env setup per `workspace:/ai/project/project-setup.md`.
+- **Create the rest** — if there aren't enough idle envs, create fresh ones with `winter ws init <greek>` (next unused Greek letter; `winter ws index <name>` resolves a name's slot). **Confirm with the user before creating any env** (workspace `CLAUDE.md` rule). After `winter ws init`, complete any project-specific env setup per `workspace:/context/project/project-setup.md`.
 
 If tracks outnumber the environments you can reasonably run, cap the pool and **queue** the extra tracks: when a track finishes and frees its env, dispatch the next queued track onto it. Tell the user the cap and the queue in one line.
 
@@ -86,7 +86,7 @@ For each task, spawn a `developer` (`subagent_type: developer`, `model: "sonnet"
 1. **The coordination preamble** (verbatim).
 2. **The env pin** — the env name and the **absolute worktree path(s)** for the repo(s) this task touches (`<workspace>/<env>/<repo>`). Hard rule: work only inside that env's worktrees, never `cd` out, and never fall back to a source checkout under `projects/`.
 3. **The task** — what to build and why. For a non-leading task in a track, note that earlier tasks in this track have already committed on this branch and its work builds on them.
-4. **Verify at runtime** — the definition-of-done bar. A green build or typecheck is **not** verification; run a real probe (execute the affected test, `curl` the endpoint, invoke the CLI, load the page) and report what was run and what was observed. Pass the base URL/port from `workspace:/ai/project/setup-tmux.toml` or the env's `.winter.env` if the probe needs a running service; if services aren't up, the developer should say so rather than guess — flurry does not start services.
+4. **Verify at runtime** — the definition-of-done bar. A green build or typecheck is **not** verification; run a real probe (execute the affected test, `curl` the endpoint, invoke the CLI, load the page) and report what was run and what was observed. Pass the base URL/port from `workspace:/context/project/setup-tmux.toml` or the env's `.winter.env` if the probe needs a running service; if services aren't up, the developer should say so rather than guess — flurry does not start services.
 5. **Land exactly one commit** — once implemented and verified, make **one** conventional commit (with scope, and a `Closes #N` footer if the ask maps to an issue) covering this task's work and nothing else. **Do not push.**
 6. **Report** — files + line ranges changed, the **commit SHA**, the probe(s) run and what was observed, and a one-line verdict.
 

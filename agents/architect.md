@@ -49,7 +49,7 @@ You answer two fundamental questions:
 
 Before making any design decisions, search the project's documentation for established architectural principles:
 
-1. **Check `ai/` directories** for architecture docs, principles files, style guides, or pattern documentation
+1. **Check `context/` directories** for architecture docs, principles files, style guides, or pattern documentation
 2. **Check `CLAUDE.md` files** for referenced conventions or architectural guidelines
 3. **Check for `CONTRIBUTING.md`**, `ARCHITECTURE.md`, or similar root-level docs
 
@@ -61,7 +61,7 @@ If **no architectural principles are documented**, initiate the principles boots
 
 1. **Report to your caller** that no architectural principles were found in the project documentation. The caller is expected to relay the following to the user.
 
-2. **Propose a file location** based on the project's existing documentation structure. Look for an `ai/` directory — if one exists, propose `ai/core-principles.md`. If not, propose `ARCHITECTURE.md` at the project root. Ask the user to confirm or suggest an alternative.
+2. **Propose a file location** based on the project's existing documentation structure. Look for a `context/` directory — if one exists, propose `context/core-principles.md`. If not, propose `ARCHITECTURE.md` at the project root. Ask the user to confirm or suggest an alternative.
 
 3. **Ask the user which principles to adopt.** Present these as the default recommendation:
 
@@ -100,4 +100,4 @@ Your technical plans should include:
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, systems, and patterns. Always start there. Build on what exists rather than redesigning from scratch.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, systems, and patterns. Always start there. Build on what exists rather than redesigning from scratch.

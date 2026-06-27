@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 
 `thaw` makes **small, focused changes to existing code** — fix a bug, tweak a behavior, adjust an existing function, restore a regression. It composes `explorer` → `developer` → `verifier` into a tight investigate-change-verify loop, without spinning up the full `blizzard` machinery.
 
-The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how thaw meets the shared **Definition of done for feature work** ([`winter-workflow:/ai/definition-of-done.md`](winter-workflow:/ai/definition-of-done.md)) — the tested-and-docs-updated bar — for the change it delivers.
+The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how thaw meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — the tested-and-docs-updated bar — for the change it delivers.
 
 ## Scope
 
@@ -114,7 +114,7 @@ Foreground `Agent` call (`subagent_type: developer`). Self-contained prompt with
 Foreground `Agent` call (`subagent_type: backend-verifier` or `frontend-verifier` per step 5). Self-contained prompt with:
 
 1. **The coordination preamble** (verbatim).
-2. **Worktree path** (absolute) and, for backend, the base URL/port. Pull connection details from `workspace:/ai/project/setup-tmux.toml` or the worktree's `.winter.env`; if neither is present, ask the user.
+2. **Worktree path** (absolute) and, for backend, the base URL/port. Pull connection details from `workspace:/context/project/setup-tmux.toml` or the worktree's `.winter.env`; if neither is present, ask the user.
 3. **Change to confirm** — the original 1-2 sentence description.
 4. **Smoke check** — the single concrete probe the explorer returned in step 3. The verifier runs **that probe** to decide pass/fail. Not a full regression sweep.
 5. **What "done" looks like** — pass criteria for the smoke check (e.g., the named test returns green, the curl returns 200 with field X, the page renders the new label without console errors).
@@ -123,7 +123,7 @@ Foreground `Agent` call (`subagent_type: backend-verifier` or `frontend-verifier
    - On `fail`: status/output observed, what was expected, any console/log excerpts, a diagnosis hint if obvious.
    - On `pass`: a one-line confirmation of what was checked.
 
-If the verifier reports **"service not reachable"** or similar environment failure (services not running, port not open), stop the loop and tell the user — `thaw` does not start services. Suggest they run `./up` (or the project's equivalent per `workspace:/ai/project/setup-tmux.toml`) and re-invoke.
+If the verifier reports **"service not reachable"** or similar environment failure (services not running, port not open), stop the loop and tell the user — `thaw` does not start services. Suggest they run `./up` (or the project's equivalent per `workspace:/context/project/setup-tmux.toml`) and re-invoke.
 
 #### 6c. Branch on verdict
 

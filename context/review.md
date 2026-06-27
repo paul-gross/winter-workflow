@@ -13,7 +13,7 @@ This engine produces *findings*; it does not shrink the surface a human must rea
 Three entry points resolve here. They differ only in which axis (and, for `pre-push`, which axes) they run — the mechanics below are identical:
 
 - **A review skill** — `cold-review` (code), `context-review` (context), `harness-review` (harness), `documentation-review` (documentation). Each binds one axis and passes `$ARGUMENTS` through as the scope. Cold subagent by default; runs inline when `$ARGUMENTS` leads with the `inline` selector.
-- **The harness directly, no skill** — point any agent at this doc with an axis and a scope for an ad-hoc review (e.g. "review the **code** axis of `HEAD~1` per `winter-workflow:/ai/review.md`"), inline or as a subagent (see *Execution mode*).
+- **The harness directly, no skill** — point any agent at this doc with an axis and a scope for an ad-hoc review (e.g. "review the **code** axis of `HEAD~1` per `winter-workflow:/context/review.md`"), inline or as a subagent (see *Execution mode*).
 - **`pre-push`** — composes several axes in parallel over the un-pushed change-set; see [`../skills/pre-push/pre-push-review.md`](../skills/pre-push/pre-push-review.md), which references this doc for the scaffold and per-axis bodies rather than restating them.
 
 ## Axes
@@ -108,7 +108,7 @@ Append exactly one. Each points at the agent definition for the methodology and 
 
 ### context
 
-> Follow your agent body (`context-reviewer`). Load workspace `CLAUDE.md` and nested `CLAUDE.md` files, the harness conventions for agent-facing markdown the workspace exposes, and any `ai/` docs governing the touched files. Check naming/prefixes, path notation, voice, frontmatter, cross-reference freshness, and single-source-of-truth.
+> Follow your agent body (`context-reviewer`). Load workspace `CLAUDE.md` and nested `CLAUDE.md` files, the harness conventions for agent-facing markdown the workspace exposes, and any `context/` docs governing the touched files. Check naming/prefixes, path notation, voice, frontmatter, cross-reference freshness, and single-source-of-truth.
 > For **paths** scope, enumerate the agent-facing markdown under the path set per [`./agent-facing-paths.md`](./agent-facing-paths.md) (plus any extension `index.md` / `README.md` written for agents; exclude test fixtures and external-facing public docs) and review its current state.
 
 ### harness
@@ -123,7 +123,7 @@ Append exactly one. Each points at the agent definition for the methodology and 
 
 ### documentation
 
-> Follow your agent body (`documentation-reviewer`). Review **external-facing public documentation only** — what a human adopter/end-user reads; not `CLAUDE.md`, `.claude/`, `agents/`, `skills/`, or `ai/` (that's `context`), and not code. Locate the project's public docs and discover its documentation conventions rather than assuming them; if a "docs reflect this change" invariant is documented, review against it and cite it by path. Read code only to judge whether a public doc still describes it accurately. No extra caller context is needed.
+> Follow your agent body (`documentation-reviewer`). Review **external-facing public documentation only** — what a human adopter/end-user reads; not `CLAUDE.md`, `.claude/`, `agents/`, `skills/`, or `context/` (that's `context`), and not code. Locate the project's public docs and discover its documentation conventions rather than assuming them; if a "docs reflect this change" invariant is documented, review against it and cite it by path. Read code only to judge whether a public doc still describes it accurately. No extra caller context is needed.
 
 ## Relay
 

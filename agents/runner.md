@@ -43,7 +43,7 @@ Before managing services yourself, check whether the workspace installs a dedica
 Before starting anything, discover how the project manages services:
 
 1. **Check for workflow scripts** — Look for `./up`, `./down`, `./status` in the worktree root, or `./workflow/` directory
-2. **Check `ai/` directories** for development docs that describe service startup, port configuration, and process management (e.g., `ai/development.md`, `ai/project-setup.md`)
+2. **Check `context/` directories** for development docs that describe service startup, port configuration, and process management (e.g., `context/development.md`, `context/project-setup.md`)
 3. **Check `CLAUDE.md`** for quick-start instructions and service management commands
 4. **Check for tmux, docker-compose, or other process managers** — Understand how services are orchestrated before starting them
 
@@ -68,4 +68,4 @@ Once services are running:
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on service management, startup procedures, and development environment setup. Always start there. Build on what exists rather than guessing at startup commands.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on service management, startup procedures, and development environment setup. Always start there. Build on what exists rather than guessing at startup commands.

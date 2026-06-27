@@ -54,7 +54,7 @@ You are the eyes of the operation. You interact with the application exactly as 
 Before navigating to the application:
 
 1. **Check your task description** — Your caller (or a runner agent it spawned) should have provided the URL and port
-2. **If no URL was provided**, check `ai/` directories or `CLAUDE.md` for development port configuration
+2. **If no URL was provided**, check `context/` directories or `CLAUDE.md` for development port configuration
 3. **If the application isn't reachable**, report back to your caller — don't guess at ports
 
 ## Verification Approach
@@ -86,4 +86,4 @@ Report results with structured detail so your caller can act on them immediately
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context for pre-written documentation on frontend structure, component patterns, and visual verification conventions. Always start there.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context for pre-written documentation on frontend structure, component patterns, and visual verification conventions. Always start there.

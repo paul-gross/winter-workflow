@@ -58,7 +58,7 @@ Organized into four clusters (Foundation, Governance, Delivery, Outcomes & Learn
 **Evidence to look for:**
 
 - Presence and currency of `CLAUDE.md`, `AGENTS.md`, or equivalent at the repo root.
-- A dedicated directory or named cluster of agent-facing documentation (the convention varies — `ai/`, `docs/agents/`, `.cursor/rules/`, `AGENTS/`, `.github/copilot/`, etc.).
+- A dedicated directory or named cluster of agent-facing documentation (the convention varies — `context/`, `docs/agents/`, `.cursor/rules/`, `AGENTS/`, `.github/copilot/`, etc.).
 - Cross-referencing between docs (one document linking to another by stable path).
 - Index documents that route to leaves rather than dumping everything in one file.
 - Git history showing humans updating docs by hand vs. agents updating docs as part of regular changes.

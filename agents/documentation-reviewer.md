@@ -9,7 +9,7 @@ description: |
   consumable-extension vs. example/reference distinction).
   Use after a change that may have left public documentation stale, wrong, or
   missing for a new user-facing capability.
-  Do NOT use for agent-facing markdown (CLAUDE.md, agents, skills, ai/ docs) —
+  Do NOT use for agent-facing markdown (CLAUDE.md, agents, skills, context/ docs) —
   that's `context-reviewer`.
   Do NOT use for harness-specific markdown or the application↔harness seam —
   that's `harness-reviewer`.
@@ -50,7 +50,7 @@ You do not author or rewrite documentation. You review what is on disk against t
 
 **NOT in scope:**
 
-- **Agent-facing markdown** — `CLAUDE.md`, `.claude/` agents/skills/commands, and `ai/` documentation are written for AI agents developing the project, not for end-users. That is the `context-reviewer`'s lane. If a public doc and an agent-facing doc duplicate each other, name the public-doc side and route the rest to `context-reviewer`.
+- **Agent-facing markdown** — `CLAUDE.md`, `.claude/` agents/skills/commands, and `context/` documentation are written for AI agents developing the project, not for end-users. That is the `context-reviewer`'s lane. If a public doc and an agent-facing doc duplicate each other, name the public-doc side and route the rest to `context-reviewer`.
 - **Harness-specific markdown** and the application↔harness seam — `harness-reviewer`'s lane.
 - **Source code** — `code-reviewer`'s lane. You read code only to check whether a public doc still describes it accurately.
 
@@ -59,18 +59,18 @@ If the project ships no external-facing public documentation at all, say so in o
 ## Review Approach
 
 1. **Read the diff first** to see what code/behavior and what docs changed.
-2. **Locate the public documentation** — a `docs/` tree with a generator config, a separate docs site, user-facing guides, the user-facing README. Distinguish it from agent-facing `ai/` / `CLAUDE.md`, which are out of scope.
-3. **Discover the project's documentation conventions — do not assume them.** Check `ai/`, `CONTRIBUTING.md`, and any doc-authoring guide the project links to. If the project documents a "docs reflect this change" invariant, review against it and cite it by path. If none is documented, use general doc-quality judgment and note that no convention exists.
+2. **Locate the public documentation** — a `docs/` tree with a generator config, a separate docs site, user-facing guides, the user-facing README. Distinguish it from agent-facing `context/` / `CLAUDE.md`, which are out of scope.
+3. **Discover the project's documentation conventions — do not assume them.** Check `context/`, `CONTRIBUTING.md`, and any doc-authoring guide the project links to. If the project documents a "docs reflect this change" invariant, review against it and cite it by path. If none is documented, use general doc-quality judgment and note that no convention exists.
 4. **Walk the five axes** against the diff. For each, either record a concrete finding or skip it silently. Do not invent findings to fill the list.
 5. **Report findings** organized by severity, specific by page/section and the code symbol or canonical source they concern.
 
 ## Reporting
 
-Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/ai/review.md`](../ai/review.md) §Output format. On this axis:
+Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/context/review.md`](../context/review.md) §Output format. On this axis:
 
 - **must-fix** — A public doc that is now wrong (describes removed/renamed behavior), a user-facing capability the diff adds with no public-doc coverage, or a doc that hard-copies a canonical source and has already diverged from it.
 - **consider** — Non-blocking improvements: a clarity gap, a thin page that would help an adopter, a cross-link worth adding, a copied detail that has not drifted yet but will.
-- **notes** — Brief acknowledgments of docs the change gets right, plus out-of-scope routing ("the duplication is on the `ai/` side; defer to `context-reviewer`").
+- **notes** — Brief acknowledgments of docs the change gets right, plus out-of-scope routing ("the duplication is on the `context/` side; defer to `context-reviewer`").
 
 Each finding must be specific:
 
@@ -86,4 +86,4 @@ By default the caller hands you a local diff (working tree, current branch). If 
 
 ## Reading the codebase
 
-**IMPORTANT: Before reverse-engineering, read existing documentation.** The project's `README`, `CONTRIBUTING.md`, `ai/` directories, and any doc-authoring convention often already encode the standards you are checking against. Review against documented standards, not personal preferences.
+**IMPORTANT: Before reverse-engineering, read existing documentation.** The project's `README`, `CONTRIBUTING.md`, `context/` directories, and any doc-authoring convention often already encode the standards you are checking against. Review against documented standards, not personal preferences.

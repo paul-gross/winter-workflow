@@ -51,7 +51,7 @@ The role-specific content must include:
 
 1. **Goal** — produce an inventory of **evidence** (file paths, command outputs, doc references) for each of the 10 dimensions in the rubric. Not stages, not scores. Evidence.
 2. **The full rubric** — read [`./rubric.md`](./rubric.md) and walk each dimension's diagnostic questions and "evidence to look for" lists.
-3. **Scope** — the target is the current working directory (`$PWD`). Search the repo, the docs (any `ai/`, `docs/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CONTRIBUTING.md`), the configs (`.pre-commit-config.yaml`, `pyproject.toml`, linter configs), and the git history (`git log`, `git log --oneline`) as appropriate per dimension. Adapt to whatever documentation cluster the target actually uses; do not assume a specific convention.
+3. **Scope** — the target is the current working directory (`$PWD`). Search the repo, the docs (any `context/`, `docs/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CONTRIBUTING.md`), the configs (`.pre-commit-config.yaml`, `pyproject.toml`, linter configs), and the git history (`git log`, `git log --oneline`) as appropriate per dimension. Adapt to whatever documentation cluster the target actually uses; do not assume a specific convention.
 4. **Output shape** — for each dimension, a short bullet list of evidence with file paths or `git log` outputs. If a dimension has no evidence, say so explicitly.
 5. **Stop** — do not propose stages. Scoring is the main agent's job.
 
@@ -129,7 +129,7 @@ The **scoring rules** (evidence-required, no averaging, half-stages, concrete ne
 
 - **One report per run per day.** Re-running on the same day overwrites the same `YYYY-MM-DD-<project>.{html,json}` files. For same-day duplicates, use the `YYYY-MM-DD-HHMM-<project>` suffix per [`../llm-html-output.md#naming`](../llm-html-output.md#naming).
 - **Sidecar `rubric_version` must equal this rubric's version.** Step 8's JSON `rubric_version` is read by step 2 of the next run to filter prior reports. Mismatches break delta computation; if you cannot satisfy this, fail loudly rather than emit a sidecar at the wrong version.
-- **No assumptions about the target's documentation convention.** This process is meant to work against any codebase. Where this document mentions `ai/`, `docs/`, `AGENTS.md`, etc., treat them as examples — the explorer should map them to whatever the target actually uses.
+- **No assumptions about the target's documentation convention.** This process is meant to work against any codebase. Where this document mentions `context/`, `docs/`, `AGENTS.md`, etc., treat them as examples — the explorer should map them to whatever the target actually uses.
 
 ## Why "cold" doesn't apply here
 

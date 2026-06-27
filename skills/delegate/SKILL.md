@@ -82,7 +82,7 @@ You track target→teammate assignment **in your own context** — there is no o
 |--------|----------|------|--------------|--------|
 | beta (env) | `beta-dev` | fix login timeout | `beta/<repo>/auth/*` | running |
 | winter-cli (standalone) | `winter-cli-dev` | add `--json` flag | `winter-cli/cli/...` | queued | <!-- winter-lint:example -->
-| workspace | `workspace-dev` | update an `ai/` doc | `ai/...` | running |
+| workspace | `workspace-dev` | update a `context/` doc | `context/...` | running |
 
 - **Name teammates `<target>-<role>`, target first** — `beta-dev`, `alpha-fe`, `winter-cli-dev`. Target first so the working tree is the first thing you read; use a short role tag (`dev`, `fe`, `be`, `review`, `explore`, `arch`, `test`, `run`). The `name` is just the display label — the spawn's `subagent_type` still uses the full role (`developer`, `frontend-verifier`, …).
 - One target can host **multiple** teammates when work there is independent (`beta-dev`, `beta-dev-2`, or area-distinct names like `beta-dev-api` / `beta-dev-ui`).
@@ -150,7 +150,7 @@ When teammates report via `SendMessage`, **aggregate into a per-agent digest** �
 
 > - `beta-dev`: fixed the login timeout (connection-pool exhaustion in the auth client); verified locally.
 > - `winter-cli-dev`: added the `--json` flag; backend-verifier confirmed the JSON output.
-> - `workspace-dev`: still updating the `ai/` doc.
+> - `workspace-dev`: still updating the `context/` doc.
 
 Surface a digest when a batch completes or when the user asks "where are things." Don't post a line every time a single message arrives unless the user wants live play-by-play.
 

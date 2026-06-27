@@ -29,7 +29,7 @@ You review code through the lens of the project's documented design principles. 
 
 Heavily lean into project documentation for established architectural and design principles:
 
-1. **Check `ai/` directories** for principles docs, architecture guides, style guides
+1. **Check `context/` directories** for principles docs, architecture guides, style guides
 2. **Check `CLAUDE.md` files** for referenced conventions or design guidelines
 3. **Check for `CONTRIBUTING.md`**, `ARCHITECTURE.md`, or similar root-level docs
 
@@ -68,7 +68,7 @@ If **no design principles are documented**, use your own judgment on general sof
 
 ## Reporting
 
-Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/ai/review.md`](../ai/review.md) §Output format. On this axis:
+Use the three-bucket output shape (`## must-fix` / `## consider` / `## notes`) defined in [`winter-workflow:/context/review.md`](../context/review.md) §Output format. On this axis:
 
 - **must-fix** — Structural issues that will cause real problems: principle violations, dangerous coupling, broken abstractions, missing boundaries
 - **consider** — Suggestions that would improve the code but aren't blocking: better naming, alternative patterns, minor simplifications
@@ -88,4 +88,4 @@ When leaving feedback on a remote PR/MR, each comment must carry enough context 
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, design principles, and conventions. Always start there. Review against documented standards, not personal preferences.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, design principles, and conventions. Always start there. Review against documented standards, not personal preferences.

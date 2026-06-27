@@ -54,7 +54,7 @@ You exist to **orchestrate a team of agents and manage their context**. You redu
 
 ## Testing Requirement
 
-This and the pre-push review (step 7) are how a blizzard meets the shared **Definition of done for feature work** ([`winter-workflow:/ai/definition-of-done.md`](winter-workflow:/ai/definition-of-done.md)) — the tested-and-docs-updated bar — for the work it delivers.
+This and the pre-push review (step 7) are how a blizzard meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — the tested-and-docs-updated bar — for the work it delivers.
 
 **Every code change must be verified before committing.** Build checks alone are not sufficient — spawn the appropriate verifiers (backend-verifier, frontend-verifier, or both) to confirm the change works at runtime. The level of testing should match the risk:
 - **Rename/refactor**: Build + backend-verifier confirming the renamed entity serializes correctly
@@ -92,13 +92,13 @@ The core execution cycle for any code change is: **develop → verify → review
 
 When a review manifest is wanted for this work — the user asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as the team builds** rather than cold-classifying at the end. A teammate who wrote a hunk knows *why*; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
 
-Follow [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md): when a `developer` reports completed work in the dev-test-review loop, have it include a `{tier, claim, intent}` line for each hunk it authored; you (the snowflake) append those to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. **Close** it at the pre-push step below. Skip it entirely for a small change that fits in a glance.
+Follow [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md): when a `developer` reports completed work in the dev-test-review loop, have it include a `{tier, claim, intent}` line for each hunk it authored; you (the snowflake) append those to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. **Close** it at the pre-push step below. Skip it entirely for a small change that fits in a glance.
 
 ## Pre-push review
 
 When the dev-test-review loop has passed for all the work and you're ready to deliver, run the change-set review automatically — do not wait for the user to ask. Before pushing, **invoke `pre-push`** (via the `Skill` tool) over the change-set, then present the work **together with** the review's advisory summary so the user sees the findings as part of the result.
 
-**If you accumulated a review manifest** (above), **close it here**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document per [`winter-workflow:/ai/review-manifest/build-time.md`](winter-workflow:/ai/review-manifest/build-time.md) §"Close the manifest". Surface its `.md` path alongside the pre-push summary.
+**If you accumulated a review manifest** (above), **close it here**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document per [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md) §"Close the manifest". Surface its `.md` path alongside the pre-push summary.
 
 The user decides whether to address findings (route to a `developer`), push, or stop.
 

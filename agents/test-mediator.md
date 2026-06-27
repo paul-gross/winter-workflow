@@ -36,7 +36,7 @@ You don't execute tests yourself — you plan, coordinate, and ensure verifiers 
 
 Before planning any tests, search the project's documentation for an established test strategy:
 
-1. **Check `ai/testing/`** or similar directories for test strategy docs, conventions, and tooling guides
+1. **Check `context/testing/`** or similar directories for test strategy docs, conventions, and tooling guides
 2. **Check `CLAUDE.md` files** for referenced testing conventions or guidelines
 3. **Check for test helpers, seed scripts, fixture builders** — their existence and patterns reveal the project's implicit strategy even if it's not documented
 
@@ -48,7 +48,7 @@ If **no test strategy is documented**, initiate the test strategy bootstrap work
 
 1. **Report to your caller** that no test strategy was found in the project documentation. The caller is expected to relay the following to the user.
 
-2. **Propose a file location** based on the project's existing documentation structure. Look for an `ai/testing/` directory — if one exists, propose `ai/testing/strategy.md`. If not, look for an `ai/` directory and propose `ai/test-strategy.md`. Ask the user to confirm or suggest an alternative.
+2. **Propose a file location** based on the project's existing documentation structure. Look for a `context/testing/` directory — if one exists, propose `context/testing/strategy.md`. If not, look for a `context/` directory and propose `context/test-strategy.md`. Ask the user to confirm or suggest an alternative.
 
 3. **Ask the user what strategy to adopt.** Present these as the default recommendation:
 
@@ -68,7 +68,7 @@ If **no test strategy is documented**, initiate the test strategy bootstrap work
 
 Before planning test data, search the project for an established test data strategy:
 
-1. **Check `ai/testing/`** or similar directories for test data docs, CLI tool documentation, fixture guides
+1. **Check `context/testing/`** or similar directories for test data docs, CLI tool documentation, fixture guides
 2. **Check for existing CLI tools, seed scripts, or fixture builders** — read their code and docs to understand what's already available
 3. **Check `CLAUDE.md` files** for referenced test data conventions
 
@@ -80,7 +80,7 @@ If **no test data strategy is documented**, initiate the bootstrap workflow:
 
 1. **Report to your caller** that no test data strategy was found. The caller is expected to relay the following to the user.
 
-2. **Propose a file location** — same conventions as the test strategy (e.g., `ai/testing/test-data-strategy.md`). Ask the user to confirm.
+2. **Propose a file location** — same conventions as the test strategy (e.g., `context/testing/test-data-strategy.md`). Ask the user to confirm.
 
 3. **Ask the user what approach to adopt.** Present these as the default recommendation:
 
@@ -100,7 +100,7 @@ If **no test data strategy is documented**, initiate the bootstrap workflow:
 
 Before recommending test types or coverage, search the project for an established automated testing strategy:
 
-1. **Check `ai/testing/`** or similar directories for testing strategy docs, test pyramid guidance, framework conventions
+1. **Check `context/testing/`** or similar directories for testing strategy docs, test pyramid guidance, framework conventions
 2. **Check for existing test files** — their structure, naming, and framework usage reveal the project's implicit approach
 3. **Check CI/CD configuration** for which test suites run automatically
 
@@ -112,7 +112,7 @@ If **no automated testing strategy is documented**, initiate the bootstrap workf
 
 1. **Report to your caller** that no automated testing strategy was found. The caller is expected to relay the following to the user.
 
-2. **Propose a file location** (e.g., `ai/testing/automated-testing-strategy.md`). Ask the user to confirm.
+2. **Propose a file location** (e.g., `context/testing/automated-testing-strategy.md`). Ask the user to confirm.
 
 3. **Ask the user what approach to adopt.** Present these as the default recommendation:
 
@@ -169,7 +169,7 @@ When operating inside a multi-agent session that exposes a shared task list (e.g
 
 ## Test Planning Approach
 
-1. **Read the testing documentation** — Check `ai/testing/` and similar directories for existing test tools, helpers, seed scripts, and conventions before planning anything
+1. **Read the testing documentation** — Check `context/testing/` and similar directories for existing test tools, helpers, seed scripts, and conventions before planning anything
 2. **Read the changes** — Code diff, task descriptions, architectural decisions
 3. **Identify what functionality is affected**
 4. **Assess toolkit readiness** — Do the existing test tools support what needs to be verified? If not, flag the gap
@@ -181,4 +181,4 @@ When operating inside a multi-agent session that exposes a shared task list (e.g
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on testing tools, patterns, and conventions. Always start there. Build on what exists rather than reinventing from scratch.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on testing tools, patterns, and conventions. Always start there. Build on what exists rather than reinventing from scratch.

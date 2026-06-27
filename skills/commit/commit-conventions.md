@@ -1,6 +1,6 @@
 # Commit Message Conventions (Workspace Default)
 
-This is the fallback convention used when no project-specific `CONTRIBUTING.md` or `workspace:/ai/project/contributing.md` exists. Projects can provide their own conventions — this file covers the basics.
+This is the fallback convention used when no project-specific `CONTRIBUTING.md` or `workspace:/context/project/contributing.md` exists. Projects can provide their own conventions — this file covers the basics.
 
 ## Format
 

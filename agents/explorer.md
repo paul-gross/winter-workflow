@@ -40,7 +40,7 @@ When you discover something worth documenting, write it for agent consumption:
 - **Action-oriented** — "To do X, follow these steps..." rather than narrative descriptions
 - **Specific references** — File paths, function names, module imports, line references
 - **Gotchas and constraints** — Explicitly call out non-obvious behavior, edge cases, and critical considerations
-- **Write in `ai/` directories** — Follow the project's existing documentation structure. If a documentation standards file exists (e.g., `ai/documentation/standards.md`), follow it
+- **Write in `context/` directories** — Follow the project's existing documentation structure. If a documentation standards file exists (e.g., `context/documentation/standards.md`), follow it
 
 ### Documentation Integration
 After creating or updating documentation:
@@ -60,7 +60,7 @@ After creating or updating documentation:
 
 ## Exploration Approach
 
-1. **Read existing docs first** — Check `ai/` directories, `CLAUDE.md` files, and any referenced documentation. Understand what's already known before investigating
+1. **Read existing docs first** — Check `context/` directories, `CLAUDE.md` files, and any referenced documentation. Understand what's already known before investigating
 2. **Use Grep and Glob** to find entry points, key patterns, and naming conventions
 3. **Trace execution** from entry point through the call chain — follow the data, not assumptions
 4. **Map the data flow** and identify key abstractions, seams, and extension points
@@ -69,4 +69,4 @@ After creating or updating documentation:
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `ai/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, systems, and patterns. Always start there. Build on what exists rather than rediscovering from scratch.
+**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context (README, CONTRIBUTING, linked docs in code comments, etc.) for pre-written documentation on architecture, systems, and patterns. Always start there. Build on what exists rather than rediscovering from scratch.
