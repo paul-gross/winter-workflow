@@ -113,13 +113,13 @@ Append exactly one. Each points at the agent definition for the methodology and 
 
 ### harness
 
-> Follow your agent body (`harness-reviewer`) — walk both its checklists (harness-change concerns and application-architecture concerns with agentic ramifications) and its *Mining mistake evidence* procedure. Caller-supplied context:
+> Follow your agent body (`harness-reviewer`) — walk both its checklists (harness-change concerns and application-architecture concerns with agentic ramifications) and its *Mining mistake evidence* procedure, which resolves session transcripts per the harness that produced them via [`./transcript-mining.md`](./transcript-mining.md). Caller-supplied context:
 >
-> - **Transcript CWDs to enumerate**: the workspace root, **every in-scope worktree path**, and each one's project source checkout. Apply the encoded-cwd transform (`/` → `-`); skip candidates with no directory under `~/.claude/projects/`.
+> - **Transcript CWDs to enumerate**: the workspace root, **every in-scope worktree path**, and each one's project source checkout. The agent detects which harness's history is present for each and falls back to git-history-only when none is — do not assume a particular harness or path.
 > - **Time window** (git history and transcripts): the diff's age — since the base commit for diff scopes; the last ~30 days for uncommitted.
 > - For diff scopes also run `git log --oneline <base>..HEAD` (or `<range>`) — reverts and fixups are signal.
 >
-> Add a final `## Evidence sources` section to the output: one line for git history (what was searched, what surfaced) and one for transcripts (paths searched, or "not present, git-history-only").
+> Add a final `## Evidence sources` section to the output: one line for git history (what was searched, what surfaced) and one for transcripts that names which harness's history was searched (or "no supported harness history present — git-history-only").
 
 ### documentation
 

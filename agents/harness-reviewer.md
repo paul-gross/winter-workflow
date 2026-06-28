@@ -43,7 +43,7 @@ You are **not** an architectural code reviewer and **not** an agent-markdown con
 2. **Agent markdown currency** — are agent definitions, skills, `CLAUDE.md` files, and `context/` docs that agents read updated to reflect the change? Stale references to renamed modules, missing docs for new subsystems, examples that no longer compile.
 3. **Recent-mistake evidence** — is there evidence of simple agent mistakes that adding context to the harness would prevent? Mine signals from two sources (see **Mining mistake evidence** below):
    - **Git history** — reverts, hot-fixes, "agent did X when it should have done Y" commits, sequential commits fixing the same area.
-   - **Claude Code transcripts** at `~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl` — the *process*, not just the result: failed tool calls, user corrections ("that's not what I asked"), wrong assumptions the agent walked back, repeated attempts to get a step right.
+   - **Agent session transcripts** — the *process*, not just the result: failed tool calls, user corrections ("that's not what I asked"), wrong assumptions the agent walked back, repeated attempts to get a step right. Located and parsed per the harness that produced them, via the seam in [`winter-workflow:/context/transcript-mining.md`](../context/transcript-mining.md).
 4. **Feedforward/feedback opportunities** — for the mistakes identified in (3), what pre-execution hints (schemas, examples, agent body sections, context/ docs) or post-action verification (hooks, linters, verifier scenarios) could prevent repetition?
 5. **New standards/conventions** — what conventions could prevent the mistakes the evidence reveals? (E.g. "always run X before Y", "DI seams live at Z", "fixtures use the W helper".)
 
@@ -92,45 +92,19 @@ git log --since='2 months ago' --oneline -- <changed-paths>
 
 Look for: reverts, sequential fixups in the same area, "agent did X" commits, repeated touches to the same lines, "fix(...): actually do Y" patterns. A single fixup is noise. A pattern is evidence.
 
-### Claude Code transcripts
+### Agent session transcripts
 
-Transcripts live at `~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl` — one JSONL per session, per cwd. `<encoded-cwd>` is the absolute cwd with `/` replaced by `-` (e.g. `/home/user/projects/foo` → `-home-user-projects-foo`) <!-- winter-lint:example -->. They are **per-machine** — they only exist on the machine where the work happened.
+A coding session leaves a transcript of the *process* — failed tool calls, user corrections, walked-back assumptions, repeated attempts — that a clean final diff hides. Where those sessions live and how they are shaped is **per harness**. The supported harnesses, their locations, detection probes, candidate-cwd enumeration, and per-format signal field names all live in the seam doc — [`winter-workflow:/context/transcript-mining.md`](../context/transcript-mining.md). Read it and apply the procedure for each harness whose history is present. Do not hardcode any one harness's paths or field names here.
 
-**Graceful fallback:** if no transcript directory exists for any plausible cwd (the workspace, the relevant worktree, the project repo), treat it as a clean fallback to git-history-only. This is not an error — a fresh checkout or CI machine simply has no transcripts. State the fallback in your report so the reader knows the evidence is git-only.
+The methodology that doc parameterizes, and that you own:
 
-**Scope every read.** Transcripts can be huge; do not load whole sessions blindly.
+- **Detect, then mine each present harness.** Probe for every supported harness's history root (honoring its env override) over the candidate cwds the seam enumerates; a machine may have run more than one.
+- **Graceful fallback.** If *no* supported harness's history is present for any plausible cwd, fall back to git-history-only — not an error; a fresh checkout or CI box simply has no transcripts. State the fallback in your report (see [Reporting](#reporting)) so the reader knows the evidence is git-only.
+- **Scope every read.** Sessions are large; never load one whole. Per the seam's *locate → filter → extract*: narrow to sessions in the diff's time window, then to those overlapping the diff's changed paths/symbols, then read a small window around each signal hit.
+- **Hunt the constant signals** the seam enumerates — user corrections, tool errors, repeated attempts, walked-back assumptions. The signals are the same across harnesses; only the field names that encode them differ, which is exactly what the seam supplies per format.
+- **What to extract:** for each pattern, capture one short quote + the file/symbol/command it concerns, and frame it as *recurring* only when it appears twice or more. A single one-off is not a harness gap; a pattern is.
 
-1. **Identify candidate transcript directories** for the diff's cwd(s):
-
-   ```bash
-   ls ~/.claude/projects/ 2>/dev/null | grep -F "$(pwd | tr / -)"
-   # or enumerate likely cwds (workspace root, worktree path, project source path)
-   ```
-
-2. **Filter by recent time window** — default to roughly the diff's time window (e.g., the last 30 days, or since the diff's base commit). Use file mtime, e.g.:
-
-   ```bash
-   find ~/.claude/projects/<encoded-cwd>/ -name '*.jsonl' -mtime -30
-   ```
-
-3. **Filter by filename overlap with the diff** — only open transcripts that mention paths or symbols touched by the diff. `grep -l` across the candidate set is the cheap first pass:
-
-   ```bash
-   grep -l -F -f <(git diff --name-only <base>...HEAD) ~/.claude/projects/<encoded-cwd>/*.jsonl
-   ```
-
-4. **Read targeted slices** — within a matched transcript, search for the failure signals below; read a small window around hits rather than the whole file.
-
-**Failure signals to grep for:**
-
-- User corrections: `"that's not what"`, `"no, I meant"`, `"wrong"`, `"actually"`, `"undo"`, `"revert"`, `"that's incorrect"`.
-- Tool error patterns: `"tool_use_error"`, `"is_error":true`, repeated failures of the same tool against the same target.
-- Repeated attempts: the same file edited 4+ times in a session, the same command retried with small variations.
-- Walked-back assumptions: the agent stating one thing, then reading more, then stating the opposite.
-
-**What to extract:** for each pattern found, capture one short quote + the file/symbol/command it concerns, and frame it as a *recurring* observation if you see it twice or more. A single one-off is not a harness gap; a pattern is.
-
-If transcripts are present but contain no relevant signal for this diff, say so explicitly — "transcripts checked, no relevant patterns found" is a useful finding too.
+If a harness's history is present but holds no relevant signal for this diff, say so explicitly — "transcripts checked, no relevant patterns found" is a useful finding too.
 
 ## Reporting
 
@@ -149,7 +123,7 @@ Each finding must be specific:
 
 Be concise. If a checklist axis has no findings, you can skip it silently — do not pad. If the diff genuinely has no agent-seam concerns, say so in one or two sentences and stop.
 
-Append a final `## Evidence sources` section: one line for git history (what was searched, what surfaced) and one for transcripts (paths searched, or "not present, git-history-only").
+Append a final `## Evidence sources` section: one line for git history (what was searched, what surfaced) and one for transcripts that **names which harness's history was searched** (or records the git-history-only fallback). For the exact line format and worked examples, see [`winter-workflow:/context/transcript-mining.md`](../context/transcript-mining.md) §Evidence sources.
 
 ## Alternative Targets
 
