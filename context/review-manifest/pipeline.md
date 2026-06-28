@@ -62,11 +62,11 @@ Then compute the `metrics` block per [`./format.md#metrics`](./format.md#metrics
 
 ### 5. Write the JSON facts file
 
-Write the classification facts to `~/.claude/winter/review-manifests/<YYYY-MM-DD>-<slug>.json` per the [`./format.md`](./format.md) schema and naming. `<slug>` is the env name (env-wide scope) or the repo name (single-repo/standalone). This is the data layer — the per-hunk tiers, claims, metrics, and the `diff_sha` binding — that the markdown is rendered from and that a later consumer freshness-checks.
+Write the classification facts to `$(winter space manifests)/<YYYY-MM-DD>-<slug>.json` per the [`./format.md`](./format.md) schema and naming (the [`../winter-space.md`](../winter-space.md) contract; default `workspace:/.winter/manifests/`). `<slug>` is the env name (env-wide scope) or the repo name (single-repo/standalone). This is the data layer — the per-hunk tiers, claims, metrics, and the `diff_sha` binding — that the markdown is rendered from and that a later consumer freshness-checks.
 
 ### 6. Render and write the markdown review document
 
-Render the **markdown review document** from the facts and write it next to the JSON, sharing the basename: `~/.claude/winter/review-manifests/<YYYY-MM-DD>-<slug>.md`. This file — not the JSON, and not an inline dump — is the manifest the human reviews.
+Render the **markdown review document** from the facts and write it next to the JSON, sharing the basename: `$(winter space manifests)/<YYYY-MM-DD>-<slug>.md`. This file — not the JSON, and not an inline dump — is the manifest the human reviews.
 
 Build it to the structure and discipline in [`./format.md#the-markdown-review-document`](./format.md#the-markdown-review-document). The essentials, so they are not missed:
 
@@ -82,7 +82,7 @@ Keep it to one or two screens. If a tier is large, cluster harder; the manifest 
 
 Tell the caller the **`.md` path** (the document they read) with the `.json` noted alongside, and a one-line headline (the tier split). Example:
 
-> Manifest at `~/.claude/winter/review-manifests/2026-06-14-alpha.md` (facts in the `.json` alongside) — 41 hunks, 78% `novel` lines, 1 audit promotion.
+> Manifest at `<manifests-dir>/2026-06-14-alpha.md` (facts in the `.json` alongside) — 41 hunks, 78% `novel` lines, 1 audit promotion.
 
 Do not re-paste the document into the reply — point at it; it exists so the reply does not have to carry the review. When the manifest is generated as a pre-step for the `cold-review` or `pre-push` skill, hand the document back to that caller to order its own attention; do not also run the cold review here.
 

@@ -92,7 +92,7 @@ The core execution cycle for any code change is: **develop → verify → review
 
 When a review manifest is wanted for this work — the user asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as the team builds** rather than cold-classifying at the end. A teammate who wrote a hunk knows *why*; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
 
-Follow [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md): when a `developer` reports completed work in the dev-test-review loop, have it include a `{tier, claim, intent}` line for each hunk it authored; you (the snowflake) append those to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. **Close** it at the pre-push step below. Skip it entirely for a small change that fits in a glance.
+Follow [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md): when a `developer` reports completed work in the dev-test-review loop, have it include a `{tier, claim, intent}` line for each hunk it authored; you (the snowflake) append those to the manifest's JSON facts at `$(winter space manifests)/<date>-<slug>.json`. **Close** it at the pre-push step below. Skip it entirely for a small change that fits in a glance.
 
 ## Pre-push review
 
@@ -218,7 +218,7 @@ Every blizzard session produces a trail of documentation so the user can underst
 
 ### Documentation Location
 
-Follow the workspace's planning-framework conventions: if the blizzard was started for a refined work item with its own directory (stated by the user), write a `blizzard/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `~/.claude/winter/workflows/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the team name). Decide from how the blizzard was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
+Follow the workspace's planning-framework conventions: if the blizzard was started for a refined work item with its own directory (stated by the user), write a `blizzard/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `$(winter space workflows)/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the team name; see [`winter-workflow:/context/winter-space.md`](winter-workflow:/context/winter-space.md)). Decide from how the blizzard was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
 
 ### Agent Activity Logs
 
@@ -252,7 +252,7 @@ Write entries with timestamps as work progresses. This log should tell the story
 
 2. **Collect responses** from all teammates
 
-3. **Write the retrospective** to `<documentation-root>/retrospective.md` with this structure:
+3. **Write the retrospective** — when a planning framework supplied the documentation root, to `<documentation-root>/retrospective.md`; otherwise (the winter-space default) to `$(winter space retrospectives)/<yyyy-mm-dd>-<name>.md` (same `<name>` as the workflow doc; see [`winter-workflow:/context/winter-space.md`](winter-workflow:/context/winter-space.md)) — with this structure:
    ```markdown
    # Blizzard Retrospective — <team-name>
    ## Date: YYYY-MM-DD

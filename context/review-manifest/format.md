@@ -8,11 +8,11 @@ A manifest describes **one change-set**, which may span several repos in one fea
 
 ## Where it lives
 
-Both files are **personal artifacts**, not repo deliverables — they live under the user's `~/.claude/` tree, mirroring `harness-score`, sharing one basename:
+Both files are **generated artifacts**, not repo deliverables — they live in the winter space's `manifests` directory ([`../winter-space.md`](../winter-space.md)), mirroring `harness-score`, sharing one basename. Resolve the directory with `winter space manifests` (by default `workspace:/.winter/manifests/`):
 
 ```
-~/.claude/winter/review-manifests/<YYYY-MM-DD>-<slug>.md      ← the review document (what the human reads)
-~/.claude/winter/review-manifests/<YYYY-MM-DD>-<slug>.json    ← the facts it was rendered from
+$(winter space manifests)/<YYYY-MM-DD>-<slug>.md      ← the review document (what the human reads)
+$(winter space manifests)/<YYYY-MM-DD>-<slug>.json    ← the facts it was rendered from
 ```
 
 `<slug>` identifies the change-set: the env name for an env-wide scope (`alpha`), or the repo name for a single-repo / standalone scope (`winter-workflow`). Same-day re-runs use the `<YYYY-MM-DD>-<HHMM>-<slug>` suffix. Neither file is written into a worktree. Report the **`.md` path** to the human — that is the manifest they review; the `.json` sits alongside for tooling and the freshness re-check.

@@ -1,6 +1,6 @@
 # Harness score — process
 
-A **codebase-scoped** maturity scoring procedure: gather evidence, apply the frozen rubric at [`./rubric.md`](./rubric.md), and emit an HTML report plus a JSON sidecar under `~/.claude/winter/harness-scores/`. If a prior report exists for the same project at the same rubric version, the new report includes a deltas section so weekly runs can track movement.
+A **codebase-scoped** maturity scoring procedure: gather evidence, apply the frozen rubric at [`./rubric.md`](./rubric.md), and emit an HTML report plus a JSON sidecar into the winter space's `scores` directory ([`../winter-space.md`](../winter-space.md)). If a prior report exists for the same project at the same rubric version, the new report includes a deltas section so weekly runs can track movement.
 
 Designed to be executed by any agent — whether reached via the `harness-score` slash command or invoked directly by another agent (e.g., a `blizzard` snowflake) that wants scoring as a substep. The skill at [`../../skills/harness-score/SKILL.md`](../../skills/harness-score/SKILL.md) is a thin entry point that hands execution to this document.
 
@@ -20,16 +20,17 @@ This process takes **no arguments**. The only target is the current working dire
 
 ```bash
 project="$(basename "$PWD")"
-report_dir="$HOME/.claude/winter/harness-scores"
+report_dir="$(winter space scores)" || exit 1
+[ -n "$report_dir" ] || { echo "winter space scores returned no path" >&2; exit 1; }
 mkdir -p "$report_dir"
 date_stamp="$(date +%Y-%m-%d)"
 ```
 
-`<project>` is `basename "$PWD"`. The report directory lives under the user's `~/.claude/` tree, **not** inside the target's working copy — scores are personal artifacts, not deliverables.
+`<project>` is `basename "$PWD"`. `winter space scores` *resolves* the report directory from winter configuration — by default `workspace:/.winter/scores/`, never inside the target's working copy — so scores are generated artifacts that travel with the workspace, not deliverables. It is read-only, so this step creates the directory itself, and it **stops on failure or an empty result** rather than falling back to a broken path (an empty `report_dir` would turn the lookup below into `ls /*-<project>.json`). See [`../winter-space.md`](../winter-space.md) for the contract.
 
 ### 2. Find the prior report (if any)
 
-Look for `~/.claude/winter/harness-scores/*-<project>.json` and pick the most recent **of the same rubric version** as this run. Sort by filename (the date prefix sorts chronologically). If none exist, skip the deltas section entirely. If older reports exist at a different rubric version, ignore them for delta purposes and note the version-bump in the report's deltas section.
+Look for `"$report_dir"/*-<project>.json` and pick the most recent **of the same rubric version** as this run. Sort by filename (the date prefix sorts chronologically). If none exist, skip the deltas section entirely. If older reports exist at a different rubric version, ignore them for delta purposes and note the version-bump in the report's deltas section.
 
 ```bash
 ls "$report_dir"/*-"$project".json 2>/dev/null | sort | tail -n 5
@@ -119,7 +120,7 @@ The sidecar is what the next run reads in step 2 to compute deltas. Keep keys, o
 
 Tell the caller (the user, or the agent that invoked this process) the report path in one sentence. Example:
 
-> Report written to `~/.claude/winter/harness-scores/2026-05-25-winter-workflow.html` (sidecar JSON alongside).
+> Report written to `<scores-dir>/2026-05-25-winter-workflow.html` (sidecar JSON alongside), where `<scores-dir>` is `winter space scores` (by default `.winter/scores/` in the workspace).
 
 Do not summarize the findings inline — the report **is** the answer. If the caller asks for a verbal summary, give one then; do not pre-empt their attention with a wall of text.
 

@@ -28,7 +28,7 @@ Establish three things before any building:
 
 - **The feature** — one or two sentences. Source: `$ARGUMENTS`, a named plan, or the user's most recent description. If none yields something concrete, ask the user once what the feature is and how you'll know it's done, then stop until they answer.
 - **The work target** — one of: a **feature environment** (e.g. `beta/`, across whichever of its repo worktrees the feature touches), a **standalone repository**, or the **workspace branch** itself. Determine it from the user's message ("on beta", a repo name, a path) or ask. Record the **absolute path(s)**; spawned agents work within the target and never `cd` outside it. For feature-environment work, use the env's repo worktrees — never fall back to a source checkout under `projects/`.
-- **The documentation root** — where the plan and retrospective live. Follow the workspace's planning-framework conventions: if the feature came in as a refined work item with its own directory, write a `glacier/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `~/.claude/winter/workflows/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the feature). Decide from how glacier was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
+- **The documentation root** — where the plan and phase docs live. Follow the workspace's planning-framework conventions: if the feature came in as a refined work item with its own directory, write a `glacier/` subdirectory inside it. If the workspace has no planning framework, track the work in your winter space as a workflow at `$(winter space workflows)/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the feature; see [`winter-workflow:/context/winter-space.md`](winter-workflow:/context/winter-space.md)). Decide from how glacier was started — a work-item name or an existing plan directory points there, otherwise use the winter space; don't search for matching items. Create the directory if it doesn't exist.
 
 ### 2. Establish the plan
 
@@ -79,7 +79,7 @@ If a phase hasn't passed an adequate runtime check in three attempts, **stop and
 
 When a review manifest is wanted for this feature — the user asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as you build** rather than cold-classifying at the end. The builder knows *why* each hunk exists; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
 
-Follow [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md): each phase's `developer` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 8); after each phase you append those entries to the manifest's JSON facts at `~/.claude/winter/review-manifests/<date>-<slug>.json`. You **close** it at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
+Follow [`winter-workflow:/context/review-manifest/build-time.md`](winter-workflow:/context/review-manifest/build-time.md): each phase's `developer` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 8); after each phase you append those entries to the manifest's JSON facts at `$(winter space manifests)/<date>-<slug>.json`. You **close** it at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
 
 ### 5. Pre-push review
 
@@ -91,7 +91,7 @@ Do not push. The user decides whether to address findings (re-task a `developer`
 
 ### 6. Retrospective
 
-Once the work is delivered (or the user calls it done), write a retrospective to `<documentation-root>/retrospective.md`:
+Once the work is delivered (or the user calls it done), write a retrospective. When a planning framework supplied the documentation root, write it there as `<documentation-root>/retrospective.md`. Otherwise — the winter-space default — write it to the winter space's `retrospectives` directory as `$(winter space retrospectives)/<yyyy-mm-dd>-<name>.md` (same `<name>` as the workflow doc; see [`winter-workflow:/context/winter-space.md`](winter-workflow:/context/winter-space.md)). Either way the structure is:
 
 ```markdown
 # Glacier Retrospective — <feature>

@@ -12,7 +12,7 @@ The cost is that the author is **not independent** — left unchecked, an author
 
 ## Accumulate as you build
 
-As you write the change — per phase, per logical edit, however the build skill is structured — record an entry for each hunk you author. Append to the JSON facts file at `~/.claude/winter/review-manifests/<YYYY-MM-DD>-<slug>.json` (the [`./format.md`](./format.md) schema), each entry with:
+As you write the change — per phase, per logical edit, however the build skill is structured — record an entry for each hunk you author. Append to the JSON facts file at `$(winter space manifests)/<YYYY-MM-DD>-<slug>.json` (the [`./format.md`](./format.md) schema and the [`../winter-space.md`](../winter-space.md) contract), each entry with:
 
 - `source: "authored"` — this came from the builder, not a cold classifier.
 - `tier` — your **honest** self-classification over the closed vocabulary (the [`diff-classifier`](../../agents/diff-classifier.md) body defines the tiers; apply the same bar to yourself). When a hunk is a real decision, mark it `novel` — that is not a failure, it is the manifest doing its job. **When in doubt, `novel`.**
