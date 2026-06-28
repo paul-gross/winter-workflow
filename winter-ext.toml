@@ -4,9 +4,8 @@ prefix = "wf"
 # Modules this one references and therefore needs when installed standalone.
 # winter-product is an optional integration today (the commit skill points at
 # its backlog/work layout); declared here until first-class optional-dependency
-# support exists. winter-harness owns the agent-authoring conventions this
-# extension's agents/README.md links to (writing-agent.md, cross-harness-projection.md).
-requires = ["winter-product", "winter-harness"]
+# support exists.
+requires = ["winter-product"]
 
 # `winter lint` check: validates that this module's agents/*.md declare a
 # non-empty description, a tools grant (non-empty list or "*"), and a model of

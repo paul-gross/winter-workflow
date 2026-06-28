@@ -28,8 +28,8 @@ Never edit a harness copy; edit the canonical file and re-run init.
 
 The format is owned by the harness conventions, not this README:
 
-- **Frontmatter contract** (`name`, `description`, `model` tier, `tools`) — [`winter-harness:/agent-context/writing-agent.md`](winter-harness:/agent-context/writing-agent.md). All four are `winter lint`-required.
-- **Per-harness projection** — the `claude:`/`codex:`/`opencode:` override blocks, the model-tier→id table, lossy projection (e.g. `tools` has no Codex/OpenCode equivalent and is dropped with an actionable warning), and identity across harnesses — [`winter-harness:/agent-context/cross-harness-projection.md`](winter-harness:/agent-context/cross-harness-projection.md).
+- **Frontmatter contract** (`name`, `description`, `model` tier, `tools`) — all four are `winter lint`-required.
+- **Per-harness projection** — the `claude:`/`codex:`/`opencode:` override blocks, the model-tier→id table, lossy projection (e.g. `tools` has no Codex/OpenCode equivalent and is dropped with an actionable warning), and identity across harnesses.
 
 **In this extension:** every agent declares its intended cross-harness access in its override
 blocks — a `codex: {sandbox_mode: ...}` and an `opencode: {permission: ...}` matched to the
