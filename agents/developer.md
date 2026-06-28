@@ -1,9 +1,8 @@
 ---
 name: developer
 description: |
-  General-purpose developer agent for implementing features, writing unit tests,
-  refactoring, and bug fixes. Use this agent when you have a defined coding task
-  and want it implemented following existing project patterns.
+  Implements features, refactors, bug fixes, and unit tests, following existing
+  project patterns. Use this agent for a defined coding task.
 model: sonnet
 tools:
   - Bash

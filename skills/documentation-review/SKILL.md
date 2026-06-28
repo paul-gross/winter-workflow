@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the docs" or asks whether external-facing public documentation is accurate, current, or complete for a change — checks the user/adopter-facing docs (a rendered docs site, guides, the user-facing README) against the code they describe. Cold, one-shot documentation-reviewer subagent. Different axis from the cold-review skill (code) and the harness-review skill (the harness); explicitly NOT agent-facing markdown (that's context-reviewer).
+description: Fresh-context review of external-facing public documentation — docs site, guides, the user-facing README — against the code it describes, by a documentation-reviewer subagent. Use when asked to review the docs.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths>]"
 allowed-tools: Bash, Read, Agent
 ---

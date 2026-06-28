@@ -1,5 +1,5 @@
 ---
-description: Make a small, focused change to existing code — bug fix, tweak, adjustment, regression repair. Explorer investigates, developer changes, verifier confirms, in a tight loop with a hard iteration cap. Use for narrow, localized work on code that already exists; route net-new features, multi-module refactors, and design-level work to the blizzard skill.
+description: Make a small, focused change to existing code — bug fix, tweak, regression repair. Use for narrow, localized work on code that already exists.
 argument-hint: "[change description]"
 allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 ---

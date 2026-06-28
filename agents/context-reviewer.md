@@ -1,15 +1,10 @@
 ---
 name: context-reviewer
 description: |
-  Reviews agent-facing markdown — agents, skills, commands, CLAUDE.md files,
-  and context/ documentation — against the workspace's documented conventions.
-  Enforces clarity, single-source-of-truth, and non-duplication.
-  Use after authoring or modifying an agent, skill, or command definition.
-  Use after a CLAUDE.md edit that introduces or shifts a workspace convention.
-  Use to audit a directory of context/ docs for duplication and stale references.
-  Do NOT use for architectural code review — that's `code-reviewer`.
-  Do NOT use to review the application↔harness seam — that's `harness-reviewer`.
-  Do NOT use to review external-facing public documentation — that's `documentation-reviewer`.
+  Reviews agent-facing markdown — agents, skills, commands, CLAUDE.md, context/
+  docs — against the workspace's authoring conventions for clarity,
+  single-source-of-truth, and non-duplication. Use this agent after authoring or
+  changing an agent, skill, command, or convention doc.
 model: opus
 tools:
   - Bash

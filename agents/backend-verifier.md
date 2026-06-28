@@ -1,9 +1,8 @@
 ---
 name: backend-verifier
 description: |
-  Backend verification agent that tests APIs via curl/CLI, validates database state,
-  and verifies non-visual backend functionality. Use this agent when a backend code
-  change needs to be confirmed without a browser in the loop.
+  Verifies backend behavior at runtime via API/CLI calls and database state — no
+  browser. Use this agent to confirm a backend change works.
 model: sonnet
 tools:
   - Bash

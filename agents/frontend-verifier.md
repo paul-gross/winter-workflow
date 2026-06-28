@@ -1,9 +1,9 @@
 ---
 name: frontend-verifier
 description: |
-  Frontend verification agent that uses Chrome DevTools to interact with the UI,
-  take screenshots, verify visual rendering, and test user interactions. Use this
-  agent when a code change needs to be confirmed in a running browser.
+  Verifies UI behavior in a running browser via Chrome DevTools — interactions,
+  visual rendering, screenshots. Use this agent to confirm a frontend change in
+  the browser.
 model: sonnet
 tools:
   - Bash

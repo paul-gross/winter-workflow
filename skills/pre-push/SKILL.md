@@ -1,5 +1,5 @@
 ---
-description: Use before pushing completed work to surface review findings over the un-pushed change-set — every repo in the feature env ahead of its upstream, reviewed together. Fans out code-reviewer plus, conditionally on the in-scope repos' surfaces, harness-reviewer, context-reviewer, and documentation-reviewer in parallel (one per axis, spanning all in-scope repos over origin/master..HEAD), then synthesizes a single advisory summary with a cross-repo consistency pass. Run before `git push` or `/ws-push`.
+description: Review the un-pushed change-set before pushing — every repo in the feature env ahead of its upstream, reviewed together across the code, harness, context, and docs axes, synthesized into one advisory summary. Run before pushing completed work.
 argument-hint: "[blocking]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion
 ---

@@ -1,5 +1,5 @@
 ---
-description: Drive one feature to completion through sequential subagent spawns on a single linear track — adopt or produce a plan, break it into ordered phases, build-and-verify each phase in order, run a pre-push review, and write a retrospective. Use to build a feature methodically, one phase at a time.
+description: Drive one feature to completion methodically on a single linear track, one ordered phase at a time. Use to build a feature step by step rather than all at once.
 argument-hint: "[plan name or feature description]"
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion, Skill
 ---

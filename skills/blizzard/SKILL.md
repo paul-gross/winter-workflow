@@ -1,5 +1,5 @@
 ---
-description: Start a blizzard — transform this session into the snowflake team lead that coordinates specialized teammates for development work
+description: Coordinate a team of specialized teammate agents to build a feature. Use for net-new features, multi-module refactors, or design-level work that needs a coordinated team.
 allowed-tools:
   - Bash
   - Read

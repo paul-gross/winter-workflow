@@ -1,10 +1,9 @@
 ---
 name: test-mediator
 description: |
-  Test mediator agent that coordinates testing strategy, defines what to test, generates
-  test data requirements, and dispatches verification work to the frontend-verifier and
-  backend-verifier. Use this agent when a code change needs a coordinated test plan
-  rather than ad-hoc verification.
+  Plans testing strategy — what to test and test-data needs — and dispatches work
+  to the frontend- and backend-verifiers. Use this agent when a change needs a
+  coordinated test plan rather than ad-hoc verification.
 model: opus
 tools:
   - Read

@@ -1,9 +1,9 @@
 ---
 name: explorer
 description: |
-  Exploratory agent for investigating undocumented systems, tracing data flows,
-  and producing AI-centric documentation. Use this agent when you need to
-  understand how an unfamiliar area of the codebase works before changing it.
+  Investigates unfamiliar or undocumented code, traces data flows, and produces
+  AI-centric notes. Use this agent to understand how an area works before changing
+  it.
 model: sonnet
 tools:
   - Bash

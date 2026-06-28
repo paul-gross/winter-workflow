@@ -1,9 +1,8 @@
 ---
 name: code-reviewer
 description: |
-  Code reviewer agent that reads and understands code changes and provides feedback.
-  Use this agent when you want to check the quality of some code. Use this agent when
-  you want to quickly assess whether new code satisfies project standards.
+  Reviews source-code changes for correctness, quality, and project standards.
+  Use this agent to assess whether new code is sound.
 model: opus
 tools:
   - Bash

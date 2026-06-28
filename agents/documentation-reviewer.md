@@ -1,19 +1,10 @@
 ---
 name: documentation-reviewer
 description: |
-  Reviews external-facing public documentation — user and adopter guides, a
-  rendered docs site, the user-facing parts of a public README — for accuracy
-  against the code it documents, completeness for a human audience,
-  single-source-of-truth against canonical sources, and conformance to the
-  project's documentation conventions (structure, placement, and the
-  consumable-extension vs. example/reference distinction).
-  Use after a change that may have left public documentation stale, wrong, or
-  missing for a new user-facing capability.
-  Do NOT use for agent-facing markdown (CLAUDE.md, agents, skills, context/ docs) —
-  that's `context-reviewer`.
-  Do NOT use for harness-specific markdown or the application↔harness seam —
-  that's `harness-reviewer`.
-  Do NOT use for source code — that's `code-reviewer`.
+  Reviews external-facing public documentation — docs site, user/adopter guides,
+  the user-facing README — for accuracy against the code, completeness, and the
+  project's documentation conventions. Use this agent after a change that may have
+  left public docs stale, wrong, or missing.
 model: opus
 tools:
   - Bash

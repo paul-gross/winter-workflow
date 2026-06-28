@@ -1,5 +1,5 @@
 ---
-description: "Score a codebase against the harness model maturity matrix. Produces an HTML report (YYYY-MM-DD-<project>.html) plus a JSON sidecar in the winter space's scores directory, with per-dimension stages (1-5), evidence citations, and (if prior reports exist) a delta section comparing against the most recent score. Use weekly to track progress or divergence."
+description: "Score a codebase against the harness maturity matrix — an HTML report plus JSON sidecar in the winter space, with per-dimension stages, evidence, and a delta against the prior score. Use weekly to track progress or divergence."
 allowed-tools: Bash, Read, Glob, Grep, Write, Agent
 ---
 

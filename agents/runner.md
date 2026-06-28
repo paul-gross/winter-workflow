@@ -1,9 +1,8 @@
 ---
 name: runner
 description: |
-  Service runner agent that manages application service lifecycle (start/stop),
-  monitors logs for errors, and reports service health. Use this agent when a
-  task needs services up-and-running before verification can proceed.
+  Manages application service lifecycle (start/stop), watches logs for errors, and
+  reports health. Use this agent when services must be up before verification.
 model: haiku
 tools:
   - Bash

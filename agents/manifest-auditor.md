@@ -1,9 +1,9 @@
 ---
 name: manifest-auditor
 description: |
-  Adversarially audits a review manifest's cheap tiers — samples mechanical and pattern
-  hunks and tries to refute each tier claim, hunting for a hidden behavioral decision.
-  Use after a diff is classified, to promote any misclassified hunk back to novel.
+  Adversarially audits a review manifest's cheap tiers — samples mechanical and
+  pattern hunks and tries to refute each tier claim. Use this agent after a diff
+  is classified, to promote any misclassified hunk back to novel.
 model: opus
 tools:
   - Bash

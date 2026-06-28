@@ -1,15 +1,10 @@
 ---
 name: harness-reviewer
 description: |
-  Reviews the seam between the application and the agentic harness against a diff.
-  Use after a feature lands to check whether verifier helpers, agent docs, and
-  conventions kept pace with the change. Use when recent agent sessions show
-  recurring mistakes in the same area and you want a check on what context the
-  harness is missing. Use to surface application-side changes (observability,
-  pluggability, naming) that would improve agent productivity.
-  Do NOT use for architectural code review — that's `code-reviewer`.
-  Do NOT use to review agent-facing markdown against documented conventions —
-  that's `context-reviewer`.
+  Reviews the seam between the application and its agentic harness against a diff
+  — whether verifier helpers, agent docs, and conventions kept pace, and whether
+  the application is shaped for agent productivity. Use this agent after a feature
+  lands, or when recent agent sessions show recurring mistakes in one area.
 model: opus
 tools:
   - Bash

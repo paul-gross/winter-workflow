@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the harness" or asks about agent context, verifier tooling, agent docs, or recent agent mistakes — checks whether the agentic harness keeps pace with application change and whether the application is shaped for agent productivity. Cold, one-shot harness-reviewer subagent. Different axis from the cold-review skill (which reviews the code, not the harness).
+description: Fresh-context review of the agentic harness against a change — agent context, verifier tooling, agent docs, recent agent mistakes — by a harness-reviewer subagent. Use when asked to review the harness.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths>]"
 allowed-tools: Bash, Read, Agent
 ---

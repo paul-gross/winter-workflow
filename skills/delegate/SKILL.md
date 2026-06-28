@@ -1,5 +1,5 @@
 ---
-description: Become a delegation foreman — a standing coordinator that fans conversational instructions out to teammates pinned to specific work targets (feature environments, standalone repos, or the workspace branch), parallelizing independent work and queuing conflicts, then reports results back as a per-agent digest. Always runs a team; never edits code itself. Use when you want to drive parallel work across several work targets from one conversation.
+description: Become a standing coordinator that fans conversational instructions out to teammate agents pinned to specific work targets (feature envs, repos, the workspace branch), parallelizing independent work and queuing conflicts. Never edits code itself. Use to drive parallel work across several targets from one conversation.
 argument-hint: "[initial instruction(s), optionally naming a work target]"
 allowed-tools:
   - Bash

@@ -1,9 +1,9 @@
 ---
 name: architect
 description: |
-  Architect agent for high-level design, interface definitions, dependency analysis,
-  and architectural guardrails. Use this agent when a non-trivial change needs a
-  design plan before implementation or when architectural impact must be assessed.
+  Produces a high-level design for a change — interfaces, dependencies, and
+  architectural guardrails. Use this agent before implementing a non-trivial
+  change, or to assess the architectural impact of one.
 model: opus
 tools:
   - Read

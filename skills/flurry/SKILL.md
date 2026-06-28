@@ -1,5 +1,5 @@
 ---
-description: Run a flurry — fan a batch of small, mostly-independent feature asks out across multiple feature environments at once, scheduling parallel vs. sequential work and dispatching a fresh one-shot developer per task that implements, verifies at runtime, and lands exactly one commit, then a pre-push review per environment. Use when you have several distinct small features to deliver together.
+description: Deliver a batch of small, mostly-independent feature asks across multiple feature environments at once, in parallel. Use when you have several distinct small features to build together.
 argument-hint: "[the small features to build; optionally the envs to run them in]"
 allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 ---

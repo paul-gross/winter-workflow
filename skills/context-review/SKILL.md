@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the agent docs/context" or asks whether agents, skills, commands, CLAUDE.md, or context/ docs follow the workspace's documented conventions — checks agent-facing markdown for clarity, single-source-of-truth, and non-duplication. Reviews the change-set by default; also takes uncommitted, a git ref/range, or a path set (reviewed in its current state). Cold, one-shot context-reviewer subagent. Different axis from the cold-review skill (code) and the harness-review skill (the harness seam); explicitly NOT external-facing public documentation (that's documentation-reviewer).
+description: Fresh-context review of agent-facing markdown — agents, skills, commands, CLAUDE.md, context/ docs — against the workspace's authoring conventions, by a context-reviewer subagent. Use when asked to review the agent docs/context. Reviews the change-set by default; also takes uncommitted, a ref/range, or paths.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths>]"
 allowed-tools: Bash, Read, Agent
 ---

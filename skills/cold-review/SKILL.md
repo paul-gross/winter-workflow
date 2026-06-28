@@ -1,5 +1,5 @@
 ---
-description: Use when the user says "review the diff/PR/branch" or asks about code correctness, architecture, or design quality — independent fresh-context code review by a code-reviewer subagent with no session history. Cold, one-shot. Different axis from the harness-review skill (which reviews the harness, not the code).
+description: Independent, fresh-context review of code changes for correctness, architecture, and design quality, by a code-reviewer subagent with no session history. Use when asked to review a diff, PR, or branch, or to assess code quality.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths>]"
 allowed-tools: Bash, Read, Agent
 ---
