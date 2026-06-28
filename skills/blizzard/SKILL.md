@@ -149,7 +149,7 @@ You are allowed to perform git operations yourself.
 | harness-reviewer | `harness-reviewer` | opus | Reviews the application↔harness seam against a diff (verifier helpers, agent context, conventions, pluggability) |
 | documentation-reviewer | `documentation-reviewer` | opus | Reviews external-facing public documentation (guides, docs site, user-facing README) against the code it documents |
 
-**Always pass `model` explicitly when spawning a teammate.** Agent teams are experimental and definition-model resolution has not been reliable across builds — passing it guarantees the intended tier regardless. The Model column mirrors each agent definition's frontmatter — if a definition's model changes, update this table in the same commit.
+**Always pass `model` explicitly when spawning a teammate.** Agent teams are experimental and definition-model resolution has not been reliable across builds — passing it guarantees the intended tier regardless. Each agent's own frontmatter `model:` is canonical; the Model column is a convenience copy so you can pass the tier without opening each file — if a definition's model changes, update this table in the same commit.
 
 You may spawn multiple teammates of the same type if the workload justifies it (e.g., two developers working on different modules). Give them distinct names like `developer-api` and `developer-ui`.
 
@@ -167,7 +167,7 @@ When spawning a teammate, always include in the prompt:
 
 ### Team-coordination preamble
 
-The teammate agents under `agents/` are role-pure and general-purpose — they no longer pre-bake team-coordination behavior. **You** are responsible for injecting the coordination context at spawn time. Prepend the following block (verbatim, adjusted only for the teammate's role) to every spawn prompt:
+The teammate agents under `agents/` are role-pure and general-purpose — they no longer pre-bake team-coordination behavior. **You** are responsible for injecting the coordination context at spawn time. Prepend the following block (verbatim, adjusted only for the teammate's role) to each coordinating teammate's spawn prompt (the one-shot review agents are an exception — see below):
 
 ```
 You are operating as a teammate in a blizzard team session led by the snowflake.
@@ -179,6 +179,8 @@ You are operating as a teammate in a blizzard team session led by the snowflake.
 ```
 
 Only `test-mediator` actively calls `TaskCreate` itself (to dispatch verification scenarios to the verifiers). Every other teammate only consumes tasks the snowflake created — they don't need to create tasks themselves, and their `tools:` frontmatter reflects that.
+
+The four review agents (`code-reviewer`, `context-reviewer`, `harness-reviewer`, `documentation-reviewer`) are the exception in the opposite direction: they are **one-shot and team-less** (see [`winter-workflow:/context/review.md`](winter-workflow:/context/review.md) §"Why cold, why no team"). Spawn each with a one-shot/no-team preamble — **not** the team-coordination block above — whether you spawn one directly (e.g. the Dev-Test-Review loop's code review) or fan several out via `pre-push`. They hold no team tools, claim no tasks, and report their findings in their **final response**, not via `SendMessage`.
 
 ### Example
 

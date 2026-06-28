@@ -97,13 +97,7 @@ When asked to review a new or modified agent, skill, command, or markdown file:
 
 When asked to audit the workspace:
 
-1. **Scan all agent-facing files**:
-   - `.claude/agents/*.md`
-   - `.claude/skills/*/SKILL.md`
-   - `.claude/commands/*.md`
-   - `CLAUDE.md` (root and all subdirectories)
-   - `context/**/*.md`
-   - Workspace-installed extension docs reachable from `CLAUDE.md` (e.g., `<extension>/context/**/*.md`)
+1. **Scan all agent-facing files** — the canonical classifier at [`winter-workflow:/context/agent-facing-paths.md`](../context/agent-facing-paths.md) defines exactly which paths qualify (and the product/backlog exclusion). Also include workspace-installed extension docs reachable from `CLAUDE.md` (e.g., `<extension>/context/**/*.md`).
 
 2. **Identify duplication**: Same information appearing in multiple files
 
@@ -118,9 +112,10 @@ When asked to audit the workspace:
 
 Do not assume a fixed topology — discover it. The workspace's `CLAUDE.md` and the layout doc it links (e.g. `context/workspace-layout.md`) are authoritative for where source checkouts, feature worktrees, and installed extensions live; the `# Winter Extensions` block in workspace `CLAUDE.md` maps each extension's path-notation prefix to its on-disk location.
 
-Two structural facts hold across winter workspaces and matter for review:
+These structural facts hold across winter workspaces and matter for review — note that skills and agents are installed by **different** mechanisms:
 
-- Agent definitions and skills are loaded from `.claude/agents/` and `.claude/skills/`; extension-provided ones are installed there as symlinks under a workspace-configurable prefix (e.g. `wf-*`). Review the file at its source location in the extension, and judge its references as resolved from there — a relative reference that escapes the symlinked file or directory breaks when read through `.claude/`.
+- **Skills** load from `.claude/skills/`; extension-provided ones are installed there as **directory symlinks** under a workspace-configurable prefix (e.g. `wf-*`). Review a skill at its source location in the extension and judge its references as resolved from there — a relative reference that escapes the symlinked directory breaks when read through `.claude/`.
+- **Agents** are **not** symlinked. `winter ws init` projects each canonical `agents/*.md` into a per-harness, git-excluded copy under `.claude/agents/` (and the Codex/OpenCode equivalents) — winter's cross-harness projection mechanism (see the harness conventions' `agent-context/cross-harness-projection.md`). Review the **canonical** source file, never the projected copy, and never edit a projection in place — edits belong in the canonical file and re-run init. The breakage to watch for here is **not** symlink-escape but a relative reference that assumes the canonical file's directory: the projection is a flat copy in a different location, so a path resolved from the canonical depth can break in the copy.
 - Cross-context file references use the `<context>:<path>` notation (`workspace:`, `<env>:`, `<extension>:`); the workspace's conventions define it.
 
 ## Communication Style

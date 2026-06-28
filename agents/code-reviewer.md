@@ -9,9 +9,6 @@ tools:
   - Read
   - Glob
   - Grep
-  - SendMessage
-  - TaskUpdate
-  - TaskList
 opencode:
   permission:
     edit: deny

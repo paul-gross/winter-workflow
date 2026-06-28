@@ -29,7 +29,7 @@ Determined from `$ARGUMENTS`:
 
 ### 2. Discover the un-pushed change-set
 
-Follow `winter-workflow:/context/changeset-scope.md` in **unpushed** mode to detect the feature env and list the in-scope repos — every worktree `winter ws push` would push (non-pinned: `tracking_ahead > 0` or `ahead > 0`; pinned: `tracking_ahead > 0`), read from `winter ws status <env> --json` rather than re-derived with hand-rolled `git rev-list`. For each in-scope repo, resolve its base ref (`origin/<main>` via the ladder in the shared doc, run inside that worktree). The result is a set of `(repo, worktree-path, base-ref)` entries; each reviewer reviews each repo over `<base>...HEAD`.
+Follow `winter-workflow:/context/changeset-scope.md` in **unpushed** mode to detect the feature env and list the in-scope repos — every worktree `winter ws push` would push, read from `winter ws status <env> --json` rather than re-derived with hand-rolled `git rev-list`. That doc owns the unpushed-scope predicate; do not restate it here. For each in-scope repo, resolve its base ref (`origin/<main>` via the ladder in the shared doc, run inside that worktree). The result is a set of `(repo, worktree-path, base-ref)` entries; each reviewer reviews each repo over `<base>...HEAD`.
 
 - **Zero repos in scope** (nothing ahead of upstream) → report "nothing to review; nothing is ahead of upstream" and stop. Do not spawn reviewers.
 - **Not in a feature env, or exactly one repo in scope** → single-repo mode: gate that one repo over its `<base>...HEAD`, no cross-repo pass.
