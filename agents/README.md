@@ -17,6 +17,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 | `manifest-auditor.md` | Adversarially refutes a review manifest's cheap-tier claims |
 | `runner.md` | Service lifecycle and log monitoring |
 | `test-mediator.md` | Test strategy, scenario design, verifier dispatch |
+| `verify-finale.md` | Verification finale — verify via the matrix, build a missing method, fix and re-verify |
 
 Shared default docs (SOLID + Clean Architecture, default test strategy, etc.) consumed by `architect.md` and `test-mediator.md` live under `docs/`.
 
@@ -54,7 +55,7 @@ Each agent's `tools:` frontmatter is the **permissive** set — every tool the a
 
 > **The key is `tools`, not `allowed-tools`.** Claude Code reads `tools` for *agents* (`allowed-tools` is the *skills/commands* key) and silently ignores `allowed-tools` here — so an agent that declares `allowed-tools` gets the wide default grant, not the restricted set the author intended. Every agent must also declare a non-empty `description` and a `model` of `haiku`, `sonnet`, or `opus`. `winter lint` enforces all three keys and flags the `allowed-tools` mistake.
 
-This split exists because the same agent definition is reused across very different coordination shapes. The `developer` agent ships with `SendMessage`, `TaskUpdate`, and `TaskList` in its tool list because `blizzard` genuinely needs them — the lead claims tasks from a shared list and teammates report back via `SendMessage`. The same agent is also spawned one-shot by `thaw` with a preamble that explicitly forbids those same tools, because no shared task list exists in that mode.
+This split exists because the same agent definition is reused across very different coordination shapes. A **resident** teammate like `runner` genuinely uses `SendMessage`, `TaskUpdate`, and `TaskList` — the snowflake manages a shared task list and the resident teammate reports back via `SendMessage` for as long as it stays up. The `developer` carries the same team-tool grant, but every current caller runs it **one-shot**: `thaw`, `glacier`, and `flurry` spawn it with a preamble that forbids those tools, and `blizzard` now does too — a one-shot developer owns a single slice and reports in its final response (see [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) *One-shot developers*). The grant stays in the definition for the resident mode; the preamble scopes it out for one-shot spawns.
 
 Worked example — `thaw`'s preamble narrows the grant for one-shot runs:
 
