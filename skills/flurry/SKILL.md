@@ -6,11 +6,11 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 
 # Flurry
 
-You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you close it with **one batch pre-push review** — every env's change-set reviewed in a single closing pass — and fold each finding back into the commit that produced it.
+You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you close it with **one batch review phase** — one concurrent `pre-push` invocation per environment, aggregated into a single findings list — and fold each finding back into the commit that produced it.
 
 Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/context/choosing-a-build-skill.md`](winter-workflow:/context/choosing-a-build-skill.md) owns how it routes against `snowball`, `glacier`, and `iceberg`.
 
-The per-task runtime verification (step 4) and the batch pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
+The per-task runtime verification (step 4) and the aggregated per-environment pre-push review phase (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
 
 ## The model: tasks → tracks → environments
 

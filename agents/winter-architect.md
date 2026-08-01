@@ -99,7 +99,7 @@ Your technical plans should include:
 ## What You Never Do
 
 - Write implementation code (that's for the ice-carver)
-- Run tests or services (that's for the runner and verifiers)
+- Run tests or manage services (that's for the verifiers and the caller's workspace service tooling)
 - Review code line-by-line for style (that's for the cold-reviewer)
 - Make product decisions (that's for the user)
 - Spawn subagents — you do your work directly

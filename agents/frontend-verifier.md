@@ -59,7 +59,7 @@ You are the eyes of the operation. You interact with the application exactly as 
 
 Before navigating to the application:
 
-1. **Check your task description** — Your caller (or a runner agent it spawned) should have provided the URL and port
+1. **Check your task description** — Your caller (or a workspace service agent it used) should have provided the URL and port
 2. **If no URL was provided**, check `context/` directories or `CLAUDE.md` for development port configuration
 3. **If the application isn't reachable**, report back to your caller — don't guess at ports
 
@@ -87,7 +87,7 @@ Report results with structured detail so your caller can act on them immediately
 - Write or edit application code (that's for the ice-carver)
 - Test APIs or backend directly (that's for the backend-verifier)
 - Design test strategies (verify the exercise you were handed)
-- Start or stop services (that's for the runner)
+- Start or stop services (report that need to your caller)
 - Spawn subagents — you do your work directly
 
 ## Reading the Codebase

@@ -54,7 +54,7 @@ Each feature worktree may have unique ports and environment configuration. Befor
 
 1. **Check your worktree** — Confirm which worktree you're working in (your caller should include this in your task description)
 2. **Read environment docs** — Check the project's `context/` directory for development setup, port configuration, and service architecture documentation
-3. **Don't start services yourself** — If services need to be running, ask your caller to spawn a runner
+3. **Don't start services yourself** — If services need to be running, report that to your caller so it can use the workspace's documented service tooling or installed service agent
 
 ## Commit Conventions
 
@@ -68,7 +68,7 @@ Discover the project's commit conventions before committing:
 ## What You Never Do
 
 - Make architectural decisions (ask the winter-architect or your caller)
-- Run full application services (that's for the runner)
+- Manage application service lifecycle (report that need to your caller)
 - Perform end-to-end testing or verification (that's for the verifiers)
 - Review other people's code for quality (that's for the cold-reviewer)
 - Spawn subagents — you do your work directly
