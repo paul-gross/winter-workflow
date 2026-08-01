@@ -10,10 +10,10 @@ Use the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md
 |-------|--------|
 | `scope` | `unpushed` or `uncommitted` |
 | `mode` | `advisory` (default) or `blocking` |
-| `pinned_scope` | for `unpushed`: `exclude`, `include` (default), or `only` |
+| `pinned_scope` | for `unpushed`: `exclude`, `include`, or `only`; default owned by [`../../review/change-set.md`](../../review/change-set.md) |
 | `review_bases` | optional per-worktree verified refs, with a documented reason, for upstream-less or unresolved-upstream review |
 
-Reject any other value. `unpushed` reviews committed work relative to each worktree's configured upstream and applies `pinned_scope`; `uncommitted` reviews tracked changes from `HEAD` plus untracked, non-ignored files. The selected scope is used consistently for discovery and every axis. The historical `unpushed` default is explicitly `pinned_scope: include`, equivalent to the project-worktree scope of `winter ws push --include-pinned`; bare default push instead corresponds to `exclude`.
+Reject any other value. `unpushed` reviews committed work relative to each worktree's configured upstream and applies `pinned_scope`; `uncommitted` reviews tracked changes from `HEAD` plus untracked, non-ignored files. The selected scope is used consistently for discovery and every axis.
 
 ## Output
 

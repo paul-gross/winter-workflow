@@ -1,7 +1,7 @@
 ---
 description: Deliver a batch of small, mostly-independent feature asks across multiple feature environments at once, in parallel. Use when you have several distinct small features to build together.
 argument-hint: "[the small features to build; optionally the envs to run them in]"
-allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
+allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 ---
 
 # Flurry

@@ -1,5 +1,5 @@
 ---
-description: Review committed work relative to each selected worktree's upstream across the code, harness, context, and docs axes before pushing. Includes pinned repos by default for historical workflow coverage.
+description: Review committed work relative to each selected worktree's upstream across the code, harness, context, and docs axes before pushing. Includes pinned repos by default.
 argument-hint: "[blocking] [exclude-pinned|include-pinned|only-pinned]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion
 ---

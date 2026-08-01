@@ -1,7 +1,7 @@
 ---
 description: Drive one feature to completion methodically on a single linear track, one ordered phase at a time. Use to build a feature step by step rather than all at once.
 argument-hint: "[plan name or feature description]"
-allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion, Skill
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
 ---
 
 # Glacier

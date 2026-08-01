@@ -6,8 +6,4 @@ Agentic build skills and role-pure subagents for winter workspaces. Installs `gl
 
 | Topic | Read when… |
 |-------|------------|
-| [methodology/index.md](./methodology/index.md) | …you need the routing hub for this extension's build, review, delivery, scoring, reporting, and artifact-storage methodology |
-| [methodology/build/index.md](./methodology/build/index.md) | …you need to pick a build process for the work at hand — the routing guide between `snowball`, `flurry`, `glacier`, and `iceberg` |
-| [methodology/completion.md](./methodology/completion.md) | …you want the shared tested-and-docs-updated bar that every build skill enforces |
-| [methodology/artifact-storage.md](./methodology/artifact-storage.md) | …a skill needs to locate where its generated artifacts go — the `winter space <kind>` contract for scores, manifests, workflow docs, and retrospectives |
-| [methodology/review/index.md](./methodology/review/index.md) | …you need the canonical review axes, shared process, scope discovery, evidence procedures, reporting contract, or manifest methodology |
+| [methodology/index.md](./methodology/index.md) | …you are about to build, review, deliver, or score work with this extension — the hub routes to the specific process |

@@ -4,7 +4,7 @@ Review agent-facing configuration and markdown against the workspace's documente
 
 ## Inputs
 
-Consume the semantic review inputs prepared by the [review process](../process.md): scope, in-scope targets, review material, cross-repo framing when applicable, and any remote-feedback destination. For a paths scope, classify the current-state files with [`../agent-context-surface.md`](../agent-context-surface.md), also including extension `index.md` or `README.md` files written for agents; exclude test fixtures, product/backlog content, and external-facing public documentation.
+Consume the semantic review inputs prepared by the [review process](../process.md): scope, in-scope targets, review material, cross-repo framing when applicable, and any remote-feedback destination. For a paths scope, classify the current-state files with [`../agent-context-surface.md`](../agent-context-surface.md).
 
 ## Discover the criteria
 

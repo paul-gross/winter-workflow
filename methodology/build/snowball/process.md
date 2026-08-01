@@ -14,7 +14,7 @@
 
 The snowball process makes **small, focused changes to existing code** — fix a bug, tweak a behavior, adjust an existing function, restore a regression. It composes `arctic-explorer` → `ice-carver` → `verifier` into a tight investigate-change-verify loop — one packed throw at one spot, without resident coordination or a phased plan. Use the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md).
 
-The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how snowball meets the shared **Definition of done for feature work** ([`winter-workflow:/methodology/completion.md`](winter-workflow:/methodology/completion.md)) — the tested-and-docs-updated bar — for the change it delivers.
+The runtime verification (step 6b) and the delivery-surfaces accounting in its report (step 7) are how snowball meets the shared **Definition of done for feature work** ([`../../completion.md`](../../completion.md)) — the tested-and-docs-updated bar — for the change it delivers.
 
 ## Scope
 
@@ -32,13 +32,7 @@ It does **not** spawn `winter-architect`, `cold-reviewer`, or `context-reviewer`
 
 ## Isolated-role restrictions
 
-Every isolated role invocation carries these semantic restrictions before its role-specific task:
-
-- Run as a one-shot isolated role for this Snowball operation, with no resident peers or shared assignment queue.
-- Return the requested result once through the isolated-result channel; perform no follow-on coordination.
-- Stop when the result is complete.
-
-The steps below refer to these as **the isolated-role restrictions**.
+Every isolated role invocation carries, before its role-specific task, the one-shot default declared by [`../../runtime-ports.md`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this Snowball operation. The steps below refer to it as **the isolated-role restrictions**.
 
 ## Steps
 

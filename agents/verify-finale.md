@@ -2,8 +2,8 @@
 name: verify-finale
 description: |
   Runs the verification finale for a built change — verifies it through the application's declared verifiability-matrix
-  methods, builds and records a missing method instead of brute-forcing an LLM pass, then fixes what it finds and re-
-  verifies. Use this agent as the closing gate after a feature is built.
+  methods, builds and records a missing method instead of brute-forcing an LLM pass, then fixes what it finds and
+  re-verifies. Use this agent as the closing gate after a feature is built.
 model: opus
 tools:
   - Bash

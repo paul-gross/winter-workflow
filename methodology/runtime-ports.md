@@ -59,4 +59,4 @@ capability: <required semantic capability>
 detail: <what the active harness cannot provide>
 ```
 
-Only degrade behavior when the process explicitly permits a fallback. In particular, `iceberg` requires resident-worker coordination; an adapter without that capability must return `unsupported-capability`, not substitute isolated runs or an in-context ledger.
+Only degrade behavior when the process explicitly permits a fallback.

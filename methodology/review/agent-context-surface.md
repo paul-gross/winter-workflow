@@ -10,5 +10,6 @@ A changed path is agent-facing markdown when it matches any of:
 - Any `CLAUDE.md` (root or nested)
 - Any `context/**/*.md`
 - Any `methodology/**/*.md`
+- An `index.md` or `README.md` written for agents (e.g. an extension's routing index)
 
-**Exclusion:** product/backlog content is not agent-facing configuration, even when it lives under a matching path — backlog plans, approaches, and product-centered initiatives describing future vision or roadmaps are reviewed by the user and downstream implementation agents, not the `context` axis.
+**Exclusions:** product/backlog content is not agent-facing configuration, even when it lives under a matching path — backlog plans, approaches, and product-centered initiatives describing future vision or roadmaps are reviewed by the user and downstream implementation agents, not the `context` axis. Test fixtures and external-facing public documentation are likewise out of scope.

@@ -16,20 +16,20 @@ Require callers to supply these normalized inputs rather than invocation-specifi
 | `pinned_scope` | for `unpushed`: `exclude`, `include`, or `only` |
 | `review_bases` | optional per-worktree verified refs, documented by the caller for an `unpushed` target whose upstream cannot be diffed |
 
-Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, default an omitted `pinned_scope` to `include`; this preserves the workflow's historical coverage and is explicitly equivalent to reviewing the project-worktree scope of `winter ws push --include-pinned`, not bare default push. Reject an unknown axis, malformed scope, invalid pinned scope, nonexistent paths, or an unverified ref/range or review base with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
+Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, an omitted `pinned_scope` takes the default owned by [`./change-set.md`](./change-set.md). Reject an unknown axis, malformed scope, invalid pinned scope, nonexistent paths, or an unverified ref/range or review base with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
 
 Session adapters own translation from their invocation syntax into these inputs. This process never reads or parses slash-command arguments.
 
 ## Axes
 
-Axis documents are the canonical methodology. Runtime agent identifiers are ports for fresh execution only; they are not methodology owners.
+Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.md) owns the axis-to-methodology mapping. Runtime agent identifiers are ports for fresh execution only; they are not methodology owners.
 
-| Axis | Methodology | Fresh runtime port |
-|------|-------------|--------------------|
-| `code` | [`./axes/code.md`](./axes/code.md) | `cold-reviewer` |
-| `context` | [`./axes/context.md`](./axes/context.md) | `context-reviewer` |
-| `harness` | [`./axes/harness.md`](./axes/harness.md) | `harness-reviewer` |
-| `documentation` | [`./axes/documentation.md`](./axes/documentation.md) | `documentation-reviewer` |
+| Axis | Fresh runtime port |
+|------|--------------------|
+| `code` | `cold-reviewer` |
+| `context` | `context-reviewer` |
+| `harness` | `harness-reviewer` |
+| `documentation` | `documentation-reviewer` |
 
 Both execution modes consume the same selected methodology file. Do not copy an axis checklist into a prompt or adapter.
 
@@ -77,7 +77,7 @@ The invoking agent executes the same scaffold and selected axis methodology in i
 
 For fresh mode, construct a self-contained spawn prompt from the following parts. For inline mode, treat the same parts as self-instructions.
 
-1. **One-shot restrictions.** For fresh mode, require the role to run without resident peers or a shared assignment queue, return one categorized report through the isolated-result channel, perform no follow-on work, and stop when the report is complete.
+1. **One-shot restrictions.** For fresh mode, require the isolated-role default declared by [`../runtime-ports.md`](../runtime-ports.md#spawn-an-isolated-role), returning one categorized report.
 
 2. **Semantic inputs.** State the normalized `axis`, `scope`, and `execution_mode`. For `unpushed`, also state `pinned_scope`, every target's configured upstream or labeled explicit review base, and all delivery blockers. Name every target with its absolute worktree path and base ref, the normalized explicit range or absolute path set, or the remote locator and feedback destination.
 
@@ -94,7 +94,7 @@ For fresh mode, construct a self-contained spawn prompt from the following parts
 
    > Because you hold every in-scope repository at once, flag any cross-repository contradiction within your axis — a change in one repository that leaves a broken caller, dead reference, contradicting assumption, or stale mirror in another — as one finding.
 
-5. **Axis execution.** Name the canonical axis file from the table and direct the executor to read it and execute every step. Do not paraphrase its checklist or output rules.
+5. **Axis execution.** Name the canonical axis file from [`./axes/index.md`](./axes/index.md) and direct the executor to read it and execute every step. Do not paraphrase its checklist or output rules.
 
 6. **Harness evidence inputs.** For the `harness` axis, also supply:
 

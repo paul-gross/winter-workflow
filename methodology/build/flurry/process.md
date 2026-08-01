@@ -15,9 +15,9 @@
 
 The executor is the **flurry lead**. The human caller supplies a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. The executor parses them, works out which can run at once and which must run in order, spreads the parallel work across multiple feature environments, and dispatches a **fresh one-shot isolated role per task**. Each successfully completed non-no-op task lands **exactly one commit**. When the batch is done, the executor closes it with **one batch review phase** — one concurrent pre-push process execution per environment, aggregated into a single findings list — and folds each finding back into the commit that produced it. Use the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md).
 
-Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/methodology/build/index.md`](winter-workflow:/methodology/build/index.md) owns how it routes against `snowball`, `glacier`, and `iceberg`.
+Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`../index.md`](../index.md) owns how it routes against `snowball`, `glacier`, and `iceberg`.
 
-The per-task runtime verification (step 4) and the aggregated per-environment pre-push review phase (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/methodology/completion.md`](winter-workflow:/methodology/completion.md)) — tested-and-docs-updated — for every successfully completed feature in the batch.
+The per-task runtime verification (step 4) and the aggregated per-environment pre-push review phase (step 5) are how flurry meets the shared **Definition of done for feature work** ([`../../completion.md`](../../completion.md)) — tested-and-docs-updated — for every successfully completed feature in the batch.
 
 ## The model: tasks → tracks → environments
 
@@ -31,13 +31,7 @@ So: **sequential work shares an environment; parallel work gets its own.** The n
 
 ## Isolated-role restrictions
 
-Every isolated role invocation carries these semantic restrictions before its role-specific task:
-
-- Run as a one-shot isolated role for this Flurry operation, with no resident peers or shared assignment queue.
-- Return the requested result once through the isolated-result channel; perform no follow-on coordination.
-- Stop when the result is complete.
-
-The steps below refer to these as **the isolated-role restrictions**.
+Every isolated role invocation carries, before its role-specific task, the one-shot default declared by [`../../runtime-ports.md`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this Flurry operation. The steps below refer to it as **the isolated-role restrictions**.
 
 ## Prime directives
 
@@ -129,7 +123,7 @@ As each track's env frees up, dispatch any **queued** track (step 3) onto it.
 
 When **every** track has reached a terminal state — completed, failed, or stopped — close the batch with **one review phase**. This is a single pass over everything the flurry successfully built, not a review ceremony per environment; a failed or stopped track does not prevent closure and does not need to be retried to success.
 
-1. **Review** — for each env holding successful batch commits, including commits produced before its track later failed or stopped, use any repo worktree of that env (e.g. `<workspace>/<env>/<repo>`) as the working directory so the review detects the env, and execute [`winter-workflow:/methodology/delivery/pre-push/process.md`](winter-workflow:/methodology/delivery/pre-push/process.md) in **blocking** mode. Flurry consumes the findings programmatically rather than through the advisory prompt. Each execution reviews every repo in that env ahead of upstream as one change-set; the envs are independent, so run them concurrently. Pool every finding into **one batch-wide list** — the fold and the report treat the batch as a unit.
+1. **Review** — for each env holding successful batch commits, including commits produced before its track later failed or stopped, use any repo worktree of that env (e.g. `<workspace>/<env>/<repo>`) as the working directory so the review detects the env, and execute [`../../delivery/pre-push/process.md`](../../delivery/pre-push/process.md) in **blocking** mode. Flurry consumes the findings programmatically rather than through the advisory prompt. Each execution reviews every repo in that env ahead of upstream as one change-set; the envs are independent, so run them concurrently. Pool every finding into **one batch-wide list** — the fold and the report treat the batch as a unit.
 2. **Map each finding to its originating commit** — your ledger holds task → env → repo → commit SHA, and each finding names a repo + file/area. Match the finding's file to the task that touched it to find the commit that produced it.
 3. **Fold the fixes home** — for each env with findings, spawn one isolated `ice-carver` with workhorse model intent, carrying the isolated-role restrictions, the env pin, and the findings **grouped by the commit SHA they belong to**. Run independent env invocations concurrently. Instruct each role to: address every finding, then **fold the fix into the commit that produced it** (`git commit --fixup <sha>` per finding, then `git rebase -i --autosquash <base>` — or amend when the finding lands on `HEAD`), preserving **one commit per task**; re-verify the affected change at runtime; **do not push**. It returns the rewritten commit SHAs and what it re-ran.
 

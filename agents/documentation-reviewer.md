@@ -1,8 +1,8 @@
 ---
 name: documentation-reviewer
 description: |
-  Read-only runtime adapter for the documentation review axis. Invoke through winter-
-  workflow:/methodology/review/process.md; a direct spawn is valid only when the caller supplies that process's
+  Read-only runtime adapter for the documentation review axis. Invoke through
+  winter-workflow:/methodology/review/process.md; a direct spawn is valid only when the caller supplies that process's
   normalized inputs, review material, and execution scaffold.
 model: opus
 tools:

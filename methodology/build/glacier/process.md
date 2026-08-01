@@ -21,7 +21,7 @@ Planning targets the application's **verifiability matrix** and **architecture g
 
 ## Definition of done
 
-Glacier meets the shared **Definition of done for feature work** ([`winter-workflow:/methodology/completion.md`](winter-workflow:/methodology/completion.md)) — the tested-and-docs-updated bar — for the feature it delivers. Two mechanisms carry it:
+Glacier meets the shared **Definition of done for feature work** ([`../../completion.md`](../../completion.md)) — the tested-and-docs-updated bar — for the feature it delivers. Two mechanisms carry it:
 
 - **Tested** — each phase is closed by the **verify finale** (step 4b), which verifies the phase's change through a method declared in the application's verifiability matrix, building the method (and recording its matrix row) when none exists rather than running an ad-hoc LLM pass. A green build or type-check is not a test.
 - **Docs updated** — the **completion review** (step 5) spans the code, agent-facing, and public-docs axes over the uncommitted feature before completion.
@@ -32,13 +32,7 @@ Work within the supplied or available planning framework — its conventions for
 
 ## Isolated-role restrictions
 
-Every isolated role invocation carries these semantic restrictions before its role-specific task:
-
-- Run as a one-shot isolated role for this Glacier operation, with no resident peers or shared assignment queue.
-- Return the requested result once through the isolated-result channel; perform no follow-on coordination.
-- Stop when the result is complete.
-
-The steps below refer to these as **the isolated-role restrictions**.
+Every isolated role invocation carries, before its role-specific task, the one-shot default declared by [`../../runtime-ports.md`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this Glacier operation. The steps below refer to it as **the isolated-role restrictions**.
 
 ## Steps
 
@@ -48,7 +42,7 @@ Establish three things before any building:
 
 - **The feature** — one or two sentences from the supplied feature or plan. If it is not concrete, ask the human caller once what the feature is and how you'll know it's done, then stop until they answer.
 - **The work target** — one of: a **feature environment** (e.g. `beta/`, across whichever of its repo worktrees the feature touches), a **standalone repository**, or the **workspace branch** itself. Determine it from the supplied work-target hint ("on beta", a repo name, a path) or ask the human caller. Record the **absolute path(s)**; spawned agents work within the target and never `cd` outside it. For feature-environment work, use the env's repo worktrees — never fall back to a source checkout under `projects/`.
-- **The documentation root** — where the plan and phase docs live. Follow the workspace's planning-framework conventions: if the feature came in as a refined work item with its own directory, write a `glacier/` subdirectory inside it. If the workspace has no planning framework, resolve `<workflows-dir>` under [`winter-workflow:/methodology/artifact-storage.md`](winter-workflow:/methodology/artifact-storage.md) and use `<workflows-dir>/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the feature). Decide from how glacier was started — a work-item name or an existing plan directory points there, otherwise use the workflow artifact directory; don't search for matching items. Create the directory if it doesn't exist.
+- **The documentation root** — where the plan and phase docs live. Follow the workspace's planning-framework conventions: if the feature came in as a refined work item with its own directory, write a `glacier/` subdirectory inside it. If the workspace has no planning framework, resolve `<workflows-dir>` under [`../../artifact-storage.md`](../../artifact-storage.md) and use `<workflows-dir>/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the feature). Decide from how glacier was started — a work-item name or an existing plan directory points there, otherwise use the workflow artifact directory; don't search for matching items. Create the directory if it doesn't exist.
 
 ### 2. Establish the plan
 
@@ -86,7 +80,7 @@ Each ice-carver's self-contained prompt carries:
 4. **Plan reference** — the path to `00-plan.md` so the ice-carver can read the full approach.
 5. **Attempt history** — for attempt > 1, the previous attempt's failing report verbatim (the verify finale's escalation and/or the `frontend-verifier`'s findings); tell the ice-carver to address it specifically.
 6. **Constraints** — keep the change scoped to this phase; do not start on later phases; do not commit. A green build or type-check is not the bar — the verify finale closes the phase against runtime behavior.
-7. **Reporting** — files + line ranges changed; a one-line summary. **If accumulating a review manifest** (see *Review manifest* below), also have the ice-carver report, for each hunk it authored, a `{tier, claim, intent}` line per [`winter-workflow:/methodology/review/manifest/build-time.md`](winter-workflow:/methodology/review/manifest/build-time.md) — it knows its own intent, which a fresh classifier never could.
+7. **Reporting** — files + line ranges changed; a one-line summary. **If accumulating a review manifest** (see *Review manifest* below), also have the ice-carver report, for each hunk it authored, a `{tier, claim, intent}` line per [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md) — it knows its own intent, which a fresh classifier never could.
 
 #### 4b. Run the verify finale (close the phase)
 
@@ -113,7 +107,7 @@ A phase passes only when its verification passes in full — the verify finale, 
 
 When a review manifest is wanted for this feature — the human caller asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as you build** rather than fresh-classifying at the end. The builder knows *why* each hunk exists; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
 
-Follow [`winter-workflow:/methodology/review/manifest/build-time.md`](winter-workflow:/methodology/review/manifest/build-time.md): each phase's `ice-carver` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 7); after each phase you append those entries to the manifest's JSON facts at its retained `<manifests-dir>/<date>-<slug>.json` path. The verify finale also authors hunks (its fixes, and any verification method or matrix row it builds) but reports no tier line — those are classified at the **close** step against the settled diff, where total-coverage enforcement catches them. You **close** the manifest at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
+Follow [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md): each phase's `ice-carver` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 7); after each phase you append those entries to the manifest's JSON facts at its retained `<manifests-dir>/<date>-<slug>.json` path. The verify finale also authors hunks (its fixes, and any verification method or matrix row it builds) but reports no tier line — those are classified at the **close** step against the settled diff, where total-coverage enforcement catches them. You **close** the manifest at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
 
 ### 5. Completion review
 
@@ -121,13 +115,13 @@ When every phase has passed, review the work automatically — do not wait for t
 
 If the result contains blocking findings, spawn a fresh isolated `ice-carver` with workhorse model intent to resolve them without committing, rerun the verification methods affected by its edits, then rerun the same uncommitted delivery review. Continue until the review returns no blocking findings. If a finding cannot be resolved without a human decision or an environment capability is unavailable, stop and escalate with the finding ids and blocker; do not claim the Definition of Done. Preserve `consider` findings in the final summary, but they do not block completion.
 
-**If you accumulated a review manifest** (above), **close it only after the blocking-finding loop settles**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document — all per [`winter-workflow:/methodology/review/manifest/build-time.md`](winter-workflow:/methodology/review/manifest/build-time.md) §"Close the manifest". Surface the manifest's `.md` path alongside the completion-review summary, so the human caller has both the cross-axis findings and the tiered review order.
+**If you accumulated a review manifest** (above), **close it only after the blocking-finding loop settles**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document — all per [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md) §"Close the manifest". Surface the manifest's `.md` path alongside the completion-review summary, so the human caller has both the cross-axis findings and the tiered review order.
 
 Do not commit or push. Once blocking findings are resolved, return the implementation, verification evidence, completion-review summary, and any advisory findings to the human caller.
 
 ### 6. Retrospective
 
-Once the work is delivered (or the human caller calls it done), write a retrospective. When a planning framework supplied the documentation root, write it there as `<documentation-root>/retrospective.md`. Otherwise resolve `<retrospectives-dir>` under [`winter-workflow:/methodology/artifact-storage.md`](winter-workflow:/methodology/artifact-storage.md) and write `<retrospectives-dir>/<yyyy-mm-dd>-<name>.md` (same `<name>` as the workflow doc). Either way the structure is:
+Once the work is delivered (or the human caller calls it done), write a retrospective. When a planning framework supplied the documentation root, write it there as `<documentation-root>/retrospective.md`. Otherwise resolve `<retrospectives-dir>` under [`../../artifact-storage.md`](../../artifact-storage.md) and write `<retrospectives-dir>/<yyyy-mm-dd>-<name>.md` (same `<name>` as the workflow doc). Either way the structure is:
 
 ```markdown
 # Glacier Retrospective — <feature>

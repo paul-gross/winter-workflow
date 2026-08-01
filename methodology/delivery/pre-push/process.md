@@ -5,7 +5,7 @@ Review the selected committed delivery change-set without pushing it. This proce
 ## Inputs
 
 - `mode: advisory|blocking`. Default an omitted mode to `advisory`.
-- `pinned_scope: exclude|include|only`. Default an omitted value to `include` to preserve the workflow's historical coverage. This is explicitly equivalent to reviewing the project-worktree scope of `winter ws push --include-pinned`; use `exclude` to match bare default push or `only` to match a pinned-only push.
+- `pinned_scope: exclude|include|only`. An omitted value takes the default owned by [`../../review/change-set.md`](../../review/change-set.md).
 - `review_bases`: optional per-worktree verified refs with documented reasons for targets whose configured upstream cannot be diffed.
 
 Reject any other value.
