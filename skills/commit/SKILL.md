@@ -28,7 +28,7 @@ Check for project-specific commit conventions in this order (use the first one f
 
 1. `CONTRIBUTING.md` in the current worktree root
 2. `workspace:/context/project/contributing.md` (project-specific workspace config)
-3. [commit-conventions.md](./commit-conventions.md) (workspace default fallback)
+3. [`winter-workflow:/context/default-commit-conventions.md`](winter-workflow:/context/default-commit-conventions.md) (workspace default fallback)
 
 ## 4. Write the Commit Message
 
@@ -36,7 +36,6 @@ Follow the conventions loaded in step 3. Write a commit message that:
 - Summarizes what changed and WHY based on the conversation context and the actual diff
 - Uses the format specified by the conventions
 - Includes a body with more detail if the changes are non-trivial
-- Ends with the co-author line
 
 ## 5. Commit
 
@@ -47,8 +46,6 @@ Use the format from the conventions loaded in step 3. Example:
 ```bash
 git commit -m "$(cat <<'EOF'
 <commit message adhering to project's commit standards>
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

@@ -1,6 +1,6 @@
 # Default Test Data Strategy
 
-This document is used by the `test-mediator` agent during the **Test Data Strategy Bootstrap Workflow**. When a project has no documented test data strategy, the test-mediator proposes these defaults.
+Workspace default for the **Test Data Strategy Bootstrap Workflow**: when a project has no documented test data strategy, an agent proposes these defaults. Not currently wired to an agent — the `winter-architect` is the likely future consumer.
 
 The user may accept these as-is, modify them, or specify an entirely different approach.
 
@@ -20,7 +20,7 @@ A thin, simple interface layer over the project's backend APIs.
 
 - **Purpose**: Provide a straightforward way to call any backend operation from the command line — create entities, trigger actions, query state — without needing to know endpoint URLs, authentication details, or payload formats.
 - **Design**: Each command maps to a single backend operation. Inputs are simple CLI arguments or flags. Outputs are the raw API response (JSON). No business logic in this layer — it's a pass-through.
-- **Why this matters for agents**: Verification agents (backend-verifier, frontend-verifier) and the test-mediator itself can issue commands without crafting raw HTTP requests. This removes a class of errors (wrong URL, wrong auth header, wrong payload shape) and lets agents focus on what they're actually testing.
+- **Why this matters for agents**: Verification agents (backend-verifier, frontend-verifier) can issue commands without crafting raw HTTP requests. This removes a class of errors (wrong URL, wrong auth header, wrong payload shape) and lets agents focus on what they're actually testing.
 - **In practice**: A command like `cli user create --name "Test User" --email "test@example.com"` should call the appropriate API endpoint, handle authentication, and return the created entity. A command like `cli universe status` should return the current state.
 
 ### Component 2: Fixture Scaffolding

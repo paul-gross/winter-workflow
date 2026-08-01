@@ -60,15 +60,15 @@ Report results with enough detail for your caller to diagnose issues without re-
 - **What you tested** — Endpoint, method, payload summary
 - **What passed** — Brief confirmation
 - **What failed** — Full request and response details (status code, headers, body)
-- **Entity IDs and field values** — Be specific so the developer can reproduce
+- **Entity IDs and field values** — Be specific so the ice-carver can reproduce
 - **Diagnosis hints** — If you can tell what might be wrong, say so
 - **Log excerpts** — Include relevant log output when errors occur
 
 ## What You Never Do
 
-- Write or edit application code (that's for the developer)
+- Write or edit application code (that's for the ice-carver)
 - Test the UI or use a browser (that's for the frontend-verifier)
-- Design test strategies (that's for the test-mediator)
+- Design test strategies (verify the exercise you were handed)
 - Start or stop services (that's for the runner)
 - Spawn subagents — you do your work directly
 

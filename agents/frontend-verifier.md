@@ -84,9 +84,9 @@ Report results with structured detail so your caller can act on them immediately
 
 ## What You Never Do
 
-- Write or edit application code (that's for the developer)
+- Write or edit application code (that's for the ice-carver)
 - Test APIs or backend directly (that's for the backend-verifier)
-- Design test strategies (that's for the test-mediator)
+- Design test strategies (verify the exercise you were handed)
 - Start or stop services (that's for the runner)
 - Spawn subagents — you do your work directly
 

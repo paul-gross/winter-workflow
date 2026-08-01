@@ -2,7 +2,7 @@
 
 A **codebase-scoped** maturity scoring procedure: gather evidence, apply the frozen rubric at [`./rubric.md`](./rubric.md), and emit an HTML report plus a JSON sidecar into the winter space's `scores` directory ([`../winter-space.md`](../winter-space.md)). If a prior report exists for the same project at the same rubric version, the new report includes a deltas section so weekly runs can track movement.
 
-Designed to be executed by any agent — whether reached via the `harness-score` slash command or invoked directly by another agent (e.g., a `blizzard` snowflake) that wants scoring as a substep. The skill at [`../../skills/harness-score/SKILL.md`](../../skills/harness-score/SKILL.md) is a thin entry point that hands execution to this document.
+Designed to be executed by any agent — whether reached via the `harness-score` slash command or invoked directly by another agent (e.g., an `iceberg` foreman) that wants scoring as a substep. The skill at [`../../skills/harness-score/SKILL.md`](../../skills/harness-score/SKILL.md) is a thin entry point that hands execution to this document.
 
 ## Where this fits
 
@@ -40,9 +40,9 @@ ls "$report_dir"/*-"$project".json 2>/dev/null | sort | tail -n 5
 
 Read [`./rubric.md`](./rubric.md). It is **frozen** at the version recorded in its header. Do not improvise dimensions or stage criteria — score against what is written. If the rubric does not fit the target well, that is a v2 conversation (a deliberate edit + version bump in a future change), not a scoring-run conversation.
 
-### 4. Spawn an `explorer` for evidence
+### 4. Spawn an `arctic-explorer` for evidence
 
-Spawn an `explorer` subagent (see [`../../agents/explorer.md`](../../agents/explorer.md)). The explorer's job is **evidence gathering, not scoring**. The main agent (you) does the scoring.
+Spawn an `arctic-explorer` subagent (see [`../../agents/arctic-explorer.md`](../../agents/arctic-explorer.md)). The arctic-explorer's job is **evidence gathering, not scoring**. The main agent (you) does the scoring.
 
 Prepend this coordination preamble verbatim before the role-specific content:
 
@@ -63,7 +63,7 @@ Spawn in the foreground; you need the inventory before you can score.
 For each of the 10 dimensions, decide:
 
 - **Stage** — 1 to 5. Half-stages (e.g., 3.5) are allowed when evidence straddles two stages. When in doubt, pick the lower stage and explain.
-- **Evidence** — 1 to 3 citations from the explorer's inventory. Each citation is a file path + a one-sentence description of what it shows. If you cannot point at a file (or a command output), the evidence does not exist for scoring purposes.
+- **Evidence** — 1 to 3 citations from the arctic-explorer's inventory. Each citation is a file path + a one-sentence description of what it shows. If you cannot point at a file (or a command output), the evidence does not exist for scoring purposes.
 - **Rationale** — 1 to 2 sentences explaining the stage choice given the evidence.
 - **Next-stage suggestion** — one concrete change: one file, one tool, one PR. Not "improve documentation"; write something the target project's maintainer could act on in an afternoon.
 
@@ -130,8 +130,8 @@ The **scoring rules** (evidence-required, no averaging, half-stages, concrete ne
 
 - **One report per run per day.** Re-running on the same day overwrites the same `YYYY-MM-DD-<project>.{html,json}` files. For same-day duplicates, use the `YYYY-MM-DD-HHMM-<project>` suffix per [`../llm-html-output.md#naming`](../llm-html-output.md#naming).
 - **Sidecar `rubric_version` must equal this rubric's version.** Step 8's JSON `rubric_version` is read by step 2 of the next run to filter prior reports. Mismatches break delta computation; if you cannot satisfy this, fail loudly rather than emit a sidecar at the wrong version.
-- **No assumptions about the target's documentation convention.** This process is meant to work against any codebase. Where this document mentions `context/`, `docs/`, `AGENTS.md`, etc., treat them as examples — the explorer should map them to whatever the target actually uses.
+- **No assumptions about the target's documentation convention.** This process is meant to work against any codebase. Where this document mentions `context/`, `docs/`, `AGENTS.md`, etc., treat them as examples — the arctic-explorer should map them to whatever the target actually uses.
 
-## Why "cold" doesn't apply here
+## Why "fresh" doesn't apply here
 
-`cold-review` and `harness-review` spawn a subagent with no session memory specifically to avoid absorbing author framing. Harness scoring is different — it scores a codebase, not a diff, and the scoring step itself is a deliberate exercise in judgment that benefits from the caller's framing of why they care. The explorer that gathers evidence is one-shot and self-contained; the main agent that scores reads the explorer's inventory plus the conversation. If a fully cold score is wanted, run the process in a fresh session.
+`cold-review` and `harness-review` spawn a subagent with no session memory specifically to avoid absorbing author framing. Harness scoring is different — it scores a codebase, not a diff, and the scoring step itself is a deliberate exercise in judgment that benefits from the caller's framing of why they care. The arctic-explorer that gathers evidence is one-shot and self-contained; the main agent that scores reads the arctic-explorer's inventory plus the conversation. If a fully fresh score is wanted, run the process in a fresh session.

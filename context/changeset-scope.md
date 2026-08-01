@@ -1,6 +1,6 @@
 # Change-set scope — reviewing a feature env as one change
 
-A logical change in this workspace often spans **several repos in one feature env** — a `winter-cli` command and the `context/` reference that documents it, a convention and its mirror downstream. This extension's review skills review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
+A logical change often spans **several repos in one feature env**. Review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
 
 This doc is the single source for that discovery, which the review engine ([`./review.md`](./review.md)) and `pre-push` reference; do not re-derive the steps elsewhere. It governs the **env-wide** scopes only — branch-vs-base, uncommitted, and unpushed. The engine's **explicit** scopes (an arbitrary git `<ref|range>` or a `<paths>` set) name their own target in the current repo and skip the env fan-out below.
 
@@ -14,32 +14,24 @@ From the repo worktree you were invoked in:
 
 ```bash
 toplevel="$(git rev-parse --show-toplevel)"
-env_file="$(dirname "$toplevel")/.winter.env"
+envdir="$(dirname "$toplevel")"
+name="$(basename "$envdir")"
 ```
 
-- `$env_file` exists and contains `WINTER_ENV=<name>` → you are in feature env `<name>`; continue to Step 2.
-- `$env_file` is absent → **not in a feature env.** Skip the rest of this doc; the change-set is the current repo alone, and the skill proceeds on its single-repo path.
+- `$envdir/.winter/config.toml` exists → `$toplevel` is a standalone repo at the workspace root — **not in a feature env.** Skip the rest of this doc; the change-set is the current repo alone, and the skill proceeds on its single-repo path.
+- Otherwise run `winter ws status "$name" --json`. Success, with an `environments` array naming `<name>` → you are in feature env `<name>`, and you already hold the Step 2 output. An error (`No worktrees match`) → **not in a feature env** — same single-repo path as above.
 
-`.winter.env` sits at the env root (`<workspace>/<env>/.winter.env`) and is the canonical env marker — see `workspace:/context/setup-project-setup.md`.
+No env marker file exists on disk — env identity derives from the directory layout and is confirmed by the read-only status call; runtime vars are computed and injected at dispatch time, never written to a file (see `workspace:/context/workspace-layout.md`).
 
 ## Step 2 — List the in-scope repos via the CLI
 
-Run the read-only status command and read its JSON directly — do not hand-roll `git rev-list` loops across repos:
+Run the read-only status command and read its JSON directly (Step 1's detection already ran it — reuse that output) — do not hand-roll `git rev-list` loops across repos:
 
 ```bash
 winter ws status <name> --json
 ```
 
-The argument is a `<env>/<repo>` glob pattern (a bare `<name>` expands to `<name>/*`), so a bare env name scopes to that whole env. When scoped to one env this way, `environments` is a one-element array. Iterate `environments[0].worktrees[]` — each entry is one repo in the env:
-
-| Field | Use |
-|-------|-----|
-| `repo` | repo name |
-| `pinned` | pinned repos track main, never a feature branch |
-| `branch` | the worktree's local branch |
-| `ahead` / `upstream` / `tracking_ahead` | divergence vs `origin/<main>` and vs the tracked upstream |
-| `dirty` | uncommitted working-tree files (staged + unstaged + untracked) |
-| `tracking_ref_present` | whether the upstream ref has been fetched |
+The argument is a `<env>/<repo>` glob pattern (a bare `<name>` expands to `<name>/*`), so a bare env name scopes to that whole env. When scoped to one env this way, `environments` is a one-element array. Iterate `environments[0].worktrees[]` — each entry is one repo in the env; the per-field schema (`WorktreeSnapshot`) is owned by `workspace:/context/winter-cli/usage/ws/status.md` — read the field meanings there rather than re-deriving them.
 
 The worktree filesystem path is not carried as a field; derive it as `<workspace.root_path>/<env.name>/<repo>` — an absolute path the reviewer can `cd` into.
 

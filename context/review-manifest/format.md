@@ -76,7 +76,7 @@ A hunk is one `@@ -a,b +c,d @@` block within a file's diff. Its stable id is:
 
 where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,b +c,d @@` header — **not** the first changed line, which differs from `c` by the leading context lines. `<repo>` is the repo the worktree belongs to. The id is what total coverage is checked against and what every manifest entry, classifier vote, and audit result is keyed by.
 
-**The orchestrator assigns these ids, once, from the diff — classifiers do not re-derive them.** Each cold classifier reading the same diff independently would otherwise key the same hunk off a slightly different line number (the header `c` vs. the first `+`/`-` line), and the k votes would never line up for reconciliation. So the pipeline parses the canonical `<repo>/<file>@@<c>` set from `git diff` up front and hands classifiers that enumerated list to classify *against*; a classifier returns `{hunk_id, tier, claim}` keyed by the ids it was given, never an id it invented. See [`./pipeline.md`](./pipeline.md) steps 1–2.
+**The orchestrator assigns these ids, once, from the diff — classifiers do not re-derive them.** Each fresh classifier reading the same diff independently would otherwise key the same hunk off a slightly different line number (the header `c` vs. the first `+`/`-` line), and the k votes would never line up for reconciliation. So the pipeline parses the canonical `<repo>/<file>@@<c>` set from `git diff` up front and hands classifiers that enumerated list to classify *against*; a classifier returns `{hunk_id, tier, claim}` keyed by the ids it was given, never an id it invented. See [`./pipeline.md`](./pipeline.md) steps 1–2.
 
 ## Schema
 
@@ -128,7 +128,7 @@ where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,
 
 Keys, ordering, and types are stable across runs at this `schema_version`. The `tier` field records the **final** tier after the audit; `promoted_from` preserves what the classifier originally assigned so a reader can see what the audit caught.
 
-`source` records **which producer** filled the entry (see [`./index.md`](./index.md) §"Two producers"): `classified` — a cold [`diff-classifier`](../../agents/diff-classifier.md) k-vote reconstructed the tier from the diff; `authored` — the agent that *wrote* the change recorded it while building. `intent` is the author's reason for the change in their own words (e.g. "extracted the shared scope vocab so fetch/pull/push stop drifting") — populated for `authored` entries, `null` for `classified` ones (a cold classifier never saw the intent). `intent` enriches the render's claim; it never substitutes for the adversarial audit, which checks an `authored` cheap-tier claim exactly as it checks a `classified` one.
+`source` records **which producer** filled the entry (see [`./index.md`](./index.md) §"Two producers"): `classified` — a fresh [`diff-classifier`](../../agents/diff-classifier.md) k-vote reconstructed the tier from the diff; `authored` — the agent that *wrote* the change recorded it while building. `intent` is the author's reason for the change in their own words (e.g. "extracted the shared scope vocab so fetch/pull/push stop drifting") — populated for `authored` entries, `null` for `classified` ones (a fresh classifier never saw the intent). `intent` enriches the render's claim; it never substitutes for the adversarial audit, which checks an `authored` cheap-tier claim exactly as it checks a `classified` one.
 
 ## Invariant 1 — total coverage
 

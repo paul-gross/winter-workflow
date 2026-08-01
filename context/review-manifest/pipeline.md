@@ -1,6 +1,6 @@
 # Review manifest — pipeline
 
-The process that generates a review manifest over a change-set: **classify → audit → render**, emitting a JSON sidecar and an inline review order. Designed to be executed by any agent — reached via the [`review-manifest`](../../skills/review-manifest/SKILL.md) skill, or invoked directly by another agent (a `blizzard` snowflake, the `cold-review` or `pre-push` skill) that wants a tiered review order as a substep.
+The process that generates a review manifest over a change-set: **classify → audit → render**, emitting a JSON sidecar and an inline review order. Designed to be executed by any agent — reached via the [`review-manifest`](../../skills/review-manifest/SKILL.md) skill, or invoked directly by another agent (an `iceberg` foreman, the `cold-review` or `pre-push` skill) that wants a tiered review order as a substep.
 
 The on-disk shape, the closed tier vocabulary, the two invariants, hunk identity, and the metrics are owned by [`./format.md`](./format.md); the tier *semantics* by the [`diff-classifier`](../../agents/diff-classifier.md) and [`manifest-auditor`](../../agents/manifest-auditor.md) agents. This doc is the **control flow** — it does not restate any of those.
 
@@ -12,7 +12,7 @@ The spine of the pipeline is a single rule: **every failure path demotes toward 
 
 ## Inputs
 
-A **diff** scope from the engine's vocabulary ([`../review.md`](../review.md)) — the manifest classifies hunks, so the engine's `paths` scope (current state, no diff) does not apply. Reached via the slash command, `$ARGUMENTS` resolves exactly as the engine resolves it: empty → branch-vs-base (default), `uncommitted`, or a git `<ref|range>`. The `unpushed` scope is — as in the engine — **not** a typeable `$ARGUMENTS` token; a caller selects it directly when invoking this pipeline (today, `pre-push`, generating a manifest over the un-pushed change-set). A leading `inline` token, if present, is stripped and ignored: the manifest pipeline has no cold/warm split of its own — the classifier is always a fresh-context subagent — so `inline` affects only how the *caller* runs, not the classify stage.
+A **diff** scope from the engine's vocabulary ([`../review.md`](../review.md)) — the manifest classifies hunks, so the engine's `paths` scope (current state, no diff) does not apply. Reached via the slash command, `$ARGUMENTS` resolves exactly as the engine resolves it: empty → branch-vs-base (default), `uncommitted`, or a git `<ref|range>`. The `unpushed` scope is — as in the engine — **not** a typeable `$ARGUMENTS` token; a caller selects it directly when invoking this pipeline (today, `pre-push`, generating a manifest over the un-pushed change-set). A leading `inline` token, if present, is stripped and ignored: the manifest pipeline has no fresh/warm split of its own — the classifier is always a fresh-context subagent — so `inline` affects only how the *caller* runs, not the classify stage.
 
 ## Process
 
@@ -28,7 +28,7 @@ Compute `diff_sha` now, by the recipe in [`./format.md#computing-diff_sha`](./fo
 
 Spawn **k = 3** [`diff-classifier`](../../agents/diff-classifier.md) subagents **in parallel** (one message, three `Agent` calls — they are independent and concurrency is free wall-time).
 
-Each spawn is **cold and identical**: it carries the diff target (worktree paths, base refs, the `git diff` command) **and the enumerated hunk-id list from step 1**, with the instruction to classify each listed hunk by its given id. **Do not pass the task prompt, the PR description, or this session's design discussion** — the classifier's value is that it never saw why the change was made. Prepend the standard one-shot/no-team preamble (verbatim):
+Each spawn is **fresh and identical**: it carries the diff target (worktree paths, base refs, the `git diff` command) **and the enumerated hunk-id list from step 1**, with the instruction to classify each listed hunk by its given id. **Do not pass the task prompt, the PR description, or this session's design discussion** — the classifier's value is that it never saw why the change was made. Prepend the standard one-shot/no-team preamble (verbatim):
 
 > This is a one-shot standalone classification. Read the diff, classify every hunk, and stop. There is no team coordinating you — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`, and do not attempt follow-on work. You did not see the task that produced this diff; do not go looking for it. When your per-hunk report is done, stop.
 
@@ -37,7 +37,7 @@ Run on **`opus`**, passed explicitly (`Agent(subagent_type: "diff-classifier", m
 **Reconcile per canonical hunk-id** once all three report — walk the step-1 enumerated list, gather the three votes for each id:
 
 - All three agree on the tier → that tier. Take the `claim` (and `exemplar`) from the majority; any classifier's claim is fine when they concur.
-- **Any disagreement → `novel`**, marked `contested: true`. This is the fail-closed core: a hunk three cold readers cannot agree is cheap is, by definition, not safe to skim. Do not average, do not take a 2-of-3 majority — *any* split fails closed.
+- **Any disagreement → `novel`**, marked `contested: true`. This is the fail-closed core: a hunk three fresh readers cannot agree is cheap is, by definition, not safe to skim. Do not average, do not take a 2-of-3 majority — *any* split fails closed.
 - A canonical id one or more classifiers **failed to vote on** is treated as a disagreement on that id → `novel`, `contested: true`. A hunk missing from *all* three is still backstopped by the coverage check in step 4 (inserted as `novel`). Ignore any id a classifier returns that is not in the enumerated list.
 
 Record each hunk's `lines` (added + removed) from the diff for the metrics.
@@ -84,11 +84,11 @@ Tell the caller the **`.md` path** (the document they read) with the `.json` not
 
 > Manifest at `<manifests-dir>/2026-06-14-alpha.md` (facts in the `.json` alongside) — 41 hunks, 78% `novel` lines, 1 audit promotion.
 
-Do not re-paste the document into the reply — point at it; it exists so the reply does not have to carry the review. When the manifest is generated as a pre-step for the `cold-review` or `pre-push` skill, hand the document back to that caller to order its own attention; do not also run the cold review here.
+Do not re-paste the document into the reply — point at it; it exists so the reply does not have to carry the review. When the manifest is generated as a pre-step for the `cold-review` or `pre-push` skill, hand the document back to that caller to order its own attention; do not also run the fresh review here.
 
-## Why cold, why k-voted, why adversarial
+## Why fresh, why k-voted, why adversarial
 
-- **Cold** — the classifier never saw the task, so it cannot be told "it's just a rename." It reads the code and judges the claim, the same coldness the `cold-review` skill relies on.
+- **Fresh** — the classifier never saw the task, so it cannot be told "it's just a rename." It reads the code and judges the claim, the same freshness the `cold-review` skill relies on.
 - **k-voted, fail closed** — three independent reads, and *any* disagreement demotes to `novel`. One classifier's blind spot cannot quietly bury a decision in a cheap tier; it takes unanimity to earn a skim.
 - **Adversarial audit** — even a unanimous cheap classification is then attacked by a reader whose only job is to refute it. The `mechanical`/`pattern` tiers are trustworthy precisely because something tried to break them and failed.
 

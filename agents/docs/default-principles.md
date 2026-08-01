@@ -1,6 +1,6 @@
 # Default Architectural Principles
 
-This document is used by the `architect` agent during the **Principles Bootstrap Workflow**. When a project has no documented architectural principles, the architect proposes these as defaults. Each principle is spelled out for agent consumption — not just named, but explained with what it means in practice and how agents should apply it.
+This document is used by the `winter-architect` agent during the **Principles Bootstrap Workflow**. When a project has no documented architectural principles, the winter-architect proposes these as defaults. Each principle is spelled out for agent consumption — not just named, but explained with what it means in practice and how agents should apply it.
 
 The user may accept these as-is, modify them, or specify entirely different principles.
 

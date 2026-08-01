@@ -6,11 +6,11 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 
 # Flurry
 
-You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you run **one pre-push review per environment** and fold each finding back into the commit that produced it.
+You are the **flurry lead**. The user hands you a batch of small, mostly-independent feature requests — a flurry of asks, each its own small feature. You parse them, work out which can run at once and which must run in order, spread the parallel work across multiple feature environments, and dispatch a **fresh one-shot subagent per task**. Each task lands **exactly one commit**. When the batch is done, you close it with **one batch pre-push review** — every env's change-set reviewed in a single closing pass — and fold each finding back into the commit that produced it.
 
-Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/context/choosing-a-build-skill.md`](winter-workflow:/context/choosing-a-build-skill.md) owns how it routes against `thaw`, `glacier`, `delegate`, and `blizzard`.
+Like `glacier`, flurry is **one lead agent that delegates** — no team, no shared task list — but where glacier drives one feature on a single linear track, flurry runs **many small features across many tracks in parallel**. Reach for flurry when you have several distinct small asks to deliver together; [`winter-workflow:/context/choosing-a-build-skill.md`](winter-workflow:/context/choosing-a-build-skill.md) owns how it routes against `snowball`, `glacier`, and `iceberg`.
 
-The per-task runtime verification (step 4) and the per-env pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
+The per-task runtime verification (step 4) and the batch pre-push review (step 5) are how flurry meets the shared **Definition of done for feature work** ([`winter-workflow:/context/definition-of-done.md`](winter-workflow:/context/definition-of-done.md)) — tested-and-docs-updated — for every feature in the batch.
 
 ## The model: tasks → tracks → environments
 
@@ -33,7 +33,7 @@ The steps below reference this as **"the coordination preamble"** — paste it v
 ## Prime directives
 
 - **Orchestrate, don't implement** — you have no `Write`/`Edit`. Every code touch and every commit goes to a subagent. Use `Bash`/`Read`/`Glob`/`Grep` only to parse asks, resolve env paths, inspect git state, and map findings to commits.
-- **One task, one fresh subagent, one commit** — never reuse a subagent across tasks, and hold each task's developer to exactly one commit. This is what makes the per-env fold (step 5) clean.
+- **One task, one fresh subagent, one commit** — never reuse a subagent across tasks, and hold each task's ice-carver to exactly one commit. This is what makes the fold (step 5) clean.
 - **Parallel by default, serialize only on dependency** — independent tracks run concurrently on separate environments. Only force tasks onto the same track (same env, in order) when a real dependency demands it.
 - **Confirm the schedule and the env plan before dispatching** — especially before creating new environments (per workspace `CLAUDE.md`).
 - **Digest, don't dump** — summarize each subagent's report; never echo raw output.
@@ -67,7 +67,7 @@ Flurry schedule (4 tasks → 3 tracks):
 
 You need one environment per concurrent track. Resolve the pool in this order:
 
-- **User-supplied envs** — if the user named environments, use those, one per track. Warn (don't silently proceed) if a named env has a dirty worktree or commits already ahead of upstream — flurry's per-env review and fold assume the env's change-set is **only** this batch's commits.
+- **User-supplied envs** — if the user named environments, use those, one per track. Warn (don't silently proceed) if a named env has a dirty worktree or commits already ahead of upstream — flurry's review and fold assume the env's change-set is **only** this batch's commits.
 - **Otherwise, reuse idle Greek envs first** — read `winter ws status --json` (or `winter ws list`) and pick environments whose worktrees are **clean** (`dirty == 0`) and **not ahead** of upstream. Prefer the conventional order (alpha, beta, gamma, …). An idle env keeps flurry's change-set isolated.
 - **Create the rest** — if there aren't enough idle envs, create fresh ones with `winter ws init <greek>` (next unused Greek letter; `winter ws index <name>` resolves a name's slot). **Confirm with the user before creating any env** (workspace `CLAUDE.md` rule). After `winter ws init`, complete any project-specific env setup per `workspace:/context/project/project-setup.md`.
 
@@ -79,23 +79,23 @@ Record the pool in the ledger (below) as track → env → absolute worktree pat
 
 Dispatch tracks across the pool. **Distinct tracks run in parallel**; **tasks within a track run in order**.
 
-#### 4a. Spawn one developer per task
+#### 4a. Spawn one ice-carver per task
 
-For each task, spawn a `developer` (`subagent_type: developer`, `model: "sonnet"` — the workhorse tier for routine implementation). Run the leading task of each parallel track **in the same message** (multiple `Agent` calls in one turn) with **`run_in_background: true`**, so the tracks proceed concurrently and dispatching never blocks; you are notified as each completes. Each spawn prompt carries, in order:
+For each task, spawn an `ice-carver` (`subagent_type: ice-carver`, `model: "sonnet"` — the workhorse tier for routine implementation). Run the leading task of each parallel track **in the same message** (multiple `Agent` calls in one turn) with **`run_in_background: true`**, so the tracks proceed concurrently and dispatching never blocks; you are notified as each completes. Each spawn prompt carries, in order:
 
 1. **The coordination preamble** (verbatim).
 2. **The env pin** — the env name and the **absolute worktree path(s)** for the repo(s) this task touches (`<workspace>/<env>/<repo>`). Hard rule: work only inside that env's worktrees, never `cd` out, and never fall back to a source checkout under `projects/`.
 3. **The task** — what to build and why. For a non-leading task in a track, note that earlier tasks in this track have already committed on this branch and its work builds on them.
-4. **Verify at runtime** — the definition-of-done bar. A green build or typecheck is **not** verification; run a real probe (execute the affected test, `curl` the endpoint, invoke the CLI, load the page) and report what was run and what was observed. Pass the base URL/port from `workspace:/context/project/project-setup.md` or the env's `.winter.env` if the probe needs a running service; if services aren't up, the developer should say so rather than guess — flurry does not start services.
+4. **Verify at runtime** — the definition-of-done bar. A green build or typecheck is **not** verification; run a real probe (execute the affected test, `curl` the endpoint, invoke the CLI, load the page) and report what was run and what was observed. Pass the base URL/port from `workspace:/context/project/project-setup.md` or the env's computed vars (`winter env <env>`) if the probe needs a running service; if services aren't up, the ice-carver should say so rather than guess — flurry does not start services.
 5. **Land exactly one commit** — once implemented and verified, make **one** conventional commit (with scope, and a `Closes #N` footer if the ask maps to an issue) covering this task's work and nothing else. **Do not push.**
 6. **Report** — files + line ranges changed, the **commit SHA**, the probe(s) run and what was observed, and a one-line verdict.
 
 #### 4b. Advance each track
 
-When a task's developer reports back:
+When a task's ice-carver reports back:
 
-- **Done and verified** (one commit, an adequate runtime probe) → if the track has more tasks, spawn a **fresh** developer for the next one on the same env; otherwise the track is complete. Record the commit SHA against the task in the ledger.
-- **Verification weak or missing** (build-only, no real probe) → re-spawn a fresh developer for the same task with the gap named explicitly; it may be verification-only if the code looks done.
+- **Done and verified** (one commit, an adequate runtime probe) → if the track has more tasks, spawn a **fresh** ice-carver for the next one on the same env; otherwise the track is complete. Record the commit SHA against the task in the ledger.
+- **Verification weak or missing** (build-only, no real probe) → re-spawn a fresh ice-carver for the same task with the gap named explicitly; it may be verification-only if the code looks done.
 - **Failed** → re-spawn with the failure folded in.
 - **Nothing to commit** (the ask was already satisfied, or a no-op) → note it; the track skips that commit and moves on.
 
@@ -103,17 +103,17 @@ Hold a soft cap of **3 attempts per task**; if a task can't pass an adequate run
 
 As each track's env frees up, dispatch any **queued** track (step 3) onto it.
 
-### 5. Per-environment pre-push review and fold
+### 5. Batch review and fold
 
-When every track is complete, review each environment **once** and fold its findings home. Do this per env (the envs are independent, so you may review several concurrently):
+When **every** track is complete, close the batch with **one review phase** — a single pass over everything the flurry built, not a review ceremony per environment:
 
-1. **Review** — `cd` into any repo worktree of the env (e.g. `<workspace>/<env>/<repo>`) so the review detects that env from its worktree, then invoke **`pre-push`** in **blocking** mode via the `Skill` tool (`pre-push` argument `blocking` — flurry consumes the findings programmatically rather than via the interactive prompt). It reviews every repo in that env ahead of upstream as one change-set and returns a single summary. See [`winter-workflow:/skills/pre-push/pre-push-review.md`](winter-workflow:/skills/pre-push/pre-push-review.md).
+1. **Review** — for each env holding batch commits, `cd` into any repo worktree of that env (e.g. `<workspace>/<env>/<repo>`) so the review detects the env from its worktree, and invoke **`pre-push`** in **blocking** mode via the `Skill` tool (`pre-push` argument `blocking` — flurry consumes the findings programmatically rather than via the interactive prompt). Each invocation reviews every repo in that env ahead of upstream as one change-set; the envs are independent, so run them concurrently. Pool every finding into **one batch-wide list** — the fold and the report treat the batch as a unit. See [`winter-workflow:/context/pre-push/process.md`](winter-workflow:/context/pre-push/process.md).
 2. **Map each finding to its originating commit** — your ledger holds task → env → repo → commit SHA, and each finding names a repo + file/area. Match the finding's file to the task that touched it to find the commit that produced it.
-3. **Fold the fixes home** — spawn one `developer` (`model: "sonnet"`) per env with findings, carrying the coordination preamble, the env pin, and the findings **grouped by the commit SHA they belong to**. Instruct it to: address each finding, then **fold the fix into the commit that produced it** (`git commit --fixup <sha>` per finding, then `git rebase -i --autosquash <base>` — or amend when the finding lands on `HEAD`), preserving **one commit per task**; re-verify the affected change at runtime; **do not push**. It reports the rewritten commit SHAs and what it re-ran.
+3. **Fold the fixes home** — spawn one `ice-carver` (`model: "sonnet"`) per env with findings, carrying the coordination preamble, the env pin, and the findings **grouped by the commit SHA they belong to**. Instruct it to: address each finding, then **fold the fix into the commit that produced it** (`git commit --fixup <sha>` per finding, then `git rebase -i --autosquash <base>` — or amend when the finding lands on `HEAD`), preserving **one commit per task**; re-verify the affected change at runtime; **do not push**. It reports the rewritten commit SHAs and what it re-ran.
 
    A finding that has no single originating commit (a cross-repo contradiction, or something spanning the whole env) becomes its own small follow-up commit on the relevant track's env — note it as such rather than forcing it into an unrelated commit.
 
-An env whose `pre-push` comes back clean needs no fold — record it clean and move on.
+An env with no findings needs no fold; a fully clean batch skips the fold entirely.
 
 ### 6. Report
 
@@ -125,7 +125,7 @@ Flurry complete — 4 tasks across 3 envs, nothing pushed.
 env α (winter-cli):  ✓ `--json` on `repo ls` — a1b2c3d; verified via `winter repo ls --json`.
                      pre-push: clean.
 env β (winter-cli):  ✓ login timeout — d4e5f6a;  ✓ retry — b7c8d9e; both verified.
-                     pre-push: 1 finding (code-reviewer) folded into d4e5f6a.
+                     pre-push: 1 finding (cold-reviewer) folded into d4e5f6a.
 env γ (winter-docs): ✓ dep bump — f0a1b2c; verified build.
                      pre-push: clean.
 ```

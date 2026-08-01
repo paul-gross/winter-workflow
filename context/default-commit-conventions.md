@@ -8,8 +8,6 @@ This is the fallback convention used when no project-specific `CONTRIBUTING.md` 
 <type>(<scope>): <description>
 
 <optional body>
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 **The first line (type, scope, description) must be all lowercase.**
@@ -30,10 +28,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Product-backlog types
 
-These types apply only when the workspace ships product-backlog
-content under `winter-product:/backlog/` and `winter-product:/work/`
-(or an equivalent backlog layout). Skip them if the workspace doesn't
-manage a product backlog.
+These types apply only when the workspace ships product-backlog content under `winter-product:/backlog/` and `winter-product:/work/` (or an equivalent backlog layout). Skip them if the workspace doesn't manage a product backlog.
 
 | Type | When to Use |
 |------|-------------|
@@ -41,16 +36,17 @@ manage a product backlog.
 | `todo(<name>)` | Any change to a `.todo.md` item — creating, editing, or promoting. Scope is the kebab-case TODO name. |
 | `feat` | Archiving a completed work item or TODO (the archive move ships completed functionality, not backlog content). |
 
+### Initial repo setup
+
+A brand-new repo starts with **two** `initial(<repo-name>)` commits, in this order:
+
+1. `initial(<repo-name>): initial commit` — **empty**: no files (`git commit --allow-empty`). It exists purely as a stable anchor for rebasing — with it in place, every real commit (including the next one) can be rewritten with `git rebase -i` without hitting the root-commit special case.
+2. `initial(<repo-name>): initial implementation` — the first real content. During the first pass on a new repo, keep **amending this commit** (`git commit --amend`) as the initial implementation takes shape, rather than stacking micro-commits; normal commit history starts after it.
+
+These two are the only commits that use the `initial` type; everything after them follows the standard types above.
+
 ## Body
 
 For non-trivial changes, include a body that explains:
 - What was changed and why
 - Any important decisions or trade-offs
-
-## Co-Authorship
-
-Always end with a co-author line:
-
-```
-Co-Authored-By: Claude <noreply@anthropic.com>
-```

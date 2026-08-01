@@ -1,6 +1,6 @@
 # Default Automated Testing Strategy
 
-This document is used by the `test-mediator` agent during the **Automated Testing Strategy Bootstrap Workflow**. When a project has no documented automated testing strategy, the test-mediator proposes these defaults.
+Workspace default for the **Automated Testing Strategy Bootstrap Workflow**: when a project has no documented automated testing strategy, an agent proposes these defaults. Not currently wired to an agent — the `winter-architect` is the likely future consumer.
 
 The user may accept these as-is, modify them, or specify an entirely different approach.
 

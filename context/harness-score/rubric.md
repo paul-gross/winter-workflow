@@ -82,7 +82,7 @@ Organized into four clusters (Foundation, Governance, Delivery, Outcomes & Learn
 
 **Evidence to look for:**
 
-- Agent definitions covering multiple roles (developer, verifier, reviewer, planner) that can be composed.
+- Agent definitions covering multiple roles (ice-carver, verifier, reviewer, planner) that can be composed.
 - Skills or commands that compose agents into end-to-end workflows.
 - Workspace tooling that lets one human run multiple agent sessions in parallel (worktrees, port assignment, environment isolation).
 - Provisioning hooks (extension `on_env_init` or equivalent) that let agents bring up their own working environment.
@@ -184,7 +184,7 @@ Organized into four clusters (Foundation, Governance, Delivery, Outcomes & Learn
 **Evidence to look for:**
 
 - Worktree / environment isolation that supports concurrent agent runs.
-- End-to-end skills (e.g., `/blizzard`) that orchestrate plan-implement-verify without per-step human handoff.
+- End-to-end skills (e.g., `/glacier`) that orchestrate plan-implement-verify without per-step human handoff.
 - Commit cadence and authorship attribution.
 - Persistent agent infrastructure (scheduled agents, queued work) rather than ad-hoc per-task spawning.
 

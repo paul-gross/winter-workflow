@@ -23,7 +23,7 @@ mkdir -p "$dir"                 # create it yourself before writing
 |----------|-------------------|-----------------|--------|
 | `scores` | `workspace:/.winter/scores/` | `harness-score` HTML report + JSON sidecar | `<YYYY-MM-DD>-<project>.{html,json}` |
 | `manifests` | `workspace:/.winter/manifests/` | `review-manifest` markdown document + JSON facts | `<YYYY-MM-DD>-<slug>.{md,json}` |
-| `workflows` | `workspace:/.winter/workflows/` | per-session documentation root (`glacier`/`blizzard` plan, phase docs, activity logs) | `<YYYY-MM-DD>-<name>/` directory |
+| `workflows` | `workspace:/.winter/workflows/` | per-session documentation root (`glacier` plan, phase docs, activity logs) | `<YYYY-MM-DD>-<name>/` directory |
 | `retrospectives` | `workspace:/.winter/retrospectives/` | the session retrospective | `<YYYY-MM-DD>-<name>.md` |
 
 Same-day re-runs disambiguate with an `-<HHMM>` segment after the date, as each skill already documents.

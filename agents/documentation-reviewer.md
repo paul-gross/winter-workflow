@@ -48,7 +48,7 @@ You do not author or rewrite documentation. You review what is on disk against t
 
 - **Agent-facing markdown** — `CLAUDE.md`, `.claude/` agents/skills/commands, and `context/` documentation are written for AI agents developing the project, not for end-users. That is the `context-reviewer`'s lane. If a public doc and an agent-facing doc duplicate each other, name the public-doc side and route the rest to `context-reviewer`.
 - **Harness-specific markdown** and the application↔harness seam — `harness-reviewer`'s lane.
-- **Source code** — `code-reviewer`'s lane. You read code only to check whether a public doc still describes it accurately.
+- **Source code** — `cold-reviewer`'s lane. You read code only to check whether a public doc still describes it accurately.
 
 If the project ships no external-facing public documentation at all, say so in one sentence and stop — there is nothing in your lane to review.
 

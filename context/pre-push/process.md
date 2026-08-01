@@ -1,8 +1,8 @@
 # Pre-push review
 
-Run an LLM-guided review over the un-pushed change-set before pushing completed work. The change-set is every repo in the feature env with commits ahead of its upstream — `pre-push` reviews them **together**, not one repo at a time. It fans out up to four one-shot reviewers in parallel — `code-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer`, **one per axis, each spanning every in-scope repo** — then synthesizes the findings into a single summary for the caller, including a cross-repo consistency pass. Which reviewers spawn depends on what surfaces the in-scope repos actually have: an env with no agentic harness anywhere gets no `harness-reviewer`, none with public docs gets no `documentation-reviewer`, and so on (see step 3).
+Run an LLM-guided review over the un-pushed change-set before pushing completed work. The change-set is every repo in the feature env with commits ahead of its upstream — `pre-push` reviews them **together**, not one repo at a time. It fans out up to four one-shot reviewers in parallel — `cold-reviewer`, `harness-reviewer`, `context-reviewer`, and `documentation-reviewer`, **one per axis, each spanning every in-scope repo** — then synthesizes the findings into a single summary for the caller, including a cross-repo consistency pass. Which reviewers spawn depends on what surfaces the in-scope repos actually have: an env with no agentic harness anywhere gets no `harness-reviewer`, none with public docs gets no `documentation-reviewer`, and so on (see step 3).
 
-`pre-push` mirrors `cold-review` and `harness-review` in shape (cold, one-shot, no team) but differs in three ways:
+`pre-push` mirrors `cold-review` and `harness-review` in shape (fresh, one-shot, no team) but differs in three ways:
 
 - **Scope is the un-pushed change-set across the env** — every repo with commits ahead of upstream, each reviewed over its own `<base>...HEAD` (where `<base>` is `origin/master` or its equivalent). The point is to gate the push, so the set is whatever `winter ws push` would actually deliver — not branch-vs-base of an arbitrary diverged history, and never uncommitted work (you don't push uncommitted work). Run from a standalone repo, or in an env where only one repo is ahead, it gates that single repo exactly as before.
 - **Multiple reviewers in parallel**, fanned out from one entry point. `cold-review` and `harness-review` are single-axis; `pre-push` covers the full review surface in one round-trip — but only the axes the in-scope repos have.
@@ -47,14 +47,14 @@ git diff --name-only <base>...HEAD
 
 Then decide each reviewer against the union — spawn it if **any** in-scope repo satisfies its trigger:
 
-- **`code-reviewer` — spawn whenever the change-set changes code** in any repo. Any code change wants a structural read. (A docs-only change-set can skip it.)
+- **`cold-reviewer` — spawn whenever the change-set changes code** in any repo. Any code change wants a structural read. (A docs-only change-set can skip it.)
 - **`harness-reviewer` — spawn if any in-scope repo has an agentic-harness surface.** Evidence: agent definitions (`agents/*.md`, `.claude/agents/`), skills, verifier/test scaffolds, harness conventions, any `CLAUDE.md`, a `context/` tree. If no in-scope repo has any of these, there is no application↔harness seam to review — skip it.
 - **`context-reviewer` — spawn if any in-scope repo has agent-facing markdown AND the change-set touches it.** Apply the canonical classifier at `winter-workflow:/context/agent-facing-paths.md` (it also defines the product/backlog exclusion). If no in-scope repo has agent-facing markdown, skip.
 - **`documentation-reviewer` — spawn if any in-scope repo has external-facing public documentation AND the change-set touches code or docs that documentation covers.** Public documentation is what a human adopter/end-user reads: a `docs/` content tree with a site-generator config (`astro.config.*` + Starlight, `docusaurus.config.*`, `mkdocs.yml`, `book.toml`, VitePress), a separate docs-site repo, user/adopter guides, or the user-facing portion of a public `README.md`. It is **not** the agent-facing `context/` tree or `CLAUDE.md` — those belong to `context-reviewer`. If no in-scope repo ships public documentation, skip the reviewer.
 
-Probe each in-scope repo's surfaces with cheap checks before deciding — e.g. `ls docs/ context/ agents/ .claude/ 2>/dev/null` in each worktree, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it. A surface in **any** in-scope repo qualifies its reviewer — a docs-only repo paired with a code-only repo in the same change-set spawns both `documentation-reviewer` and `code-reviewer`.
+Probe each in-scope repo's surfaces with cheap checks before deciding — e.g. `ls docs/ context/ agents/ .claude/ 2>/dev/null` in each worktree, look for a docs-generator config, check for `CLAUDE.md`. When in doubt about whether a surface exists, a quick `git ls-files` glob settles it. A surface in **any** in-scope repo qualifies its reviewer — a docs-only repo paired with a code-only repo in the same change-set spawns both `documentation-reviewer` and `cold-reviewer`.
 
-Record which reviewers will be spawned and why the others were skipped. Tell the caller in one short line (e.g., "Spawning code-reviewer + context-reviewer over 9 files across `alpha/winter` + `alpha/winter-docs`; no public-docs surface in scope…") before issuing the spawns.
+Record which reviewers will be spawned and why the others were skipped. Tell the caller in one short line (e.g., "Spawning cold-reviewer + context-reviewer over 9 files across `alpha/winter` + `alpha/winter-docs`; no public-docs surface in scope…") before issuing the spawns.
 
 ### 4. Spawn the reviewers in parallel
 
@@ -63,9 +63,9 @@ Record which reviewers will be spawned and why the others were skipped. Tell the
 Each reviewer's prompt is built from the **shared review engine**, `winter-workflow:/context/review.md` — the same scaffold the single-axis review skills use, so `pre-push` and `cold-review` never drift. For every selected reviewer, follow the engine's **Spawn-prompt scaffold** and append its **per-axis body**, with these `pre-push`-specific bindings:
 
 - **Scope** = `unpushed` (the engine scope of that name). The in-scope target set is the `(repo, worktree-path, base-ref)` entries from step 2; each reviewer reads each repo over `<base>...HEAD` and, for ≥2 repos, applies the engine's cross-repo rule.
-- **Execution / model** = the engine default — a cold subagent, with the model passed explicitly per the engine's Model section. All spawns are foreground — you need the findings to synthesize them.
+- **Execution / model** = the engine default — a fresh subagent, with the model passed explicitly per the engine's Model section. All spawns are foreground — you need the findings to synthesize them.
 - **Reviewers** = those selected in step 3:
-  - `subagent_type: code-reviewer` — axis `code`
+  - `subagent_type: cold-reviewer` — axis `code`
   - `subagent_type: harness-reviewer` — axis `harness`
   - `subagent_type: context-reviewer` — axis `context` (only if classified in step 3)
   - `subagent_type: documentation-reviewer` — axis `documentation` (only if classified in step 3)
@@ -76,25 +76,25 @@ The engine carries the canonical one-shot/no-team preamble, the diff commands, t
 
 Once every spawned reviewer has reported back, produce **one consolidated summary** for the caller. Do **not** paste the reviewer reports verbatim — synthesize.
 
-**Cross-repo consistency pass** (change-sets spanning two or more repos only). Before writing the summary, scan the reviewers' findings and the change-set for contradictions *between* repos — a command, flag, convention, or symbol changed in one repo and left stale in another's docs, mirror, or caller. Each axis reviewer holds the whole change-set and should already flag these within its lane; this pass consolidates them and catches any that span axes (e.g. `code-reviewer` saw the removal, `documentation-reviewer` saw the stale mention). Promote each confirmed cross-repo contradiction to a single `## cross-repo` finding that names both repos. Single-repo change-sets skip this pass entirely.
+**Cross-repo consistency pass** (change-sets spanning two or more repos only). Before writing the summary, scan the reviewers' findings and the change-set for contradictions *between* repos — a command, flag, convention, or symbol changed in one repo and left stale in another's docs, mirror, or caller. Each axis reviewer holds the whole change-set and should already flag these within its lane; this pass consolidates them and catches any that span axes (e.g. `cold-reviewer` saw the removal, `documentation-reviewer` saw the stale mention). Promote each confirmed cross-repo contradiction to a single `## cross-repo` finding that names both repos. Single-repo change-sets skip this pass entirely.
 
 Output shape:
 
 ```
 ## Pre-push review: env `<env>` — <repo>@<commits>[, <repo>@<commits>]   (single repo: <base>...HEAD)
 
-Reviewers: code-reviewer[, harness-reviewer][, context-reviewer][, documentation-reviewer]
+Reviewers: cold-reviewer[, harness-reviewer][, context-reviewer][, documentation-reviewer]
 Files: <N> changed across <R> repos, <M> commits
 
 ## cross-repo
-- (code-reviewer + documentation-reviewer) <contradiction naming both repos>
+- (cold-reviewer + documentation-reviewer) <contradiction naming both repos>
 
 ## must-fix
-- (code-reviewer) <repo>: <finding>
+- (cold-reviewer) <repo>: <finding>
 - (harness-reviewer) <repo>: <finding>
 
 ## consider
-- (code-reviewer) <repo>: <finding>
+- (cold-reviewer) <repo>: <finding>
 - (context-reviewer) <repo>: <finding>
 
 ## clean
@@ -106,7 +106,7 @@ Rules for the summary:
 - Cap at roughly 25 lines. If the findings exceed that, list the headlines and offer to relay the full report from a specific reviewer on request.
 - Attribute every finding to its reviewer in parentheses — the caller needs to know which axis raised what. When the change-set spans multiple repos, prefix each finding with its repo so the caller can locate it.
 - Lead with `## cross-repo` when present — a contradiction between repos is the failure mode this skill exists to catch, so it goes first. Omit the section for single-repo change-sets and when none is found.
-- Sort within each section by reviewer in this order: code-reviewer, harness-reviewer, context-reviewer, documentation-reviewer (matches the spawn order so the caller can scan predictably). Skip the ones that weren't spawned.
+- Sort within each section by reviewer in this order: cold-reviewer, harness-reviewer, context-reviewer, documentation-reviewer (matches the spawn order so the caller can scan predictably). Skip the ones that weren't spawned.
 - If a reviewer found nothing, list it under `## clean` rather than omitting it — absence of a section is ambiguous, presence in `## clean` is signal. List reviewers that were **not spawned** (no matching surface in any in-scope repo) on one line under the `Reviewers:` header, not in `## clean` — "not run" and "ran clean" are different signals.
 
 ### 6. Decide
@@ -131,12 +131,12 @@ The fan-out is conditional, not fixed: each reviewer is spawned only when some i
 
 ## Why no team
 
-Like `cold-review` and `harness-review`, `pre-push` is deliberately team-less. Each reviewer is a role-pure one-shot. No shared `TaskList`, no peers, no follow-on. This keeps `pre-push` composable: a user can invoke it directly, a `blizzard` snowflake can invoke it as a contained pre-push step without nesting teams, and the reviewers never try to coordinate work they aren't responsible for.
+Like `cold-review` and `harness-review`, `pre-push` is deliberately team-less. Each reviewer is a role-pure one-shot. No shared `TaskList`, no peers, no follow-on. This keeps `pre-push` composable: a user can invoke it directly, an `iceberg` foreman can invoke it as a contained pre-push step without nesting teams, and the reviewers never try to coordinate work they aren't responsible for.
 
 ## Why no automatic push
 
 Coupling `pre-push` to `/ws-push` would invert the dependency direction. `/ws-push` lives in winter core (workspace `.claude/skills/`); `pre-push` lives in `winter-workflow` (an extension). Workflow can depend on core; core cannot depend on extensions. Keeping the two skills decoupled preserves that arrow — invoke `pre-push` for review, then `/ws-push` (or raw `git push`) to deliver. Callers who want a one-shot "review then push" flow can chain them themselves.
 
-## Why "cold"
+## Why "fresh"
 
-Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a cold reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `pre-push` preserves it across every axis it runs.
+Each spawned reviewer reads only the diff, the code, and the docs — never this session's design discussion. A reviewer that sat in on the design absorbs the author's framing; a fresh reviewer reads what's actually on disk. That gap is where the most valuable findings live, and `pre-push` preserves it across every axis it runs.

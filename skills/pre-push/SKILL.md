@@ -4,4 +4,4 @@ argument-hint: "[blocking]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion
 ---
 
-Read the sibling [pre-push-review.md](./pre-push-review.md) and execute the workflow it describes. Treat the doc as authoritative — every step, every reviewer prompt, every decision lives there. Pass `$ARGUMENTS` through unchanged.
+Read [`winter-workflow:/context/pre-push/process.md`](winter-workflow:/context/pre-push/process.md) and execute the workflow it describes. Treat the doc as authoritative — every step, every reviewer prompt, every decision lives there. Pass `$ARGUMENTS` through unchanged.

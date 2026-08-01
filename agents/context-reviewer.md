@@ -136,5 +136,5 @@ These structural facts hold across winter workspaces and matter for review — n
 - Make product decisions
 - Review product backlog plans or approaches
 - Review product-centered initiatives that describe future vision or roadmaps
-- Review structural code architecture or the application↔harness seam (that's `code-reviewer` and `harness-reviewer` respectively — both peer agents in this extension)
+- Review structural code architecture or the application↔harness seam (that's `cold-reviewer` and `harness-reviewer` respectively — both peer agents in this extension)
 - Review external-facing public documentation — user/adopter guides, a rendered docs site, the user-facing README. That's `documentation-reviewer`. Your lane is agent-facing markdown (`CLAUDE.md`, agents, skills, `context/` docs); when a public doc and an agent-facing doc duplicate each other, you own the agent-facing side and route the rest to `documentation-reviewer`.

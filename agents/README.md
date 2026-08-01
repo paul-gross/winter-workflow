@@ -4,22 +4,20 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 
 | File | Role |
 |------|------|
-| `architect.md` | High-level design, interfaces, dependencies |
+| `winter-architect.md` | High-level design, interfaces, dependencies |
 | `backend-verifier.md` | API/CLI/database verification |
-| `code-reviewer.md` | Architectural code review |
+| `cold-reviewer.md` | Architectural code review |
 | `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
-| `developer.md` | Code implementation, unit tests, refactoring |
-| `diff-classifier.md` | Cold, k-voted per-hunk tier classifier for a review manifest |
+| `ice-carver.md` | Code implementation, unit tests, refactoring |
+| `diff-classifier.md` | Fresh, k-voted per-hunk tier classifier for a review manifest |
 | `documentation-reviewer.md` | Reviews external-facing public documentation for accuracy and currency |
-| `explorer.md` | Investigates undocumented systems, writes AI-centric docs |
+| `arctic-explorer.md` | Investigates undocumented systems, writes AI-centric docs |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
 | `harness-reviewer.md` | Application↔harness seam review against a diff |
 | `manifest-auditor.md` | Adversarially refutes a review manifest's cheap-tier claims |
-| `runner.md` | Service lifecycle and log monitoring |
-| `test-mediator.md` | Test strategy, scenario design, verifier dispatch |
 | `verify-finale.md` | Verification finale — verify via the matrix, build a missing method, fix and re-verify |
 
-Shared default docs (SOLID + Clean Architecture, default test strategy, etc.) consumed by `architect.md` and `test-mediator.md` live under `docs/`.
+Shared default docs live under `docs/`: the principles defaults (SOLID + Clean Architecture) consumed by `winter-architect.md`, plus test-strategy defaults kept for a future bootstrap workflow (not currently wired to any agent).
 
 ## Canonical agent format
 
@@ -44,10 +42,10 @@ Agent bodies describe **what the role does and how it works** — coding standar
 Concretely:
 
 - Agent bodies reference "your caller" rather than a named coordinator.
-- Agents do not include `TaskList`/`TaskUpdate` instructions by default. Where coordination tools appear in the `tools:` frontmatter, they're listed because some caller (today, `blizzard`) genuinely needs them.
+- Agents do not include `TaskList`/`TaskUpdate` instructions by default. Where coordination tools appear in the `tools:` frontmatter, they're listed because some caller (today, `iceberg`) genuinely needs them.
 - Skills that compose multiple agents are expected to inject a short **coordination preamble** at the top of each spawn prompt explaining how the agent should participate (claim tasks, report back, when to stop).
 
-The `blizzard` skill documents its preamble in [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) under *Team-coordination preamble*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `cold-review` does with `code-reviewer`).
+The `iceberg` skill documents its preamble in [`../skills/iceberg/SKILL.md`](../skills/iceberg/SKILL.md) under *Coordination preamble (inject verbatim)*. New skills that compose these agents should follow the same pattern with whatever coordination shape they need (or skip it entirely for one-shot work, like `cold-review` does with `cold-reviewer`).
 
 ## Convention: tool grant vs. preamble
 
@@ -55,31 +53,31 @@ Each agent's `tools:` frontmatter is the **permissive** set — every tool the a
 
 > **The key is `tools`, not `allowed-tools`.** Claude Code reads `tools` for *agents* (`allowed-tools` is the *skills/commands* key) and silently ignores `allowed-tools` here — so an agent that declares `allowed-tools` gets the wide default grant, not the restricted set the author intended. Every agent must also declare a non-empty `description` and a `model` of `haiku`, `sonnet`, or `opus`. `winter lint` enforces all three keys and flags the `allowed-tools` mistake.
 
-This split exists because the same agent definition is reused across very different coordination shapes. A **resident** teammate like `runner` genuinely uses `SendMessage`, `TaskUpdate`, and `TaskList` — the snowflake manages a shared task list and the resident teammate reports back via `SendMessage` for as long as it stays up. The `developer` carries the same team-tool grant, but every current caller runs it **one-shot**: `thaw`, `glacier`, and `flurry` spawn it with a preamble that forbids those tools, and `blizzard` now does too — a one-shot developer owns a single slice and reports in its final response (see [`../skills/blizzard/SKILL.md`](../skills/blizzard/SKILL.md) *One-shot developers*). The grant stays in the definition for the resident mode; the preamble scopes it out for one-shot spawns.
+This split exists because the same agent definition is reused across very different coordination shapes. A **resident** teammate — an `iceberg` target-pinned `ice-carver` — genuinely uses `SendMessage`, `TaskUpdate`, and `TaskList`: the foreman manages a shared task list and the resident teammate reports back via `SendMessage` for as long as it stays up. The one-shot build skills run the same `ice-carver` differently: `snowball`, `glacier`, and `flurry` spawn it with a preamble that forbids those tools — a one-shot ice-carver owns a single slice and reports in its final response. The grant stays in the definition for the resident mode; the preamble scopes it out for one-shot spawns.
 
-Worked example — `thaw`'s preamble narrows the grant for one-shot runs:
+Worked example — `snowball`'s preamble narrows the grant for one-shot runs:
 
-> You are operating as a one-shot agent spawned by the `thaw` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
+> You are operating as a one-shot agent spawned by the `snowball` skill. No shared task list exists. Report results to the skill via your final response only — do not call `SendMessage`, `TaskCreate`, or `TaskUpdate`. When your task is done, stop.
 
-The `developer` (or `explorer`, or a verifier) agent reads this and ignores its task tools for the duration of the call. The tools stay in the grant so `blizzard` can use them; the preamble is what scopes any one run.
+The `ice-carver` (or `arctic-explorer`, or a verifier) agent reads this and ignores its task tools for the duration of the call. The tools stay in the grant so `iceberg` can use them; the preamble is what scopes any one run.
 
 If you add a new skill that composes these agents, decide which tools its mode allows and document the restrictions in your preamble. The agent definitions themselves stay stable.
 
-## Worked examples (non-blizzard callers)
+## Worked examples (one-shot callers)
 
-Non-blizzard skills compose these role-pure agents without spinning up a team. Each one shows how a different coordination shape stays compatible with the convention above.
+These skills compose the role-pure agents without spinning up a team. Each one shows how a different coordination shape stays compatible with the convention above.
 
 | Skill | Agent(s) composed | Coordination shape |
 |-------|-------------------|--------------------|
-| [`cold-review`](../skills/cold-review/SKILL.md) | `code-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
-| [`glacier`](../skills/glacier/SKILL.md) | `architect` *(optional)* → `developer` (one per phase) → `verify-finale` (one per phase) → `frontend-verifier` *(per phase, for a browser-driven method the Bash-only finale can't drive)* | Sequential one-shots across ordered phases; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble; per phase the `developer` implements and the `verify-finale` closes it through the application's verifiability matrix, and the skill gates phase advancement on the finale (and any split-off `frontend-verifier`) passing |
+| [`cold-review`](../skills/cold-review/SKILL.md) | `cold-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff and reports |
+| [`glacier`](../skills/glacier/SKILL.md) | `winter-architect` *(optional)* → `ice-carver` (one per phase; a phase's independent slices may run in parallel) → `verify-finale` (one per phase) → `frontend-verifier` *(per phase, for a browser-driven method the Bash-only finale can't drive)* | Sequential one-shots across ordered phases; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble; per phase the `ice-carver` implements and the `verify-finale` closes it through the application's verifiability matrix, and the skill gates phase advancement on the finale (and any split-off `frontend-verifier`) passing |
 | [`harness-review`](../skills/harness-review/SKILL.md) | `harness-reviewer` | One-shot, single agent, no preamble — the reviewer reads the diff plus harness/transcripts and reports |
-| [`review-manifest`](../skills/review-manifest/SKILL.md) | `diff-classifier` (k-fan-out) → `manifest-auditor` | One-shot, no team; **k = 3** classifiers spawned in parallel over the same diff (reconciled per hunk, any split fails closed to `novel`), then one auditor refutes the cheap tiers. Each spawn gets the verbatim one-shot/no-team preamble; the classifiers additionally never receive the task prompt (coldness is the point) |
-| [`harness-score`](../skills/harness-score/SKILL.md) | `explorer` | One-shot evidence gathering; main agent applies the rubric and renders the report. Preamble adds a "no documentation writing, no context-reviewer request" clause on top of the standard one-shot wording, since `explorer`'s default body otherwise authors `context/` docs |
-| [`thaw`](../skills/thaw/SKILL.md) | `explorer` → `developer` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
-| [`flurry`](../skills/flurry/SKILL.md) | `developer` (one fresh per task) → `developer` (one per env *with findings*, to fold them) | Parallel one-shots, no team; tracks run concurrently across environments (background spawns), tasks within a track sequentially. Each spawn gets the verbatim one-shot/no-team preamble, but unlike `glacier`/`thaw` the per-task `developer` also lands exactly one commit. Composes `pre-push` (per env) for review |
+| [`review-manifest`](../skills/review-manifest/SKILL.md) | `diff-classifier` (k-fan-out) → `manifest-auditor` | One-shot, no team; **k = 3** classifiers spawned in parallel over the same diff (reconciled per hunk, any split fails closed to `novel`), then one auditor refutes the cheap tiers. Each spawn gets the verbatim one-shot/no-team preamble; the classifiers additionally never receive the task prompt (freshness is the point) |
+| [`harness-score`](../skills/harness-score/SKILL.md) | `arctic-explorer` | One-shot evidence gathering; main agent applies the rubric and renders the report. Preamble adds a "no documentation writing, no context-reviewer request" clause on top of the standard one-shot wording, since `arctic-explorer`'s default body otherwise authors `context/` docs |
+| [`snowball`](../skills/snowball/SKILL.md) | `arctic-explorer` → `ice-carver` → `backend-verifier` \| `frontend-verifier` | Sequential one-shots, capped iteration loop; each spawn gets a verbatim "you are operating as a one-shot agent, no shared task list" preamble |
+| [`flurry`](../skills/flurry/SKILL.md) | `ice-carver` (one fresh per task) → `ice-carver` (one per env *with findings*, to fold them) | Parallel one-shots, no team; tracks run concurrently across environments (background spawns), tasks within a track sequentially. Each spawn gets the verbatim one-shot/no-team preamble, but unlike `glacier`/`snowball` the per-task `ice-carver` also lands exactly one commit. Composes `pre-push` once over the finished batch for review |
 
-`harness-review` is the same composition shape as `cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching `blizzard` or the other composed skills.
+`harness-review` is the same composition shape as `cold-review` but reviews a different concern axis (application↔harness seam, not architectural code quality). It is the standard worked example of "add a new role-pure reviewer and expose it as a one-shot skill" without touching the other composed skills.
 
 The four single-axis review skills (`cold-review`, `context-review`, `harness-review`, `documentation-review`) and `pre-push` no longer carry their own spawn instructions — they route through the shared engine [`../context/review.md`](../context/review.md), which builds every reviewer prompt (the one-shot/no-team preamble, scope, diff commands, per-axis body, output shape) and chooses the model. The role-pure / caller-injects-coordination convention is unchanged: the engine is the caller, and it injects exactly the one-shot, no-team preamble these reviewers expect.
 
