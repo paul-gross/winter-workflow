@@ -26,6 +26,15 @@ Run a canonical role in a fresh isolated context with:
 
 An isolated role has no prior conversation context. Unless a process explicitly says otherwise, it has no resident peers or shared assignment queue, returns its result once through the harness's isolated-result channel, performs no follow-on coordination, and stops.
 
+### Fork the current context
+
+Create concurrent copies of the calling context that inherit everything it has read and established, each carrying one bounded charter and a declared result shape.
+
+- A fork inherits the parent's accumulated context and model intent; its charter adds only the fork's task, restrictions, and result shape.
+- **Fork to deepen, spawn fresh to diversify or adjudicate.** A fork shares the parent's framing, so use forks to pursue work the parent has already framed correctly. Any step whose value depends on independence from that framing — verification of the parent's findings, adjudication between results, a control read of the same material — uses **Spawn an isolated role** instead.
+- Forks run as a declared concurrent group, return one distilled result each through the harness's isolated-result channel, and stop; the parent awaits the group. A fork returns conclusions, not its investigation.
+- When the active harness cannot fork the current context and the process explicitly permits a fallback, degrade by writing an orientation briefing from the parent context and spawning isolated roles that carry it. The briefing is lossy; the process result must label the degraded execution. Without an explicit fallback permission, an unavailable fork capability is an unsupported capability.
+
 ### Ask the human caller
 
 Present the declared question and choices through the session's human interaction channel. Stop until the answer is available when the process requires a decision before continuing.

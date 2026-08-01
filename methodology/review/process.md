@@ -27,6 +27,9 @@ Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.m
 | Axis | Fresh runtime port |
 |------|--------------------|
 | `code` | `cold-reviewer` |
+| `correctness` | `cold-reviewer` |
+| `architecture` | `cold-reviewer` |
+| `qualities` | `cold-reviewer` |
 | `context` | `context-reviewer` |
 | `harness` | `harness-reviewer` |
 | `documentation` | `documentation-reviewer` |

@@ -1,10 +1,20 @@
 # Code review axis
 
-Review source-code changes for correctness, architectural quality, and adherence to the target's documented design principles. Produce high-signal, low-noise findings about problems that matter rather than comments on every changed file.
+Review source-code changes with one goal: find what is not good enough to ship — incorrect behavior, structural weakness, violations of the target's documented design principles, and tests that fail to hold the change to its claims. The review's value is measured by the real problems it surfaces.
 
 ## Inputs
 
 Consume the semantic review inputs prepared by the [review process](../process.md): scope, in-scope targets, review material, cross-repo framing when applicable, and any remote-feedback destination.
+
+## Stance
+
+The change is unproven until you have attacked it. Your job is to find the ways it is wrong, weak, or below the target's declared bar — not to summarize it, appreciate it, or certify it.
+
+Plausible-looking code is where defects live: a clean-reading change has survived only its author's framing, and you are its first hostile reader. Treat "it reads fine" as the starting condition, not a verdict.
+
+An empty report is a strong claim — that you ran every attack line below against the change and it held. Earn it before you make it.
+
+Spend no attention on praise, and none on formatting, style, or trivial naming preferences; neither is a finding.
 
 ## Discover the criteria
 
@@ -17,32 +27,35 @@ Do not assume the target's principles or treat familiar filenames as authoritati
 
 Review against the declared principles and cite their owner in each applicable finding. If no design principles are documented, use general software-design judgment and note the missing documented standard so the target can bootstrap one.
 
-## Evidence method
+## The hunt
 
-1. Read all review material and establish the change's intent from the code and supplied scope.
-2. Read surrounding code to understand existing patterns, boundaries, and conventions.
-3. Evaluate the change against the discovered criteria and the checklist below.
-4. Report only concrete issues supported by a file and location. Do not invent findings to fill the checklist.
+1. Establish the change's intent from the review material and scope. State what the change claims to do — several attack lines test the code against its claims.
+2. Enumerate the attack lines below against this specific change, then pursue each one to a conclusion. Do not read the diff once and report whatever happened to surface — the defects worth finding are the ones a single pass misses.
+3. Investigate beyond the diff. The diff shows what the author touched, not what the change affects: read the callers, implementors, and neighbors of every changed surface, and trace data flow through the changed paths rather than assuming the surrounding code still holds.
 
-## Checklist
+### Attack lines
 
-- **Correctness and usefulness**: identify incorrect behavior, dead or useless code, dependencies, and method calls.
-- **Principle adherence**: flag violations of documented architecture or design principles.
-- **Separation of concerns**: detect business logic or responsibilities leaking across layers.
-- **Naming and abstraction level**: assess whether names communicate intent and abstractions sit at the right level; ignore trivial preferences.
-- **Coupling and boundaries**: identify tight coupling, missing boundaries, and concepts that should be encapsulated together.
-- **Complexity**: flag unnecessary abstractions, premature generalization, and over-engineering.
-- **Performance**: identify credible risks such as excessive rerenders, N+1 queries, or missing indexes.
-- **Tests**: identify behavior gaps, useless assertions or tests, and application refactors that would simplify the tests.
-- **Good decisions**: briefly acknowledge a particularly strong design decision when useful.
+- **Broken behavior** — trace concrete inputs through every changed path and hunt for the input, state, or sequence that produces a wrong result: boundary values, empty and error cases, repeated or concurrent invocation, the path the author visibly never exercised.
+- **Broken neighbors** — the change's blast radius: callers, implementors, configuration, and cross-repo dependents it obligates but does not touch. Read them; do not infer their safety from the diff.
+- **False claims** — names, comments, docstrings, types, and commit messages assert behavior; check every assertion against what the code does. A lying name or a stale comment is a finding.
+- **Principle violations** — judge the change against the discovered criteria and cite the owner. A decision the change had to make with no documented criterion to govern it is itself a finding.
+- **Wrong shape** — coupling across boundaries, responsibilities leaking between layers, abstractions at the wrong level; structure the change needed but lacks, and structure it carries but never needed.
+- **Weak tests** — ask whether the suite would catch the defects you hunted for above. Assertions that cannot fail, tests pinned to implementation rather than behavior, and changed behavior no test pins are findings, as are application refactors that would materially simplify the tests.
+- **Credible performance harm** — N+1 queries, missing indexes, unbounded growth, excessive rerenders. Report only with a concrete mechanism, never on vibes.
 
-Do not report formatting, style, or trivial naming nitpicks. Do not run tests; this axis reviews the code and its tests but does not verify execution.
+### Substantiation
+
+Re-derive every candidate finding before reporting it: confirm from the code that the failure or weakness actually occurs, and drop what you cannot substantiate.
+
+You may run a targeted probe — a snippet, a REPL call, a one-off script — to confirm or refute a specific suspected defect. Do not run the target's test suite as certification: execution-based verification belongs to the verification processes, and a green run is not a review.
+
+A suspicion on a load-bearing path that you genuinely cannot resolve is still reportable: state it as an open question with the evidence you have and what would settle it, explicitly labeled unconfirmed.
 
 ## Severity
 
-- **must-fix**: correctness failures or structural issues likely to cause real problems, including principle violations, dangerous coupling, broken abstractions, and missing boundaries.
-- **consider**: non-blocking improvements such as clearer naming, a better-fitting pattern, or a minor simplification.
-- **notes**: brief acknowledgments and concise routing of an out-of-scope concern to another axis.
+- **must-fix**: incorrect behavior, broken callers or dependents, and structural issues likely to cause real problems — including principle violations, dangerous coupling, broken abstractions, and missing boundaries.
+- **consider**: real, non-blocking improvements — a better-fitting pattern, a meaningful simplification, a test that should pin behavior it currently misses.
+- **notes**: concise routing of an out-of-scope concern to another axis.
 
 ## Output
 
