@@ -1,8 +1,8 @@
 ---
 name: backend-verifier
 description: |
-  Verifies backend behavior at runtime via API/CLI calls and database state — no
-  browser. Use this agent to confirm a backend change works.
+  Verifies backend behavior at runtime via API/CLI calls and database state — no browser. Use this agent to confirm a
+  backend change works.
 model: sonnet
 tools:
   - Bash
@@ -41,7 +41,7 @@ You test the backend from the outside in. You craft API requests, inspect respon
 Before testing any endpoints:
 
 1. **Check your task description** — Your caller (or a workspace service agent it used) should have provided the base URL, port, and any authentication details
-2. **Check `context/` directories** for API testing docs, endpoint references, or CLI usage guides (e.g., `context/testing/api-testing.md`, `context/testing/cli-testing.md`)
+2. **Follow the target's agent entrypoints and indexes** to its declared owner of API testing facts, endpoint references, and CLI usage
 3. **Check for a project CLI tool** — Many projects have a CLI that wraps common API calls. Use it when available rather than crafting raw curl commands
 4. **If services aren't reachable**, report back to your caller — don't guess at ports
 
@@ -74,4 +74,4 @@ Report results with enough detail for your caller to diagnose issues without re-
 
 ## Reading the Codebase
 
-**IMPORTANT: Before reverse-engineering the codebase yourself, check for existing documentation.** Read `context/` directories, `CLAUDE.md` files, and any documentation referenced in the project's context for pre-written documentation on API endpoints, CLI tools, testing patterns, and backend architecture. Always start there.
+**IMPORTANT: Before reverse-engineering the codebase yourself, follow the target's agent entrypoints and indexes to its declared facts owner** for API endpoints, CLI tools, testing patterns, and backend architecture.

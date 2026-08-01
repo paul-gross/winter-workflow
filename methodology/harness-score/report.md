@@ -1,6 +1,6 @@
 # Harness score — HTML report guide
 
-The harness-score-specific HTML output. Build on the generic standard in [`../llm-html-output.md`](../llm-html-output.md) and add the specifics below. This file owns everything particular to the harness score; the generic spec owns everything reusable.
+The harness-score-specific HTML output. Build on the generic standard in [`../html-report.md`](../html-report.md) and add the specifics below. This file owns everything particular to the harness score; the generic spec owns everything reusable.
 
 ## Tailwind config
 

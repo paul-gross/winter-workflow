@@ -2,17 +2,17 @@
 
 A review manifest is **two files**: a **markdown review document** a human reads to walk the change tier by tier, and a **JSON facts file** the markdown is rendered from. The markdown is the deliverable — the thing a reviewer opens; the JSON is the data layer (per-hunk tiers, claims, metrics, the freshness binding) that the renderer and any consumer reads. Generate the JSON first (it holds the facts and the invariants), then render the markdown from it.
 
-This doc is the single source for both files: the JSON schema, the markdown structure, the closed tier vocabulary, the two hard invariants (total coverage, freshness binding), how a hunk is identified, and the per-change metrics. The pipeline that produces a manifest is [`./pipeline.md`](./pipeline.md); the tier *semantics* (what makes a hunk `mechanical` vs `pattern` vs `novel`) are owned by the [`diff-classifier`](../../agents/diff-classifier.md) agent — this doc names the values, not their meaning.
+This doc is the single source for both files: the JSON schema, the markdown structure, the two hard invariants (total coverage, freshness binding), how a hunk is identified, and the per-change metrics. The process that produces a manifest is [`process.md`](./process.md); [`classification.md`](./classification.md) owns the closed tier vocabulary and its semantics. This doc only records those values in the schema and render.
 
-A manifest describes **one change-set**, which may span several repos in one feature env (the same change-set unit the review engine uses — see [`../review.md`](../review.md) and [`../changeset-scope.md`](../changeset-scope.md)). Every hunk is keyed by its repo, so one manifest covers the whole set.
+A manifest describes **one change-set**, which may span several repos in one feature env (the same change-set unit the review engine uses — see [`../process.md`](../process.md) and [`../change-set.md`](../change-set.md)). Every hunk is keyed by its repo, so one manifest covers the whole set.
 
 ## Where it lives
 
-Both files are **generated artifacts**, not repo deliverables — they live in the winter space's `manifests` directory ([`../winter-space.md`](../winter-space.md)), mirroring `harness-score`, sharing one basename. Resolve the directory with `winter space manifests` (by default `workspace:/.winter/manifests/`):
+Both files are **generated artifacts**, not repo deliverables. Resolve `<manifests-dir>` once under the `manifests` consumer policy in [`../../artifact-storage.md`](../../artifact-storage.md), then write the pair with one basename:
 
 ```
-$(winter space manifests)/<YYYY-MM-DD>-<slug>.md      ← the review document (what the human reads)
-$(winter space manifests)/<YYYY-MM-DD>-<slug>.json    ← the facts it was rendered from
+<manifests-dir>/<YYYY-MM-DD>-<slug>.md      ← the review document (what the human reads)
+<manifests-dir>/<YYYY-MM-DD>-<slug>.json    ← the facts it was rendered from
 ```
 
 `<slug>` identifies the change-set: the env name for an env-wide scope (`alpha`), or the repo name for a single-repo / standalone scope (`winter-workflow`). Same-day re-runs use the `<YYYY-MM-DD>-<HHMM>-<slug>` suffix. Neither file is written into a worktree. Report the **`.md` path** to the human — that is the manifest they review; the `.json` sits alongside for tooling and the freshness re-check.
@@ -56,15 +56,7 @@ The discipline is **summarize and group, never transcribe**: a reviewer should b
 
 ## The closed tier vocabulary
 
-Exactly three values, no fourth, no "unsure" — uncertainty resolves to `novel`:
-
-| Tier | Verified by |
-|------|-------------|
-| `mechanical` | deterministic replay (regenerate from the claim, byte-compare) — a follow-up |
-| `pattern` | LLM judge with the named exemplar in context, k votes — a follow-up |
-| `novel` | a human, at full attention |
-
-`novel` is the default and the safe value. The deep definition of each tier — what qualifies, and why `mechanical` and `pattern` demand a verifiable claim — lives in the [`diff-classifier`](../../agents/diff-classifier.md) agent body; do not restate it here. The replay and exemplar-judging verifications are **out of scope for this cut** (see the issue's follow-ups); this cut records the tier and claim, and verifies the cheap tiers only through the adversarial audit in the pipeline.
+The schema accepts exactly `mechanical`, `pattern`, or `novel`; there is no fourth value and no "unsure". [`classification.md`](./classification.md) owns what each value means, how uncertainty resolves, and how renderers and humans interpret it. The replay and exemplar-judging verifications remain out of scope for this cut; cheap tiers are checked through [`audit.md`](./audit.md).
 
 ## Hunk identity
 
@@ -76,7 +68,7 @@ A hunk is one `@@ -a,b +c,d @@` block within a file's diff. Its stable id is:
 
 where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,b +c,d @@` header — **not** the first changed line, which differs from `c` by the leading context lines. `<repo>` is the repo the worktree belongs to. The id is what total coverage is checked against and what every manifest entry, classifier vote, and audit result is keyed by.
 
-**The orchestrator assigns these ids, once, from the diff — classifiers do not re-derive them.** Each fresh classifier reading the same diff independently would otherwise key the same hunk off a slightly different line number (the header `c` vs. the first `+`/`-` line), and the k votes would never line up for reconciliation. So the pipeline parses the canonical `<repo>/<file>@@<c>` set from `git diff` up front and hands classifiers that enumerated list to classify *against*; a classifier returns `{hunk_id, tier, claim}` keyed by the ids it was given, never an id it invented. See [`./pipeline.md`](./pipeline.md) steps 1–2.
+**The orchestrator assigns these ids, once, from the diff — classifiers do not re-derive them.** Each fresh classifier reading the same diff independently would otherwise key the same hunk off a slightly different line number (the header `c` vs. the first `+`/`-` line), and the k votes would never line up for reconciliation. So the process parses the canonical `<repo>/<file>@@<c>` set from `git diff` up front and hands classifiers that enumerated list to classify *against*; a classifier returns `{hunk_id, tier, claim}` keyed by the ids it was given, never an id it invented. See [`./process.md`](./process.md) steps 1–2.
 
 ## Schema
 
@@ -86,6 +78,7 @@ where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,
   "skill_version": "v1",
   "generated_at": "<ISO-8601 timestamp>",
   "scope": "branch-vs-base | uncommitted | range | unpushed",
+  "pinned_scope": "exclude | include | only | null",
   "slug": "<env-or-repo>",
   "diff_sha": "<hash binding the manifest to the diff it describes>",
   "targets": [
@@ -93,6 +86,7 @@ where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,
       "repo": "<repo name>",
       "worktree": "<absolute worktree path>",
       "base": "<base ref>",
+      "base_kind": "integration | upstream | explicit | head",
       "head_sha": "<HEAD sha, for diagnostics>",
       "base_sha": "<resolved base sha, for diagnostics>"
     }
@@ -128,7 +122,7 @@ where `<new-start-line>` is the `c` (the post-image start line) from the `@@ -a,
 
 Keys, ordering, and types are stable across runs at this `schema_version`. The `tier` field records the **final** tier after the audit; `promoted_from` preserves what the classifier originally assigned so a reader can see what the audit caught.
 
-`source` records **which producer** filled the entry (see [`./index.md`](./index.md) §"Two producers"): `classified` — a fresh [`diff-classifier`](../../agents/diff-classifier.md) k-vote reconstructed the tier from the diff; `authored` — the agent that *wrote* the change recorded it while building. `intent` is the author's reason for the change in their own words (e.g. "extracted the shared scope vocab so fetch/pull/push stop drifting") — populated for `authored` entries, `null` for `classified` ones (a fresh classifier never saw the intent). `intent` enriches the render's claim; it never substitutes for the adversarial audit, which checks an `authored` cheap-tier claim exactly as it checks a `classified` one.
+`source` records **which producer** filled the entry: `classified` follows the fresh-classification [`process.md`](./process.md), while `authored` follows [`build-time.md`](./build-time.md). `intent` is the author's reason for the change in their own words (e.g. "extracted the shared scope vocab so fetch/pull/push stop drifting") — populated for `authored` entries, `null` for `classified` ones (a fresh classifier never saw the intent). `intent` enriches the render's claim; it never substitutes for the adversarial audit, which checks an `authored` cheap-tier claim exactly as it checks a `classified` one.
 
 ## Invariant 1 — total coverage
 
@@ -171,9 +165,9 @@ The repo-sort and the fixed diff command make the hash reproducible from the sam
 
 ### The staleness check
 
-Any consumer of a manifest (the render step, the `cold-review` / `pre-push` skills) runs, before trusting it:
+Any consumer of a manifest runs, before trusting it:
 
-1. Rediscover the change-set for the manifest's `scope` (per `../changeset-scope.md`).
+1. Rediscover the change-set for the manifest's `scope` (per `../change-set.md`), preserving its `pinned_scope`, target base kinds, and any documented explicit review bases.
 2. Recompute `diff_sha` by the recipe above.
 3. **Match** → the manifest describes the current diff; use it. **Mismatch** (or a target that no longer exists / a hunk-set that no longer matches) → **reject as stale**; regenerate the manifest, do not patch it. A stale manifest is never silently reused — a manifest that claims a hunk is `mechanical` for a diff that has since changed is exactly the false reassurance the binding exists to prevent.
 

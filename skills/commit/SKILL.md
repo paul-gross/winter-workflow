@@ -28,7 +28,7 @@ Check for project-specific commit conventions in this order (use the first one f
 
 1. `CONTRIBUTING.md` in the current worktree root
 2. `workspace:/context/project/contributing.md` (project-specific workspace config)
-3. [`winter-workflow:/context/default-commit-conventions.md`](winter-workflow:/context/default-commit-conventions.md) (workspace default fallback)
+3. [`winter-workflow:/methodology/delivery/commit/conventions.md`](winter-workflow:/methodology/delivery/commit/conventions.md) (workspace default fallback)
 
 ## 4. Write the Commit Message
 

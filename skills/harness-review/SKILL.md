@@ -1,11 +1,11 @@
 ---
 description: Fresh-context review of the agentic harness against a change — agent context, verifier tooling, agent docs, recent agent mistakes — by a harness-reviewer subagent. Use when asked to review the harness.
-argument-hint: "[inline] [uncommitted | <ref|range> | <paths>]"
+argument-hint: "[inline] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---
 
-# Harness Review
+The procedure for this skill is at `winter-workflow:/methodology/review/process.md`.
 
-Run a **fresh** harness review — a fresh-context `harness-reviewer` subagent evaluates the change-set with zero prior conversation history. Where `cold-review` asks "is the code architecturally sound?", this axis asks "does the harness keep pace with the change, and is the application shaped so agents can develop it productively?" — the application↔harness seam. Run both for full coverage.
+## Execute
 
-The mechanics — scope vocabulary, change-set discovery across the feature env, execution mode, model choice, the reviewer prompt scaffold (including the transcript-mining context this axis needs), and how to relay findings — are the single source in `winter-workflow:/context/review.md`. Read that engine doc and run the **harness** axis over the scope described by `$ARGUMENTS` (default: branch-vs-base; also `uncommitted`, a git `<ref|range>`, or a `<paths>` set). The engine is authoritative: pass `$ARGUMENTS` through unchanged, run it in the mode the engine selects — a fresh subagent by default, or in-context when `$ARGUMENTS` leads with `inline` (e.g. `inline main`) — and present the findings as it directs.
+Translate `$ARGUMENTS` into `{axis, scope, execution_mode}` before reading the procedure: bind `axis: harness`; a leading `inline` binds `execution_mode: inline` and is removed, otherwise bind `fresh`; discard an optional leading filler `against` or `vs` from the remainder; map an empty remainder to `branch-vs-base`, literal `uncommitted` to that scope, existing paths to `{paths: [<values>]}`, a forge PR/MR locator to `{remote: <locator>, feedback: default}`, and a verified git ref or range to `{range: <value>}`. Reject any other remainder. Read `winter-workflow:/methodology/review/process.md` and execute every step with those semantic inputs.

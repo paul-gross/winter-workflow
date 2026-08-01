@@ -7,7 +7,7 @@ prefix = "wf"
 # support exists.
 requires = ["winter-product"]
 
-# `winter lint` check: validates that this module's agents/*.md declare a
-# non-empty description, a tools grant (non-empty list or "*"), and a model of
-# haiku|sonnet|opus. Path is relative to this extension directory.
-lint = "scripts/lint-agents.py"
+# `winter lint` checks: validate agent frontmatter and keep runtime-specific
+# invocation syntax and adapter paths out of top-level methodology Markdown.
+# Paths are relative to this extension directory.
+lint = ["scripts/lint-agents.py", "scripts/lint-methodology.py"]

@@ -8,13 +8,13 @@ Exercise the change using a verification method declared in the application's **
 
 When no declared method covers the change: build one — add or extend a durable verification method and add its row to the matrix — rather than running an ad-hoc LLM verification pass.
 
-When the application has no matrix yet: fall back to its documented test strategy (`context/testing/` or equivalent) and treat the absence as a prompt to bootstrap the matrix.
+When the application has no matrix yet: fall back to its documented test strategy (`context/testing/`, `methodology/testing/`, or equivalent) and treat the absence as a prompt to bootstrap the matrix.
 
 ## Docs updated
 
 Reflect the change in each documentation surface it affects:
 
-- **Agent-facing `context/` docs** — the conventions and references agents read (a repo's `context/` tree, an extension `index.md`, `CLAUDE.md`).
+- **Agent-facing methodology/context docs** — the conventions and references agents read (a repo's `context/` or `methodology/` tree, an extension `index.md`, `CLAUDE.md`).
 - **External-facing public docs** — the project's user- and adopter-facing documentation, where it has any (a rendered docs site, adopter guides, the user-facing README).
 
 A change owes only the surfaces it actually touches; a surface that doesn't apply is a noted N/A, not a silent skip.

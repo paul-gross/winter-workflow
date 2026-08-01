@@ -4,8 +4,8 @@ argument-hint: "[uncommitted | <ref|range>]"
 allowed-tools: Bash, Read, Agent, Write
 ---
 
-# Review Manifest
+The procedure for this skill is at `winter-workflow:/methodology/review/manifest/process.md`.
 
-Generate a **review manifest** over the change-set — a reading guide that tells **a human reviewing this diff** where to spend attention. A fresh-context classifier walks the diff hunk-by-hunk and tiers every hunk (`mechanical` / `pattern` / `novel`), an adversarial auditor attacks the cheap tiers, and the result renders as a **review order** the human reads — `novel` first and in full, `pattern` collapsed behind their claims, `mechanical` as a one-line list. A JSON sidecar is written into the winter space's `manifests` directory (`winter space manifests`; default `workspace:/.winter/manifests/`). The output is advisory; it reorders the reviewer's attention and gates nothing.
+## Execute
 
-Read `winter-workflow:/context/review-manifest/pipeline.md` and execute every step against the scope in `$ARGUMENTS` (default: branch-vs-base; also `uncommitted` or a git `<ref|range>` — the engine scope vocabulary). The pipeline doc is the source of truth: it discovers the change-set, spawns the k-voted [`diff-classifier`](winter-workflow:/agents/diff-classifier.md) fan-out and the [`manifest-auditor`](winter-workflow:/agents/manifest-auditor.md), enforces total coverage and the diff-SHA freshness binding ([`winter-workflow:/context/review-manifest/format.md`](winter-workflow:/context/review-manifest/format.md)), and renders the review order. Do not paraphrase or shortcut its steps. Pass `$ARGUMENTS` through unchanged.
+Translate `$ARGUMENTS` into a semantic diff scope before reading the procedure: map an empty value to `branch-vs-base`, literal `uncommitted` to that scope, and a verified git ref or range to `{range: <value>}`. Reject any other value. Read `winter-workflow:/methodology/review/manifest/process.md` and execute every step with that scope.
