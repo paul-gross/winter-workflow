@@ -10,13 +10,13 @@ Require callers to supply these normalized inputs rather than invocation-specifi
 
 | Input | Values |
 |-------|--------|
-| `axis` | `code`, `context`, `harness`, or `documentation` |
+| `axis` | any axis registered in [`./axes/index.md`](./axes/index.md) |
 | `scope` | `branch-vs-base`, `uncommitted`, `unpushed`, `{range: <verified-ref-or-range>}`, `{paths: [<existing-path>...]}`, or `{remote: <PR-or-MR-locator>, feedback: default|report|inline}` |
 | `execution_mode` | `fresh` or `inline` |
 | `pinned_scope` | for `unpushed`: `exclude`, `include`, or `only` |
 | `review_bases` | optional per-worktree verified refs, documented by the caller for an `unpushed` target whose upstream cannot be diffed |
 
-Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, an omitted `pinned_scope` takes the default owned by [`./change-set.md`](./change-set.md). Reject an unknown axis, malformed scope, invalid pinned scope, nonexistent paths, or an unverified ref/range or review base with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
+Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, an omitted `pinned_scope` takes the default owned by [`./change-set.md`](./change-set.md). Reject an axis not registered in the axes index, a malformed scope, an invalid pinned scope, nonexistent paths, or an unverified ref/range or review base with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
 
 Session adapters own translation from their invocation syntax into these inputs. This process never reads or parses slash-command arguments.
 
@@ -30,6 +30,7 @@ Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.m
 | `correctness` | `cold-reviewer` |
 | `architecture` | `cold-reviewer` |
 | `qualities` | `cold-reviewer` |
+| `tests` | `cold-reviewer` |
 | `context` | `context-reviewer` |
 | `harness` | `harness-reviewer` |
 | `documentation` | `documentation-reviewer` |

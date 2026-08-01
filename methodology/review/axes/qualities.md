@@ -29,6 +29,8 @@ A review whose findings touch only traits named above has reviewed this template
 
 Also flag a change that silently shifts a declared trade-off even when no single trait is violated outright — such as introducing a stateful component into a tier the target declares horizontally scalable. Substantiate every finding with the declared trait, its magnitude, and the concrete mechanism by which the change affects it; drop what you cannot substantiate.
 
+Execution is bounded to targeted probes that confirm or refute a specific suspected degradation. Do not run the target's test suite as certification: execution-based verification belongs to the verification processes, and a green run is not a review.
+
 ## Severity
 
 - **must-fix**: the change degrades a declared trait at its declared magnitude, or forecloses a declared commitment.

@@ -25,7 +25,13 @@ If the target is clean on the selected axis, return one concise sentence instead
 
 ## Remote feedback
 
-When an axis directs findings to a remote review, preserve the same ids and severity semantics. Make each inline comment self-contained because readers may not see the comments together. Return the posting result or any posting failure to the caller; never imply feedback was posted when the forge command failed.
+A remote scope carries a normalized `feedback` value; each axis declares its own default. The values mean:
+
+- `report`: return the findings to the caller without posting anything to the remote review.
+- `inline`: post each `must-fix` and `consider` finding as a self-contained inline comment on the remote review through the available forge CLI (`gh`, `glab`, `tea`, or equivalent), each comment carrying its finding id, severity, violated principle or concern, proposed direction, and reasoning.
+- `default`: apply the executing axis's declared default (`report` or `inline`).
+
+Preserve the same ids and severity semantics as a local report, and make each inline comment self-contained because readers may not see the comments together. Return a concise posting summary only when every attempted post succeeds. If any post fails, return the failure and the affected unposted findings to the caller, and never imply feedback was posted when the forge command failed.
 
 ## Relay
 

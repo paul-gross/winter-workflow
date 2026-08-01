@@ -6,7 +6,8 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 |------|------|
 | `winter-architect.md` | High-level design, interfaces, dependencies |
 | `backend-verifier.md` | API/CLI/database verification |
-| `cold-reviewer.md` | Architectural code review |
+| `cold-reviewer.md` | Runtime adapter for the code-facing review axes |
+| `faceted-reviewer.md` | Faceted review lead — gathers the change-set context, fans out per facet, aggregates |
 | `context-reviewer.md` | Reviews agent-facing markdown against documented conventions |
 | `ice-carver.md` | Code implementation, unit tests, refactoring |
 | `diff-classifier.md` | Fresh, k-voted per-hunk tier classifier for a review manifest |
@@ -19,7 +20,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 
 Shared default docs live under `docs/`: the principles defaults (SOLID + Clean Architecture) consumed by `winter-architect.md`, plus test-strategy defaults kept for a future bootstrap workflow (not currently wired to any agent).
 
-The four reviewer files are isolated-runtime adapters rather than methodology owners. Their canonical methods live under [`../methodology/review/axes/`](../methodology/review/axes/index.md); inline and fresh execution consume those same files.
+The reviewer files are isolated-runtime adapters rather than methodology owners. Their canonical methods live under [`../methodology/review/axes/`](../methodology/review/axes/index.md); inline and fresh execution consume those same files.
 
 ## Canonical agent format
 

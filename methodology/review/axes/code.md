@@ -61,4 +61,4 @@ A suspicion on a load-bearing path that you genuinely cannot resolve is still re
 
 Follow the shared [reporting contract](../reporting.md). For every finding, identify the file and location, the principle or concern violated, the evidence, and a concrete direction without writing the replacement.
 
-For a local target, return the report to the caller. For a remote PR or MR, honor its normalized `feedback` value. With `report`, return the findings to the caller without posting them. With `default` or `inline`, use the forge CLI (`gh`, `glab`, `tea`, or equivalent) to leave each finding as a self-contained inline comment on the remote review; each comment must include its finding id, severity, violated principle or concern, proposed direction, and reasoning. Return a concise posting summary only when every attempted post succeeds. If any post fails, return the failure and the affected unposted findings to the caller, and never imply that feedback was posted successfully.
+For a local target, return the report to the caller. For a remote PR or MR, follow the reporting contract's remote-feedback semantics; this axis's default feedback is `inline`.

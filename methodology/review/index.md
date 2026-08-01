@@ -3,7 +3,7 @@
 | Topic | Read when... |
 |-------|--------------|
 | [Review process](./process.md) | You need the shared scope vocabulary, execution scaffold, semantic inputs, or fresh/inline modes. |
-| [Review axes](./axes/index.md) | You need the canonical methodology for code, context, harness, or documentation review. |
+| [Review axes](./axes/index.md) | You need the canonical methodology for a registered review axis, or the registry of available axes. |
 | [Faceted review](./faceted/process.md) | You need one gathered context fanned out across several review facets at once, converged into a single aggregated report. |
 | [Reporting](./reporting.md) | You need shared severity buckets, finding ids, required finding fields, remote feedback, or relay semantics. |
 | [Change-set discovery](./change-set.md) | You need to discover an env-wide review scope across repositories. |

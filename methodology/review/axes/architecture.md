@@ -29,6 +29,8 @@ Evaluate the change against the discovered principles:
 
 Substantiate every finding from the code and the declaration it violates; drop what you cannot substantiate. Formatting, style, and trivial naming preferences are not findings.
 
+Execution is bounded to targeted probes that confirm or refute a specific suspected violation. Do not run the target's test suite as certification: execution-based verification belongs to the verification processes, and a green run is not a review.
+
 ## Severity
 
 - **must-fix**: a violation of a declared principle, dangerous coupling, a broken abstraction, or a missing boundary likely to cause real problems.
