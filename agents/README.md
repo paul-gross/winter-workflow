@@ -12,6 +12,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 | `ice-carver.md` | Code implementation, unit tests, refactoring |
 | `diff-classifier.md` | Fresh, k-voted per-hunk tier classifier for a review manifest |
 | `documentation-reviewer.md` | Reviews external-facing public documentation for accuracy and currency |
+| `plan-reviewer.md` | Runtime adapter for the plan review axis — reviews an implementation plan before building |
 | `arctic-explorer.md` | Investigates undocumented systems, writes AI-centric docs |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
 | `harness-reviewer.md` | Application↔harness seam review against a diff |

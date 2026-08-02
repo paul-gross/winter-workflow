@@ -12,6 +12,7 @@ Each axis is a caller-neutral review methodology. The shared review process sele
 | `context` | [Context review](./context.md) | agent-facing markdown against documented authoring conventions |
 | `harness` | [Harness review](./harness.md) | the application-to-agentic-harness seam |
 | `documentation` | [Documentation review](./documentation.md) | external-facing public documentation |
+| `plan` | [Plan review](./plan.md) | an implementation plan, before building |
 
 `code` is the single-pass generalist; `correctness`, `architecture`, `qualities`, and `tests` decompose its ground into focused axes so each reviewer holds one concern — run the generalist or the decomposition over a change-set, not both.
 

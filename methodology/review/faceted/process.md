@@ -26,7 +26,7 @@ Reject an omitted or empty facet list: nothing runs until the caller names the f
 
 Bind the supplied facet list; deduplicate names and preserve caller order. Facets without a registry entry stay in the set — they are handled by discovery, not rejected.
 
-Reject a facet whose registered methodology declares required evidence inputs that only the shared review process's execution scaffold constructs, rather than deriving from the change-set and target context — today, the `harness` axis. Name the rejected facet and route the caller to the shared review process for it; run the remaining facets.
+Reject a facet whose registered methodology declares required evidence inputs that only the shared review process's execution scaffold constructs, rather than deriving from the change-set and target context — today, the `harness` axis — and likewise a facet whose registered subject is not the gathered change-set — today, the `plan` axis, which reviews a current-state plan artifact. Name the rejected facet and route the caller to the shared review process for it; run the remaining facets.
 
 ### 2. Establish the change-set
 

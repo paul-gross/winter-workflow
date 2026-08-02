@@ -34,12 +34,13 @@ Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.m
 | `context` | `context-reviewer` |
 | `harness` | `harness-reviewer` |
 | `documentation` | `documentation-reviewer` |
+| `plan` | `plan-reviewer` |
 
 Both execution modes consume the same selected methodology file. Do not copy an axis checklist into a prompt or adapter.
 
 ## Scope semantics
 
-The three implicit local scopes fan out across a feature environment. Explicit local scopes operate only on the current repository. Remote scope operates on the identified forge review.
+The three implicit local scopes fan out across a feature environment. Explicit local scopes operate on the current repository, with the one paths exception owned below. Remote scope operates on the identified forge review.
 
 | Scope | Discovery | Review material |
 |-------|-----------|-----------------|
@@ -50,7 +51,7 @@ The three implicit local scopes fan out across a feature environment. Explicit l
 | `{paths: values}` | current repository | current state of the named files, with no diff |
 | `{remote: locator, ...}` | identified forge review | remote diff and metadata fetched through the appropriate CLI |
 
-Paths scope generalizes a current-state audit. The axis methodology filters the supplied set to its own surface.
+Paths scope generalizes a current-state audit. The axis methodology filters the supplied set to its own surface. A paths entry may lie outside the current repository only when the selected axis declares a separate work-target input that the scaffold supplies (today, the `plan` axis, whose plan artifact commonly lives in a work-item or workspace artifact directory); for every other axis, validate paths in the current repository as above.
 
 ### Discover the local change-set
 
@@ -61,7 +62,7 @@ For `branch-vs-base`, `uncommitted`, and `unpushed`, execute [`./change-set.md`]
 - One repository, or execution outside a feature environment: use single-repository framing.
 - Two or more repositories: give one executor the union and instruct it to review the targets as one change-set.
 
-Range and paths scopes skip environment discovery. Validate and normalize them in the current repository before execution.
+Range and paths scopes skip environment discovery. Validate and normalize them before execution — ranges in the current repository, paths under the paths rule above.
 
 For remote scope, identify the forge from the locator, verify that its CLI is available and authenticated, and fetch the review metadata and diff. Do not silently substitute a local branch when remote retrieval fails.
 
@@ -100,12 +101,14 @@ For fresh mode, construct a self-contained spawn prompt from the following parts
 
 5. **Axis execution.** Name the canonical axis file from [`./axes/index.md`](./axes/index.md) and direct the executor to read it and execute every step. Do not paraphrase its checklist or output rules.
 
-6. **Harness evidence inputs.** For the `harness` axis, also supply:
+6. **Axis-specific inputs.** For the `harness` axis, also supply:
 
    - Transcript candidate working directories: the workspace root, every in-scope worktree, and each target's project source checkout.
    - Evidence time window: since the base commit for diff scopes; approximately 30 days for uncommitted or current-state paths.
    - Changed paths and symbols extracted from the review material.
    - For diff scopes, the commit list from base to reviewed head or across the normalized range.
+
+   For the `plan` axis, also supply the work-target absolute path(s) — the repository or repositories whose verifiability matrix and architecture guidance the plan is judged against — with cross-repository framing when the plan spans repositories. The caller names the work target; this process does not infer it from the plan text.
 
 7. **Output owner.** Direct the executor to follow [`./reporting.md`](./reporting.md) and all axis-specific additions. For remote scope, preserve the selected axis's default feedback behavior unless `scope.feedback` explicitly overrides it.
 
