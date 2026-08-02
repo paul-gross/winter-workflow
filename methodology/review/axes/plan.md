@@ -6,7 +6,9 @@ Review an implementation plan before any building, with one goal: catch the plan
 
 Consume the semantic review inputs prepared by the [review process](../process.md): scope, in-scope targets, review material, cross-repo framing when applicable, and any remote-feedback destination. The natural scope is paths naming a refined work item's plan directory or a plan file; filter the supplied set to the plan documents and their planning companions, and review their current state, not a diff. If the supplied scope contains no plan document, return one sentence saying so and stop.
 
-This axis additionally requires the **work-target absolute path(s)** — the application repository or repositories the plan is judged against — supplied by the process's execution scaffold. The plan artifact commonly lives outside those repositories (a work-item directory or a workspace artifact directory), so never substitute the plan file's own location for the work target.
+This axis additionally requires the **`work_target`** semantic input — the application repository or repositories the plan is judged against — supplied by the process's execution scaffold. The plan artifact commonly lives outside those repositories (a work-item directory or a workspace artifact directory), so never substitute the plan file's own location for the work target.
+
+A plan supplied as conversation content rather than a file is materialized by the caller before review: a process with its own plan location (such as glacier's documentation root) writes it there; a standalone caller resolves the `workflows` artifact kind per [artifact storage](../../artifact-storage.md) and writes the plan into a directory of that kind. Either way the review then binds the materialized file under paths scope.
 
 ## Discover the criteria
 

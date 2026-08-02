@@ -16,4 +16,6 @@ Each axis is a caller-neutral review methodology. The shared review process sele
 
 `code` is the single-pass generalist; `correctness`, `architecture`, `qualities`, and `tests` decompose its ground into focused axes so each reviewer holds one concern — run the generalist or the decomposition over a change-set, not both.
 
+`harness` and `plan` are not selectable as faceted facets — `harness` needs evidence inputs only the shared review process's scaffold constructs, and `plan` reviews a current-state plan artifact rather than the change-set; invoke both through the shared review process.
+
 All axes use the shared [reporting contract](../reporting.md).

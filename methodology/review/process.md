@@ -15,8 +15,9 @@ Require callers to supply these normalized inputs rather than invocation-specifi
 | `execution_mode` | `fresh` or `inline` |
 | `pinned_scope` | for `unpushed`: `exclude`, `include`, or `only` |
 | `review_bases` | optional per-worktree verified refs, documented by the caller for an `unpushed` target whose upstream cannot be diffed |
+| `work_target` | required for `axis: plan`: absolute path(s) of the repository or repositories the plan is judged against |
 
-Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, an omitted `pinned_scope` takes the default owned by [`./change-set.md`](./change-set.md). Reject an axis not registered in the axes index, a malformed scope, an invalid pinned scope, nonexistent paths, or an unverified ref/range or review base with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
+Default omitted values to `scope: branch-vs-base` and `execution_mode: fresh`. For `unpushed`, an omitted `pinned_scope` takes the default owned by [`./change-set.md`](./change-set.md). Reject an axis not registered in the axes index, a malformed scope, an invalid pinned scope, nonexistent paths, an unverified ref/range or review base, or a `plan`-axis invocation whose `work_target` is missing or names a nonexistent path — each with the valid semantic values. `unpushed` is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
 
 Session adapters own translation from their invocation syntax into these inputs. This process never reads or parses slash-command arguments.
 
@@ -108,7 +109,7 @@ For fresh mode, construct a self-contained spawn prompt from the following parts
    - Changed paths and symbols extracted from the review material.
    - For diff scopes, the commit list from base to reviewed head or across the normalized range.
 
-   For the `plan` axis, also supply the work-target absolute path(s) — the repository or repositories whose verifiability matrix and architecture guidance the plan is judged against — with cross-repository framing when the plan spans repositories. The caller names the work target; this process does not infer it from the plan text.
+   For the `plan` axis, also supply the normalized `work_target` path(s), with cross-repository framing when the plan spans repositories.
 
 7. **Output owner.** Direct the executor to follow [`./reporting.md`](./reporting.md) and all axis-specific additions. For remote scope, preserve the selected axis's default feedback behavior unless `scope.feedback` explicitly overrides it.
 
