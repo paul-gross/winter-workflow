@@ -113,11 +113,11 @@ Follow [`../../review/manifest/build-time.md`](../../review/manifest/build-time.
 
 When every phase has passed, review the work automatically — do not wait for the human caller to ask and do not use the pre-push binding. Glacier's work is deliberately uncommitted, so execute [`../../delivery/review/process.md`](../../delivery/review/process.md) with `scope: uncommitted` and `mode: blocking`.
 
-If the result contains blocking findings, spawn a fresh isolated `ice-carver` with workhorse model intent to resolve them without committing, rerun the verification methods affected by its edits, then rerun the same uncommitted delivery review. Continue until the review returns no blocking findings. If a finding cannot be resolved without a human decision or an environment capability is unavailable, stop and escalate with the finding ids and blocker; do not claim the Definition of Done. Preserve `consider` findings in the final summary, but they do not block completion.
+If the result contains blocking findings, spawn a fresh isolated `ice-carver` with workhorse model intent to resolve them without committing, rerun the verification methods affected by its edits, then rerun the same uncommitted delivery review. Continue until the review returns no blocking findings. If a finding cannot be resolved without a human decision or an environment capability is unavailable, stop and escalate with the finding ids and blocker; do not claim the Definition of Done. Preserve `consider` findings and any gaps in the final summary; neither blocks completion.
 
 **If you accumulated a review manifest** (above), **close it only after the blocking-finding loop settles**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document — all per [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md) §"Close the manifest". Surface the manifest's `.md` path alongside the completion-review summary, so the human caller has both the cross-axis findings and the tiered review order.
 
-Do not commit or push. Once blocking findings are resolved, return the implementation, verification evidence, completion-review summary, and any advisory findings to the human caller.
+Do not commit or push. Once blocking findings are resolved, return the implementation, verification evidence, completion-review summary, and any advisory findings and gaps to the human caller.
 
 ### 6. Retrospective
 

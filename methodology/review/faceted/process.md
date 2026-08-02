@@ -9,7 +9,7 @@ A facet is any named review concern. Every registered review axis is a facet, an
 This process is open to new facets and closed to modification by them. It never enumerates facets and never binds to a specific facet's methodology; it discovers both at execution time:
 
 - The [review axes index](../axes/index.md) is the **facet registry**: every axis registered there is an available facet, and registering a new one is a registry change, never a change to this process.
-- A facet with no registry entry is still reviewable: its reviewer discovers the target's declared conventions for that concern and reports the missing methodology as a gap (step 5).
+- A facet with no registry entry is still reviewable: its reviewer discovers the target's declared conventions for that concern and reports the missing methodology as a finding (step 5).
 
 ## Inputs
 
@@ -72,8 +72,8 @@ The lead is the closing gate — it converges the facet reports into one review 
 
 - **Dedup across facets.** The same defect surfaced through two lenses becomes one finding citing both facets, at the highest severity either assigned.
 - **Resolve contradictions.** When two facet reports make incompatible claims, investigate and settle which is right before reporting either; never present both or average them.
-- **Re-rank with the whole-change view.** A facet sees only its own concern and inflates locally; the lead re-ranks severity across the union under the shared severity buckets and renumbers findings into one id sequence per the reporting contract.
-- **Preserve the record.** Keep each facet's coverage note, every reported gap, every delivery blocker collected in step 2, and the list of unreviewed and rejected facets in the final report.
+- **Re-rank with the whole-change view.** A facet sees only its own concern and inflates locally; the lead re-ranks severity across the union under the shared severity buckets and renumbers findings and gaps into one id sequence per the reporting contract, which owns how a gap's must-fix references survive that renumbering and a dedup merge.
+- **Preserve the record.** Keep each facet's coverage note, every gap, every delivery blocker collected in step 2, and the list of unreviewed and rejected facets in the final report.
 - **Deliver remote feedback last.** For a remote scope, the lead applies the reporting contract's remote-feedback semantics to the aggregated, renumbered report: an omitted or `default` feedback value resolves to `report` for a multi-facet review, and `inline` posts the aggregated findings only after dedup and renumbering are complete.
 
 Return the aggregated report as the lead's single result.

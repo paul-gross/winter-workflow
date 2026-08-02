@@ -17,7 +17,7 @@ Reject any other value. `unpushed` reviews committed work relative to each workt
 
 ## Output
 
-Return one synthesized review result containing the selected scope, pinned scope when applicable, targets and their base kinds, delivery blockers, reviewers run and skipped, findings with original ids and severities, clean axes, and a `blocking_findings` set. Delivery blockers, confirmed cross-repository contradictions, and `must-fix` findings are blocking; `consider` findings remain advisory.
+Return one synthesized review result containing the selected scope, pinned scope when applicable, targets and their base kinds, delivery blockers, reviewers run and skipped, findings with original ids and severities, any gaps the reviewers returned, clean axes, and a `blocking_findings` set. Delivery blockers, confirmed cross-repository contradictions, and `must-fix` findings are blocking; `consider` findings and gaps remain advisory.
 
 ## Steps
 
@@ -81,11 +81,14 @@ Files: <N> changed across <R> repositories
 ## consider
 - (<role> <id>) <repo>: <finding>
 
+## gaps
+- (<role> <id>) <repo>: <gap, naming the must-fix id(s) it explains as <role> <id>>
+
 ## clean
 - <role>: no findings
 ```
 
-Omit empty finding sections, including `delivery-blockers` when none exist. Preserve every original finding id. Prefix findings with their repository when the change-set spans repositories. Sort by axis in this order: code, harness, context, documentation. Distinguish skipped axes from axes that ran clean. Keep the synthesis to roughly 25 lines; offer a named raw report when more detail exists.
+Omit empty sections, including `delivery-blockers` and `gaps` when none exist. Preserve every original finding id. Prefix findings with their repository when the change-set spans repositories. Sort by axis in this order: code, harness, context, documentation. Distinguish skipped axes from axes that ran clean. Keep the synthesis to roughly 25 lines; offer a named raw report when more detail exists.
 
 ### 5. Apply mode
 

@@ -55,7 +55,7 @@ This port is materially different from spawning isolated roles. A process that r
 
 ### Return a result
 
-Return the process's declared result to its caller through the current runtime's result channel. Preserve status, findings, ids, evidence, and stop/report behavior; do not claim an external action succeeded when the adapter could not perform it.
+Return the process's declared result to its caller through the current runtime's result channel. Preserve status, every section of the declared result, ids, evidence, and stop/report behavior; do not claim an external action succeeded when the adapter could not perform it.
 
 ## Unsupported capabilities
 
