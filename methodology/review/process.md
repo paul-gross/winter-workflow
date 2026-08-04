@@ -69,6 +69,8 @@ For remote scope, identify the forge from the locator, verify that its CLI is av
 
 ## Execution mode
 
+A review context is **cold** when it contains no authoring, planning, or steering of the change under review. Coldness is a property of the context, not of the spawn that created it: fresh execution guarantees it, and a process may exploit an already-cold invoking context where it declares its own placement rule (the [faceted review's lead placement](./faceted/process.md)).
+
 ### Fresh
 
 Spawn the selected canonical role in a one-shot isolated context with **judgment model intent** (Opus/Sol class), supply the scaffold below, and await its result. The session adapter resolves the role's projected identity and model. Fresh execution has zero prior conversation context and is the default because it avoids the author's framing and design-history bias. Delivery review always uses fresh execution.
@@ -77,7 +79,7 @@ Override to a cheaper model only for a deliberately trivial scope and state the 
 
 ### Inline
 
-The invoking agent executes the same scaffold and selected axis methodology in its current context without spawning. Inline execution is warm and therefore forfeits freshness; use it only when that bias is acceptable. It does not select a different checklist, evidence bar, severity rule, or report format.
+The invoking agent executes the same scaffold and selected axis methodology in its current context without spawning. An invoking context that authored, planned, or steered the change — the common case — is warm, and inline execution then forfeits freshness; use it only when that bias is acceptable. It does not select a different checklist, evidence bar, severity rule, or report format.
 
 ## Execution scaffold
 

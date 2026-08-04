@@ -6,10 +6,10 @@ This repo follows the default conventions in [`methodology/delivery/commit/conve
 
 ## Pre-push checks
 
-Run before pushing to `master`:
+Run the [verifiability matrix](./verifiability.md) methods the change class owes before pushing to `master`:
 
-- `winter lint winter-workflow` — runs this module's contributed checks. The agent-frontmatter check (`scripts/lint-agents.py`) validates required agent metadata. The methodology-boundary check (`scripts/lint-methodology.py`) rejects `$ARGUMENTS` and Markdown links, `@` imports, inline-code paths, or canonical references from `methodology/` back to top-level `skills/` or `agents/`. Fenced code and lines marked `<!-- winter-lint:example -->` are treated as illustrative examples. Both checks are wired through the `lint` field in `winter-ext.toml` and emit findings through `winter lint`.
-- `python3 tests/test_lint_agents.py` and `python3 tests/test_lint_methodology.py` — exercise both checks with stdlib-only fixtures or temporary repositories.
+- `winter-workflow:lint` and `winter-workflow:lint-tests` — always.
+- `winter-workflow:manual` — the cold-spawn behavioral eval, for any change `canon:cold-eval` names as owing one (new or reshaped rule, routing change, broadened trigger). An owed eval is a checklist item, not a remembered obligation.
 
 ## Delivery
 

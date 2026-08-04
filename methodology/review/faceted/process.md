@@ -32,11 +32,14 @@ Reject a facet whose registered methodology declares required evidence inputs th
 
 For the implicit local scopes, execute [change-set discovery](../change-set.md) and apply its collapse and zero-target handling, collecting its reviewable entries and delivery blockers. Validate explicit range, paths, or remote scopes under the scope owner's semantics.
 
-### 3. Spawn the facet lead
+### 3. Place the facet lead
 
-Spawn the canonical `faceted-reviewer` role in a fresh isolated context with judgment model intent; its task is to execute steps 4–7 of this process. The lead is cold — no session history, no author framing — and its runtime must support the [fork port](../../runtime-ports.md#fork-the-current-context) from within the lead's own context.
+The lead must be **cold** — the [shared review process's coldness property](../process.md#execution-mode) — and must sit where its runtime supports the [fork port](../../runtime-ports.md#fork-the-current-context) from within the lead's own context; resolve fork availability from the harness capability facts the fork port's adapter note names, never by assumption. Choose the placement that preserves the fork port:
 
-The lead's task carries the facet set, the normalized scope, every change-set entry with its absolute worktree path and base ref, all delivery blockers, and the path to this process document.
+- **The calling session is the lead** when it is cold, satisfies judgment model intent, and its runtime can fork from its own context. It executes steps 4–7 in place.
+- **Spawn the lead** otherwise — including for a cold caller that lacks judgment model intent or fork capability: run the canonical `faceted-reviewer` role in a fresh isolated context with judgment model intent, its task being steps 4–7 of this process. The spawned lead's task carries the facet set, the normalized scope, every change-set entry with its absolute worktree path and base ref, all delivery blockers, and the path to this process document.
+
+In either placement the lead phase is review-only: modify nothing, run no builds, services, or test suites, and spawn nothing beyond the step 5 fan-out. Do not spawn an isolated lead whose runtime cannot fork when the calling session is itself a cold, judgment-class, fork-capable placement — that trades away the fork port to buy a coldness the caller already has.
 
 **Fallback.** If the lead's runtime cannot fork, this process permits the fork port's briefing fallback, executed by the lead itself: the same lead gathers (step 4), writes the orientation briefing from its gathered context, spawns one isolated reviewer per facet carrying the briefing and the step 5 charter, and aggregates (step 7). Only the fork mechanism is replaced — the gather and the aggregation stay with the lead. If the lead's runtime can neither fork nor spawn isolated roles, return `unsupported-capability`. A briefing-fallback run must be labeled in the final report.
 
@@ -80,4 +83,4 @@ Return the aggregated report as the lead's single result.
 
 ### 8. Relay
 
-The calling session relays the lead's report per the reporting contract's relay semantics, with a preamble naming the facet set, scope, and target count. Label a briefing-fallback execution in the preamble.
+The calling session relays the lead's report — its own aggregated report, when it was the lead — per the reporting contract's relay semantics, with a preamble naming the facet set, scope, and target count. Label a briefing-fallback execution in the preamble.

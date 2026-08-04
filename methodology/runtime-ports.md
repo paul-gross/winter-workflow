@@ -34,6 +34,7 @@ Create concurrent copies of the calling context that inherit everything it has r
 - **Fork to deepen, spawn fresh to diversify or adjudicate.** A fork shares the parent's framing, so use forks to pursue work the parent has already framed correctly. Any step whose value depends on independence from that framing — verification of the parent's findings, adjudication between results, a control read of the same material — uses **Spawn an isolated role** instead.
 - Forks run as a declared concurrent group, return one distilled result each through the harness's isolated-result channel, and stop; the parent awaits the group. A fork returns conclusions, not its investigation.
 - When the active harness cannot fork the current context and the process explicitly permits a fallback, degrade by writing an orientation briefing from the parent context and spawning isolated roles that carry it. The briefing is lossy; the process result must label the degraded execution. Without an explicit fallback permission, an unavailable fork capability is an unsupported capability.
+- Whether a given context can fork — and through which native mechanism — is a harness capability fact, not a methodology fact: resolve it from the live capability declaration at `workspace:/context/harness-runtime-ports.md` before any placement decision that depends on it, and treat a harness or nesting depth with no declared fork support as unable to fork.
 
 ### Ask the human caller
 
