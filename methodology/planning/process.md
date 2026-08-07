@@ -8,10 +8,10 @@ A plan targets the two artifacts the application's harness declares — its **ve
 
 | Input | Meaning |
 |-------|---------|
-| `feature_or_plan` | A feature description, a plan file or directory, a refined work item, or an inline plan |
+| `findings` | Optional: a plan-review report with must-fix findings. Present selects the revision step; absent selects authoring |
+| `feature_or_plan` | Authoring only: a feature description, a plan file or directory, a refined work item, or an inline plan. Omitted on a revision round — the plan at `plan_root` is the subject |
 | `plan_root` | The caller-resolved location where the plan artifact lives (a work-item directory, a `<workflows-dir>` session directory, a graph asset) |
 | `work_target` | The absolute path(s) of the repository or repositories the plan is judged against |
-| `findings` | Optional: a plan-review report with must-fix findings. Present selects the revision step; absent selects authoring |
 
 ## Author
 
@@ -21,6 +21,6 @@ A plan targets the two artifacts the application's harness declares — its **ve
 
 ## Revise
 
-When `findings` is supplied, route it to the plan builder that owns the plan — the framework's builder, or a fresh `winter-architect` spawn carrying the findings, the plan's path, and `work_target`. A finding that needs a product decision is returned to the caller unresolved rather than answered in prose. One rule shapes the revision:
+When `findings` is supplied, it is a plan-review report against the plan at `plan_root`. Route it to the plan builder that owns the plan — the framework's builder, or a fresh `winter-architect` spawn carrying the findings, the plan's path, and `work_target` — to resolve each finding in the plan text. The one exception is a finding only a product decision can resolve: return it to the caller unresolved rather than answering it in prose. One rule shapes the revision:
 
 **Deletion first.** Resolve a finding by removing or pointing before defending with new prose: cut the claim, the mechanism passage, or the restated fact the finding attacks, or replace it with a pointer to the owner. Text may be added only where a finding names misdirected building — something the builder would do wrong without it — and the revision states in one line, per addition, which finding required new text. A revision that grows the plan without that justification is itself an unmet obligation for the next gate round.
