@@ -35,7 +35,7 @@ Direct reviewer-agent calls must use the engine's normalized axis, scope, and ex
 
 - **Context Reviewer** (`context-reviewer` subagent) — reviews agent-facing markdown (agents, skills, CLAUDE.md, `context/` or `methodology/` docs) against the workspace's documented conventions for clarity, single-source-of-truth, and non-duplication. Review-only; paired with `harness-reviewer`.
 - **Documentation Reviewer** (`documentation-reviewer` subagent) — reviews external-facing public documentation (user/adopter guides, a rendered docs site, the user-facing README) for accuracy against the code it documents, completeness for a human audience, and single-source-of-truth against canonical sources. Review-only; explicitly distinct from `context-reviewer` (agent-facing markdown) and `harness-reviewer` (the harness seam).
-- **Plan Reviewer** (`plan-reviewer` subagent) — reviews an implementation plan against the application's verifiability matrix and architecture guidance, plus the plan's own planning specs. Review-only; the default gate for `glacier`'s planning step. Distinct from `winter-product`'s `product-plan-reviewer`, which reviews product plans against that framework's own specs.
+- **Plan Reviewer** (`plan-reviewer` subagent) — reviews an implementation plan against the application's verifiability matrix and architecture guidance, plus the plan's own planning specs, running the plainly read-only checks those specs declare. The gate for `glacier`'s planning step; its planning-spec conformance gate discovers the plan conventions a workspace planning framework declares.
 
 ### Evaluations
 

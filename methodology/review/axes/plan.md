@@ -26,11 +26,11 @@ Run every gate over the plan; each unmet obligation is a finding.
 - **Architecture gate** — the structure the plan commits to conforms to the architecture guidance: layers, boundaries, abstractions, and declared design principles. Cite the guidance a proposed decision violates. A structural decision the plan must make that no guidance governs is a gap finding.
 - **Planning-spec conformance** — the plan conforms to the specs that govern its own form: the owning planning framework's declared plan conventions when one applies, and the plan's internal consistency either way — planned work that covers the stated scope, no contradiction between the stated goal and the planned changes, and no step that depends on an artifact no earlier step produces.
 
-Substantiate every finding from the plan text and the declaration it violates, and drop what you cannot substantiate. You may read the target codebase to test a load-bearing plan assumption — a file the plan says exists, a seam it claims is free — but do not redesign the feature: review the plan the author wrote, not the plan you would have written.
+Substantiate every finding from the plan text and the declaration it violates, and drop what you cannot substantiate. You may test a load-bearing plan assumption against the target: read the codebase to check a file the plan says exists or a seam it claims is free, and when the owning framework's plan conventions bind a plan claim to a runnable check — a declared eval the plan asserts passes today — run the check if it is plainly read-only, from the working directory those conventions declare. A failing check means the claim lies, and a check that would mutate state is reported as a finding instead of run. But do not redesign the feature: review the plan the author wrote, not the plan you would have written.
 
 ## Severity
 
-- **must-fix**: a planned change with no declared verification method and no scheduled build of one; a plan that violates the architecture guidance; a load-bearing plan assumption the target contradicts; a contradiction or omission that would misdirect building.
+- **must-fix**: a planned change with no declared verification method and no scheduled build of one; a plan that violates the architecture guidance; a load-bearing plan assumption the target contradicts, including a declared check that fails when run; a contradiction or omission that would misdirect building.
 - **consider**: a sharper phase or scope split, a better-fitting verification method the matrix already declares, plan structure the owning specs recommend but do not require.
 - **notes**: concise routing of an out-of-scope concern to another axis, and undeclared-ownership gaps — a missing matrix or guidance — not tied to a specific planned change.
 
