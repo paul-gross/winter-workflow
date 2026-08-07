@@ -6,6 +6,6 @@ Agentic build skills and role-pure subagents for winter workspaces. Installs `gl
 
 | Topic | Read when… |
 |-------|------------|
-| [methodology/index.md](./methodology/index.md) | …you are about to build, review, deliver, or score work with this extension — the hub routes to the specific process |
+| [methodology/index.md](./methodology/index.md) | …you are about to plan, build, review, deliver, or score work with this extension — the hub routes to the specific process |
 | [methodology/orchestration.md](./methodology/orchestration.md) | …you are executing within the blizzard agent orchestration system — a fleet worker session working a chunk's node-step. Contains critical blizzard integration to workflows: the node-step → methodology map |
 | [verifiability.md](./verifiability.md) | …you are verifying a change to winter-workflow itself — the declared verification methods and their ids |
