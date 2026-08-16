@@ -1,6 +1,6 @@
 # Review manifest — process
 
-Generate a review manifest over a change-set through **classify → audit → render**, emitting the JSON facts file and the markdown review document owned by [`format.md`](./format.md). Any caller may execute this reusable process as a standalone operation or a substep; runtime operations follow [`../../runtime-ports.md`](../../runtime-ports.md). This doc owns only the control flow.
+Generate a review manifest over a change-set through **classify → audit → render**, emitting the JSON facts file owned by [`format.md`](./format.md) and the markdown review document owned by [`render.md`](./render.md). Any caller may execute this reusable process as a standalone operation or a substep; runtime operations follow [`../../runtime-ports.md`](../../runtime-ports.md). This doc owns only the control flow.
 
 A manifest partitions every hunk into verification tiers so full human attention lands only on the hunks that hold actual decisions (`novel`), while a rename-heavy change collapses to a one-line list. The rendered review order is for the **human reviewing the change** — the agents in this pipeline only build it — and it is **advisory**: it reorders attention, gates nothing, and never replaces the review. The pipeline's spine is one rule: **every failure path demotes toward human review.** An unclassified hunk, a contested k-vote, and an audit hit all become `novel`.
 
@@ -52,7 +52,7 @@ Resolve `<manifests-dir>` once through the artifact-directory runtime operation 
 
 ### 6. Render and write the markdown review document
 
-Render the markdown review document from the facts — to the structure and discipline owned by [`./format.md#the-markdown-review-document`](./format.md#the-markdown-review-document) — and write it next to the JSON with the same basename. This file, not the JSON and not an inline dump, is the manifest the human reviews.
+Render the markdown review document from the facts — to the structure and discipline owned by [`render.md`](./render.md) — and write it next to the JSON with the same basename. This file, not the JSON and not an inline dump, is the manifest the human reviews.
 
 ### 7. Report
 

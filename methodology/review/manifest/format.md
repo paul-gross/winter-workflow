@@ -1,50 +1,12 @@
 # Review manifest — format and invariants
 
-A review manifest is **two files**: a **markdown review document** a human reads to walk the change tier by tier, and the **JSON facts file** it is rendered from — the per-hunk tiers, claims, metrics, and freshness binding that the renderer and any later consumer read. Generate the JSON first, then render the markdown. This doc owns both shapes, the two hard invariants, hunk identity, and the metrics; [`classification.md`](./classification.md) owns what the tier values mean.
+A review manifest is **two files**: a **markdown review document** a human reads to walk the change tier by tier, and the **JSON facts file** it is rendered from — the per-hunk tiers, claims, metrics, and freshness binding that the renderer and any later consumer read. Generate the JSON first, then render the markdown. This doc owns the facts file — its schema, hunk identity, the two hard invariants, and the metrics. [`render.md`](./render.md) owns the markdown document's shape and discipline; [`classification.md`](./classification.md) owns what the tier values mean.
 
 A manifest describes **one change-set**, which may span several repos in one feature env (the same unit the review engine uses — see [`../change-set.md`](../change-set.md)). Every hunk is keyed by its repo, so one manifest covers the whole set.
 
 ## Where it lives
 
 Both files are generated artifacts, never written into a worktree. Resolve `<manifests-dir>` and name the pair under the `manifests` consumer policy in [`../../artifact-storage.md`](../../artifact-storage.md), which owns the naming pattern and its same-day variant; the `.md` and `.json` share one basename. `<slug>` identifies the change-set: the env name for an env-wide scope (`alpha`), the repo name for a single-repo or standalone scope (`winter-workflow`). Report the **`.md` path** to the human — that is the manifest they review; the `.json` sits alongside for tooling and the freshness re-check.
-
-## The markdown review document
-
-The markdown is **a high-level reading guide for a human, not a diff dump**. It tells the reviewer what to look at, why, and what they can skip; the reviewer opens the actual diff in their own tool, so the manifest points at hunks and describes each decision in plain language. **Never paste raw hunk bodies** — a wall of inlined diff is the unreadable thing the manifest exists to replace. Aim for one to two screens; when a tier has many hunks, cluster them by theme rather than listing every one flat.
-
-Structure:
-
-```markdown
-# Review manifest — <slug>
-
-<one sentence: what this change is>
-
-**<N> hunks, <L> lines** · novel <p>% · pattern <p>% · mechanical <p>%
-contested <c>/<N> · audit: <sampled> sampled, <promoted> promoted
-
-> **Where to spend your attention.** <2–3 sentences orienting the reviewer: the shape of the
-> change, which tier holds the real decisions, what the cheap tiers cover and that they're verified.>
-
-## Decisions — read these (novel · <count>)
-
-Grouped by theme, not one flat row per hunk. Each entry: a plain-language **what changed and why it
-needs judgment**, then the file pointer(s). Lead with the highest-stakes group; surface promoted and
-contested hunks first — the audit and the vote flagged them.
-
-- **<theme>** — <plain description of the decision and what to check> · `path/one.md`, `path/two.md`
-- **⚠️ <contested item>** — <why the classifiers split; what to confirm> · `path@@line`
-
-## Conforms to a pattern (pattern · <count>)
-
-- `<path>` — <claim> (exemplar `<exemplar-path>`)
-
-## Mechanical — skip (<count>) · audit-verified ✓
-
-<One line, or a terse grouped list — not per-hunk prose.> e.g. "8 pure link-retargets, all verified
-to resolve: `README.md`, `setup.md` ×6, `worktree-ops.md`." Tag any hunk the audit did not sample.
-```
-
-`novel` carries prose because it holds the decisions; `pattern` collapses to one line per hunk behind its claim and exemplar; `mechanical` collapses to a single skip-line for the whole tier. The header carries the metrics, led by the line percentages — they answer *how much of this change actually needs me?*
 
 ## Hunk identity
 
