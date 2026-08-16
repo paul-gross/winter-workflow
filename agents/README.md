@@ -14,6 +14,7 @@ This directory holds the role-pure subagents provided by `winter-workflow`. Each
 | `documentation-reviewer.md` | Reviews external-facing public documentation for accuracy and currency |
 | `plan-reviewer.md` | Runtime adapter for the plan review axis — reviews an implementation plan before building |
 | `arctic-explorer.md` | Investigates undocumented systems, writes AI-centric docs |
+| `distiller.md` | Cold rewrite of existing markdown into its smallest current form, via the distill process |
 | `frontend-verifier.md` | Chrome DevTools browser verification |
 | `harness-reviewer.md` | Application↔harness seam review against a diff |
 | `manifest-auditor.md` | Adversarially refutes a review manifest's cheap-tier claims |

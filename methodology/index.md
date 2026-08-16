@@ -11,5 +11,6 @@
 | [Review](./review/index.md) | You need the review process, scopes, evidence seams, or manifest methodology. |
 | [Delivery](./delivery/index.md) | You need commit conventions or the pre-push review process. |
 | [Harness score](./harness-score/process.md) | You need to score a codebase against the harness maturity rubric. |
+| [Distill](./distill/process.md) | You need to rewrite existing bloated or stale markdown into its smallest current form. |
 | [HTML reports](./html-report.md) | You are producing an HTML report from a winter-workflow skill. |
 | [Artifact storage](./artifact-storage.md) | You need to locate generated scores, manifests, workflows, or retrospectives. |

@@ -8,7 +8,7 @@ that spawn-time behavior is deterministic:
                                    routing logic of skills that pick a subagent.
   tools        non-empty list,   — without it spawn-time tool access opens
                or the literal "*"  wider than intended.
-  model        haiku|sonnet|opus — without it the agent inherits the spawner's
+  model        haiku|sonnet|opus|fable — without it the agent inherits the spawner's
                                    model (a cost-discipline regression).
 
 This is a `winter lint` check (see `winter-cli` setup.md "Lint checks"). It runs
@@ -54,7 +54,7 @@ from pathlib import Path
 
 CHECK = "agent-frontmatter"
 MANIFEST = "winter-ext.toml"
-VALID_MODELS = ("haiku", "sonnet", "opus")
+VALID_MODELS = ("haiku", "sonnet", "opus", "fable")
 
 # Top-level canonical common keys — anything else at the top level must be a
 # recognised vendor override block (claude / codex / opencode).
