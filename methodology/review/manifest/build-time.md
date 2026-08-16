@@ -22,9 +22,10 @@ You are classifying your own work, so the failure mode is self-flattery — call
 
 When the change is settled — the feature is built, the phase is done, the manifest is wanted for review — **close** it: the shared tail of [`./process.md`](./process.md), entered with the facts already populated.
 
-1. **Settle the diff and bind ids.** Compute `diff_sha` and enumerate the canonical hunk-id set from the final change-set (process step 1); bind each authored entry to its final `hunk_id`.
+1. **Settle the diff and bind ids.** Compute `diff_sha` and enumerate the canonical hunk-id set from the final change-set, per [discover the change-set](./process.md#1-discover-the-change-set); bind each authored entry to its final `hunk_id`.
 2. **Enforce total coverage.** Any final hunk with no authored entry is inserted as `novel` ([`./format.md#invariant-1--total-coverage`](./format.md#invariant-1--total-coverage)) — a forgotten hunk fails closed toward human review.
-3. **Audit the cheap tiers.** Run the `manifest-auditor` over the authored `mechanical` and `pattern` hunks exactly as in process step 3; intent is not a free pass, and hits promote to `novel` and increment `misclassification_count`.
-4. **Render and report.** Write the facts and render the review document (process steps 5–7), folding each captured `intent` into its `novel` entry's description so the human reads *why*, not just *what*.
+3. **Audit the cheap tiers.** Run the `manifest-auditor` over the authored `mechanical` and `pattern` hunks, per [audit the cheap tiers](./process.md#3-audit--adversarially-refute-the-cheap-tiers); intent is not a free pass, and hits promote to `novel` and increment `misclassification_count`.
+4. **Compute the metrics.** Fill the `metrics` block per [`./format.md#metrics`](./format.md#metrics) on the **final**, post-audit tiers — the render header reads from it.
+5. **Render and report.** Write the facts file and render the review document, per [write the JSON facts file](./process.md#5-write-the-json-facts-file) onward, folding each captured `intent` into its `novel` entry's description so the human reads *why*, not just *what*.
 
 The producers are mutually exclusive per hunk — a hunk is either author-recorded or fresh-classified, never both, and the authored path has no k-vote to reconcile. Either way the human opens the same document, and the skeptic checked the cheap tiers before they got there.

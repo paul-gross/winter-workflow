@@ -4,17 +4,19 @@ The canonical classification contract shared by every review-manifest producer a
 
 ## The closed tier vocabulary
 
-Every hunk is exactly one of three values — there is no fourth, and "unsure" is not a tier. A tier is defined by **how the hunk is verified**, not what it looks like:
+Every hunk is exactly one of three values — there is no fourth, and "unsure" is not a tier. A tier is defined by **what it takes to verify the hunk**, not what it looks like:
 
 | Tier | Claim | Verification | Human interpretation |
 |------|-------|--------------|----------------------|
-| `mechanical` | A rename / move / codemod with **no behavior change** — the same code, relocated or relabeled. | Deterministic replay: regenerate the change from the claim and byte-compare. | Skim the grouped summary; inspect any unaudited tag. |
-| `pattern` | Conforms to a **named exemplar** — a new instance of an established pattern already in the codebase. | An LLM judge with the exemplar in context, k votes. | Skim the one-line claim and exemplar; inspect any unaudited tag. |
+| `mechanical` | A rename / move / codemod with **no behavior change** — the same code, relocated or relabeled. | Unanimous classification, then the adversarial [`audit.md`](./audit.md) hunt for behavior riding along. | Skim the grouped summary; inspect any unaudited tag. |
+| `pattern` | Conforms to a **named exemplar** — a new instance of an established pattern already in the codebase. | Unanimous classification, then the same audit, reading the exemplar and comparing. | Skim the one-line claim and exemplar; inspect any unaudited tag. |
 | `novel` | A **new decision** — anything that introduces or changes behavior, structure, or intent. | A human, at full attention. | Read the real diff and judge the decision in full. |
+
+Both cheap tiers are verified the same way today: the k classifiers must agree ([`process.md`](./process.md) fails any split closed to `novel`), and the audit then tries to refute what they agreed on.
 
 `novel` is the default and the safe value: uncertainty, a hunk on the line, a claim that cannot be cleanly stated — all resolve to `novel`, with the reason said. The asymmetry is deliberate: a wrong cheap tier hides a decision from the human, while an over-cautious `novel` costs seconds of reading. **When in doubt, `novel`.**
 
-The replay and exemplar-judging verifications are not yet implemented; until they are, both cheap tiers are checked by the adversarial [`audit.md`](./audit.md) methodology before rendering.
+**Target state — not built.** Each cheap tier is meant to earn a verification of its own: deterministic replay for `mechanical`, regenerating the change from the claim and byte-comparing; and for `pattern`, an LLM judge holding the exemplar in context over k votes. Neither exists, so read the table's Verification column as what runs today, not as a check you can assume happened.
 
 ### `mechanical` — only when behavior is provably unchanged
 

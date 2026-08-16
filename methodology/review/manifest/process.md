@@ -34,7 +34,7 @@ Record each hunk's `lines` (added + removed) from the diff for the metrics.
 
 Spawn the canonical `manifest-auditor` role in a fresh isolated context, with judgment model intent, over the reconciled **`mechanical` and `pattern`** hunks (`novel` is never audited — it already has the human). It executes [`audit.md`](./audit.md) and returns one result before this process continues.
 
-Give it the cheap-tier hunk list and a **sampling budget**: audit all cheap-tier hunks when there are ≤ 20; above that, the hardest 20 first (largest hunks, control-flow- or default-touching, classifier-flagged on-the-line), with the rest declared out of budget so the auditor lists them rather than implying they were cleared.
+Give it the cheap-tier hunk list and a **sampling budget**: every cheap-tier hunk when there are ≤ 20, otherwise 20, with the rest declared out of budget so the auditor lists them rather than implying they were cleared. Which hunks fill that budget is the auditor's selection step in [`audit.md`](./audit.md#procedure).
 
 Apply the results:
 

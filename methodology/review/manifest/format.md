@@ -6,7 +6,7 @@ A manifest describes **one change-set**, which may span several repos in one fea
 
 ## Where it lives
 
-Both files are generated artifacts, never written into a worktree. Resolve `<manifests-dir>` under the `manifests` consumer policy in [`../../artifact-storage.md`](../../artifact-storage.md), which also owns the `<YYYY-MM-DD>-<slug>.{md,json}` naming; the pair shares one basename. `<slug>` identifies the change-set: the env name for an env-wide scope (`alpha`), the repo name for a single-repo or standalone scope (`winter-workflow`). Report the **`.md` path** to the human — that is the manifest they review; the `.json` sits alongside for tooling and the freshness re-check.
+Both files are generated artifacts, never written into a worktree. Resolve `<manifests-dir>` and name the pair under the `manifests` consumer policy in [`../../artifact-storage.md`](../../artifact-storage.md), which owns the naming pattern and its same-day variant; the `.md` and `.json` share one basename. `<slug>` identifies the change-set: the env name for an env-wide scope (`alpha`), the repo name for a single-repo or standalone scope (`winter-workflow`). Report the **`.md` path** to the human — that is the manifest they review; the `.json` sits alongside for tooling and the freshness re-check.
 
 ## The markdown review document
 
@@ -108,9 +108,20 @@ where `<new-start-line>` is `c`, the post-image start line from the `@@` header 
 }
 ```
 
-Keys, ordering, and types are stable across runs at this `schema_version`. `tier` takes exactly the three values owned by [`classification.md`](./classification.md) and records the **final** tier after the audit; `promoted_from` preserves what the classifier originally assigned so a reader can see what the audit caught.
+Keys, ordering, and types are stable across runs at this `schema_version`. `tier` takes exactly the three values owned by [`classification.md`](./classification.md) and records the **final** tier after the audit; `promoted_from` preserves what the classifier originally assigned so a reader can see what the audit caught. `base_kind` takes the review-base kinds owned by [`../change-set.md`](../change-set.md), which names the kind it returns for each scope.
 
 `source` records which producer filled the entry: `classified` follows [`process.md`](./process.md), `authored` follows [`build-time.md`](./build-time.md). `intent` is the author's reason for the change in their own words — populated for `authored` entries, `null` for `classified` ones (a fresh classifier never saw the intent). Intent enriches the render's claim; it never substitutes for the adversarial audit, which checks an `authored` cheap-tier claim exactly as it checks a `classified` one.
+
+### Fail-closed entries
+
+Two entry kinds reach the schema with no concurring classifier behind them. Both are `tier: "novel"`, `exemplar: null`, `audit: "unaudited"` (`novel` is never audited), `promoted_from: null`, and `lines` counted from the diff like any other hunk; `source` records whichever producer path ran, and `intent` is `null` unless a build-time author recorded one. They differ in the two fields that carry why the entry exists:
+
+| Entry | `contested` | `claim` |
+|-------|-------------|---------|
+| **Contested** — the k classifiers split ([`process.md`](./process.md)) | `true` | The split itself and the tiers voted, since no assertion survived the vote |
+| **Coverage-inserted** — the hunk reached [invariant 1](#invariant-1--total-coverage) with no entry | `false` | That no classifier vote exists for the hunk |
+
+A coverage-inserted hunk is not contested: nothing was voted on to disagree about. Fixing these two shapes here is what keeps `contested_rate` and the tier percentages comparable across runs.
 
 ## Invariant 1 — total coverage
 
@@ -159,6 +170,12 @@ Before trusting a manifest, a consumer:
 2. Recomputes `diff_sha` by the recipe above.
 3. **Match** → the manifest describes the current diff; use it. **Mismatch** — or a target that no longer exists, or a hunk-set that no longer matches — → **reject as stale** and regenerate; never patch or silently reuse. A manifest claiming a hunk is `mechanical` for a diff that has since changed is exactly the false reassurance the binding exists to prevent.
 
+### Amending a rendered manifest
+
+A manifest whose `diff_sha` still matches may be amended in **one direction only: toward human review.** A review finding proving a cheap-tier hunk carried a decision promotes that hunk in place; nothing moves a hunk to a cheaper tier, and no other in-place edit is permitted. A manifest needing any other correction is regenerated, which is also the only remedy once `diff_sha` stops matching.
+
+A promotion obliges the full set, or it is a lie the metrics inherit: set `tier: "novel"`, `audit: "promoted"`, and `promoted_from` to the tier it left; increment `misclassification_count`; recompute the `metrics` block; and re-render the markdown so the document a human reads agrees with the facts file.
+
 ## Metrics
 
 Per change-set, emitted into `metrics` and surfaced in the render header:
@@ -168,4 +185,4 @@ Per change-set, emitted into `metrics` and surfaced in the render header:
 | **% of diff lines per tier** | `lines_by_tier[t] / total_lines`, per tier. Lines = added + removed within the hunk. Reported on the **final** tiers (post-audit). |
 | **contested-classification rate** | `contested_count / total_hunks` — hunks where the k classifiers disagreed and were failed closed to `novel`. |
 | **audit promotion rate** | `audit_promotions / cheap_sampled` — sampled cheap-tier hunks the audit promoted to `novel`. Zero sampled → report `n/a`, not `0`. |
-| **misclassification count** | total cheap-tier hunks the audit promoted (the per-change counter the audit increments). |
+| **misclassification count** | total cheap-tier hunks promoted out of a cheap tier. The step applying an audit result or a review finding increments it; the audit itself only reports hits. |

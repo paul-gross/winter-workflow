@@ -122,7 +122,7 @@ Relay a completed single-axis report according to [`./reporting.md`](./reporting
 If a [review manifest](./manifest/index.md) exists for the change-set, reconcile it after the review settles:
 
 - If fixes or other edits changed the diff, its freshness binding is stale; regenerate it rather than leaving a manifest that describes an old diff.
-- If a finding proves a `mechanical` or `pattern` hunk carried a decision, promote that hunk to `novel` or regenerate the manifest.
+- If a finding proves a `mechanical` or `pattern` hunk carried a decision, promote that hunk in place under [the amendment rule](./manifest/format.md#amending-a-rendered-manifest), or regenerate the manifest.
 - If the diff did not change and no finding contradicted a cheap tier, leave the manifest intact.
 
 ## Optional attention ordering

@@ -76,6 +76,19 @@ On the single-repository path, resolve that repository's configured upstream dir
 
 The returned change-set therefore contains reviewable target entries plus any delivery blockers. A blocker is part of the result even when other repositories can still be reviewed.
 
+### Review-base kind per scope
+
+Every reviewable target carries the **kind** of base it was resolved against, not just the ref, so a consumer can tell a mainline comparison from a delivery diff without re-deriving it. This is the single owner of that vocabulary:
+
+| Scope | Kind | Base |
+|-------|------|------|
+| `branch-vs-base` | `integration` | the repo's integration ref resolved in step 3 |
+| `unpushed` | `upstream` | the worktree's configured upstream |
+| `unpushed` with a supplied review base | `explicit` | the caller's documented, verified ref, labeled per step 4 |
+| `uncommitted` | `head` | `HEAD`; the scope resolves no base of its own |
+
+A ref or range the caller supplies outside env discovery is `explicit` as well — the kind records where the base came from, and a caller-named base is explicit however the review reached it.
+
 ## Step 5 — Collapse to single-repo when the set is small
 
 If the reviewable set has **0 repos** and there are no blockers, there is nothing to review — report it and stop. If blockers exist, return them even when no diff can be reviewed. If there is **exactly 1 reviewable repo**, there is no cross-repo dimension: review that one repo exactly as the single-repo path, with no union framing and no cross-repo consistency pass.
