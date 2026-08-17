@@ -1,147 +1,118 @@
-# Glacier
+# Glacier — process
+
+Glacier drives one feature to completion on a single linear track: adopt or produce a plan, break it into ordered phases, build and verify each phase one at a time, run a completion review over the uncommitted work, and write a retrospective. It meets the shared definition of done for feature work owned by [`../../completion.md`](../../completion.md) — the tested-and-docs-updated bar — for the feature it delivers: the tested half is carried by closing every phase with the verify finale, and the docs-updated half by the completion review, which spans the code, agent-facing, and public-docs axes over the uncommitted feature.
+
+Glacier executes its coordination through the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md); the executing session adapter resolves each operation for its harness. Every isolated-role invocation carries, before its role-specific task, the one-shot default declared at [`../../runtime-ports.md#spawn-an-isolated-role`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this glacier operation — the steps below call this "the isolated-role restrictions".
 
 ## Inputs
 
-- **Feature or plan** — a feature description, named plan, refined work item, or inline plan; it may initially be absent when a human caller is available to clarify it.
-- **Work-target hint** — optional feature environment, standalone repository, workspace branch, or path.
-- **Documentation-root hint** — optional existing planning or work-item directory.
-- **Planning context** — the workspace's planning framework, verifiability matrix, and architecture guidance when available. Step 2 hands these to the [planning process](../../planning/process.md) and the plan-review gate.
-- **Human-caller channel** — available for required planning approval, phase confirmation, environment gaps, and escalation decisions.
+- **Feature or plan** — a feature description, named plan, refined work item, or inline plan; may initially be absent when a human caller is available to clarify it.
+- **Work-target hint** (optional) — a feature environment, standalone repository, workspace branch, or path.
+- **Documentation-root hint** (optional) — an existing planning or work-item directory.
+- **Planning context** (when available) — the workspace's planning framework, verifiability matrix, and architecture guidance, handed to the planning process and the plan-review gate.
+- **Human-caller channel** (required) — used for required planning approval, phase confirmation, environment gaps, and escalation decisions.
 
 ## Outputs
 
-- An approved plan and phase record at `<documentation-root>/00-plan.md`.
-- The feature implementation, with every phase verified, left uncommitted for the human caller.
-- The automatic uncommitted delivery-review summary and an optional closed review manifest.
-- A retrospective at the location selected in step 6.
+- The approved plan and phase record at `<documentation-root>/00-plan.md`.
+- The feature implementation with every phase verified, left uncommitted for the human caller to commit.
+- The automatic uncommitted delivery-review summary and, optionally, a closed review manifest.
+- A retrospective at the location the retrospective step selects.
 
-Drive one feature to completion on a single linear track: adopt or produce a plan, break it into ordered phases, build-and-verify each phase one at a time, run a completion review over the uncommitted work, and write a retrospective. Use the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md); the executing session adapter resolves canonical roles, model intent, concurrency, human interaction, and result channels for its harness.
+## 1. Frame the feature
 
-Planning targets the application's **verifiability matrix** and **architecture guidance** and is gated on both (step 2); each phase is then closed by the tool-building **verify finale** (step 4), which verifies through a method declared in the matrix and builds a missing one rather than improvising.
+Before any building, frame the feature in one or two sentences. If the supplied feature is not concrete, ask the human caller once what the feature is and how completion will be recognized, then stop until they answer.
 
-## Definition of done
+## 2. Resolve the work target
 
-Glacier meets the shared **Definition of done for feature work** ([`../../completion.md`](../../completion.md)) — the tested-and-docs-updated bar — for the feature it delivers. Two mechanisms carry it:
+The work target is one of: a feature environment (spanning whichever of its repo worktrees the feature touches), a standalone repository, or the workspace branch. Resolve it from the work-target hint or by asking the human caller. Record it as absolute path(s) — every spawned agent works inside the target and never changes directory outside it. Feature-environment work happens in the environment's repo worktrees, never in a source checkout under `projects/`.
 
-- **Tested** — each phase is closed by the **verify finale** (step 4b), which verifies the phase's change through a method declared in the application's verifiability matrix, building the method (and recording its matrix row) when none exists rather than running an ad-hoc LLM pass. A green build or type-check is not a test.
-- **Docs updated** — the **completion review** (step 5) spans the code, agent-facing, and public-docs axes over the uncommitted feature before completion.
+## 3. Choose the documentation root
 
-Do not advance past a phase until its verify finale has passed.
+Work within the supplied or available planning framework, following its conventions for where plans, phases, and session artifacts live and any plan-review gate it declares. When the workspace has no planning framework, gently suggest to the human caller once that adopting one would help organization and observability, then proceed without blocking on it.
 
-Work within the supplied or available planning framework — its conventions for where plans, phases, and session artifacts live, and any **plan-review gate** it declares (step 2). If no planning framework exists, gently suggest to the human caller that adopting one would help with organization and observability, then proceed: establish the plan through the planning process (step 2), treat a missing verifiability matrix or architecture guidance as a gap to surface rather than invent around, and track the work in your winter space (see step 1).
+Decide the documentation root from how glacier was started: a work-item name or existing plan directory points there; otherwise use the workflow artifact directory. Do not search for matching work items; create the directory if it does not exist. The documentation root holds the plan and phase docs. When the feature arrived as a refined work item with its own directory, use a `glacier/` subdirectory inside that item's directory; when the workspace has no planning framework, resolve `<workflows-dir>` per [`../../artifact-storage.md`](../../artifact-storage.md) and use `<workflows-dir>/<yyyy-mm-dd>-<name>/`, with `<name>` a short kebab-case slug derived from the feature.
 
-## Isolated-role restrictions
+## 4. Plan, gate, approve
 
-Every isolated role invocation carries, before its role-specific task, the one-shot default declared by [`../../runtime-ports.md`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this Glacier operation. The steps below refer to it as **the isolated-role restrictions**.
+Glacier owns the plan loop — author, gate, revise until convergence, then approve — composing the planning process (which authors and revises the artifact) with the shared review process (which gates it). The plan axis owns what the gate checks; glacier owns when the gate runs and the revision loop around it.
 
-## Steps
+**Author.** Execute [`../../planning/process.md`](../../planning/process.md) with `feature_or_plan` set to the supplied feature or plan, `plan_root` set to `<documentation-root>/00-plan.md` (or the planning framework's own plan location when the framework supplied the documentation root), and `work_target` set to the recorded work-target path(s). Glacier's planning targets the application's verifiability matrix and architecture guidance and is gated on both; treat a missing matrix or missing guidance as a gap to surface to the human caller, never as something to invent around.
 
-### 1. Frame the feature, work target, and documentation root
+**Gate.** Execute the shared review process at [`../../review/process.md`](../../review/process.md) with the plan axis ([`../../review/axes/plan.md`](../../review/axes/plan.md)), scoped to the plan's directory or file, supplying the work-target path(s) as the axis's work target. A planning framework that declares its own plan-review gate takes precedence over the shipped plan axis; discover and invoke that gate from the runtime context rather than assuming a particular agent, command, or file layout.
 
-Establish three things before any building:
+**Revise.** On must-fix findings, re-execute the planning process with `findings` set to the review report — its revision step owns the shape of the fix, deletion first — escalate to the human caller any finding that needs a product decision, then re-run the gate. Track per revision round the must-fix count and the plan's size: if the must-fix count ever fails to strictly decrease, or three revision rounds pass without a clean verdict, stop the loop and escalate to the human caller with the round history — counts, sizes, and unresolved findings. Rounds that produce plan mass instead of a shrinking finding count signal a plan at the wrong altitude or a needed product decision, not a need for more rounds.
 
-- **The feature** — one or two sentences from the supplied feature or plan. If it is not concrete, ask the human caller once what the feature is and how you'll know it's done, then stop until they answer.
-- **The work target** — one of: a **feature environment** (e.g. `beta/`, across whichever of its repo worktrees the feature touches), a **standalone repository**, or the **workspace branch** itself. Determine it from the supplied work-target hint ("on beta", a repo name, a path) or ask the human caller. Record the **absolute path(s)**; spawned agents work within the target and never `cd` outside it. For feature-environment work, use the env's repo worktrees — never fall back to a source checkout under `projects/`.
-- **The documentation root** — where the plan and phase docs live. Follow the workspace's planning-framework conventions: if the feature came in as a refined work item with its own directory, write a `glacier/` subdirectory inside it. If the workspace has no planning framework, resolve `<workflows-dir>` under [`../../artifact-storage.md`](../../artifact-storage.md) and use `<workflows-dir>/<yyyy-mm-dd>-<name>/` (short kebab-case `<name>` from the feature). Decide from how glacier was started — a work-item name or an existing plan directory points there, otherwise use the workflow artifact directory; don't search for matching items. Create the directory if it doesn't exist.
+**Approve.** Present the gated plan to the human caller and obtain approval before building; record the approved plan at `<documentation-root>/00-plan.md`, superseding any pre-gate draft. Do not advance to building until the human caller approves the plan, and an approval-time adjustment that changes the planned changes goes back through the plan gate before building.
 
-### 2. Establish the plan
+## 5. Break into phases
 
-Glacier owns the plan loop — author, gate, revise until convergence, approve — composing two shared units: the [planning process](../../planning/process.md) authors and revises the artifact, and the shared review process gates it.
+When the plan arrives already phased, adopt its phases; otherwise decompose the plan into ordered phases, each a coherent, independently verifiable increment. Account for every surface the change owes — including surfaces outside the code repo, such as a separate public-docs site — so each is a planned phase from the outset rather than something the completion review catches later. Confirm the phase breakdown with the human caller, then write the confirmed phases into `<documentation-root>/00-plan.md` alongside the plan.
 
-**Author.** Execute the [planning process](../../planning/process.md) with `feature_or_plan` = the supplied feature or plan, `plan_root` = `<documentation-root>/00-plan.md` (or the planning framework's own plan location when the framework supplied the documentation root), and `work_target` = the path(s) from step 1.
+Phases execute strictly in order: a phase starts only after the previous one passed verification, phases are never reordered or run concurrently, and parallelism exists only inside a phase.
 
-**Gate.** Execute the shared review process ([`../../review/process.md`](../../review/process.md)) with the [`plan` axis](../../review/axes/plan.md), scoped to the plan's directory or file and supplying the work-target path(s) as the axis's work target. The axis owns what the gate checks; glacier owns when it runs and the loop below. A planning framework that declares its own plan-review gate wins — discover and invoke it from the runtime context rather than assuming a particular agent, command, or file layout; the shipped axis is the gate otherwise.
+## 6. Build and verify each phase
 
-**Revise until convergence.** On must-fix findings, re-execute the planning process with `findings` = the report — its revision step owns the fix's shape (deletion first) — escalating to the human caller any finding that needs a product decision, then re-run the gate. Track per round the must-fix count and the plan's size. If the must-fix count fails to strictly decrease on any round, or three revision rounds pass without a clean verdict, **stop the loop and escalate to the human caller** with the round history — counts, sizes, and the unresolved findings. Review effort that produces plan mass instead of a shrinking finding count signals a plan at the wrong altitude or a needed product decision, not more rounds.
+Each phase runs a build-then-verify loop — implement with an ice-carver, close with the verify finale — with a hard cap of three build-and-verify attempts per phase.
 
-**Approve.** Present the plan to the human caller and get approval before building. Record the approved plan at `<documentation-root>/00-plan.md`, superseding any pre-gate draft, so the session has a record. Do not advance until the human caller approves or adjusts it; an adjustment that changes the planned changes goes back through the gate before building.
+### Build
 
-### 3. Establish the phases
+Spawn the canonical `ice-carver` role in a one-shot isolated context with workhorse model intent and await its result; treat it as a full-stack engineer owning the phase's implementation across everything it touches, while runtime verification belongs to the verify finale rather than the ice-carver. Each prompt is self-contained and carries:
 
-**Given** the plan is already phased (provided or written that way) — adopt those phases.
+- the isolated-role restrictions;
+- the absolute work-target path(s);
+- the phase goal plus a one-line feature framing;
+- the path to `00-plan.md` for the full approach;
+- for attempts after the first, the previous attempt's failing report verbatim, with instruction to address it specifically;
+- the constraints to stay scoped to this phase, not start later phases, and not commit;
+- the reporting requirement: files with line ranges changed plus a one-line summary.
 
-**Otherwise** — decompose the plan into ordered phases, each a coherent, independently verifiable increment. A feature delivery spans more than the code repo — when you break the work down, account for every surface the change owes, including any that lives outside the code (such as a separate public-docs site), so each is a planned phase from the outset rather than a completion-review catch. **Confirm the phase breakdown with the human caller** through the human-caller port. Write the confirmed phases to `<documentation-root>/00-plan.md` alongside the plan.
+When a phase's work divides into independent slices — disjoint files, no shared build artifact — you may spawn one isolated ice-carver per slice as a single concurrent group; sequence slices that overlap, and when in doubt use one ice-carver. A sliced phase still closes as one unit: await every slice's result, then run the verify finale once after all slices have landed.
 
-**Phases execute strictly in order.** A phase starts only after the previous one has passed verification (step 4). Do not reorder phases or run two phases at once — parallelism lives *inside* a phase (step 4a), never across phases.
+### Verify
 
-### 4. Per-phase build-and-verify loop (hard cap: 3 attempts per phase)
+To close a phase, spawn the canonical `verify-finale` role in a one-shot isolated context and await its result: it verifies the change through a method declared in the application's verifiability matrix, builds a missing method (and records its matrix row) when none covers the change rather than running an ad-hoc LLM pass, and fixes then re-verifies until the method passes. Because the finale both verifies and fixes, its findings are not separately routed to an ice-carver. Its prompt carries:
 
-For each phase, in order, **build it with an `ice-carver`, then close it with the verify finale**. Allow up to three build→verify attempts per phase.
+- the isolated-role restrictions;
+- the absolute work-target path(s);
+- for runtime verification, the base URL and port from `workspace:/context/project/project-setup.md` or the environment's computed variables via `winter env <env>`, asking the human caller when neither yields them;
+- the phase goal and the ice-carver's reported change, so the finale knows what behavior to assert;
+- the directive to verify through the matrix, build and record any missing method first, then fix what verification surfaces and re-verify until passing.
 
-#### 4a. Run the ice-carver (implement the phase)
+The one seam the finale cannot drive: when its runtime capabilities cannot perform a declared browser-driven matrix method, spawn the canonical `frontend-verifier` role in a one-shot isolated context for that method — carrying the isolated-role restrictions, the work-target path(s), the base URL/port, and the declared browser exercise — while the finale closes everything else.
 
-Spawn the canonical `ice-carver` role in a one-shot isolated context with workhorse model intent and await its result. Treat this ice-carver as a full-stack engineer who owns the phase's implementation across whatever it touches (backend, frontend, data, CLI); runtime verification is the finale's job (4b), not the ice-carver's.
+A phase passes only when its verification passes in full — the verify finale and any frontend-verifier split off for a browser-driven method. A green build or type-check never counts as a test; phases close against runtime behavior. Glacier does not start services: when verification needs services that are not running, the finale reports that condition rather than guessing, and glacier tells the human caller to run `winter service up <env>` — the run phase per `workspace:/context/environment-lifecycle.md` — and rerun the process.
 
-When a phase's work splits into **independent slices** — disjoint files, no shared build artifact — you may spawn one isolated `ice-carver` per slice as one concurrent group instead of a single ice-carver. Sequence slices that overlap; when in doubt, use one ice-carver. The phase still closes as one unit: await every slice result, then run the verify finale (4b) once after every slice has landed.
+### On failure
 
-Each ice-carver's self-contained prompt carries:
+When the finale escalates something it cannot resolve in its own retries or that only the human can decide, or a split-off frontend-verifier reports a failure (it only verifies and cannot fix), re-task the same phase: spawn a fresh ice-carver at attempt plus one with the failing report folded into the attempt history, then re-run the finale. Do not blindly re-spawn the finale or verifier against the same build.
 
-1. **The isolated-role restrictions**.
-2. **Work-target path(s)** (absolute).
-3. **Phase goal** — this phase's increment, plus the one-line feature framing for context.
-4. **Plan reference** — the path to `00-plan.md` so the ice-carver can read the full approach.
-5. **Attempt history** — for attempt > 1, the previous attempt's failing report verbatim (the verify finale's escalation and/or the `frontend-verifier`'s findings); tell the ice-carver to address it specifically.
-6. **Constraints** — keep the change scoped to this phase; do not start on later phases; do not commit. A green build or type-check is not the bar — the verify finale closes the phase against runtime behavior.
-7. **Reporting** — files + line ranges changed; a one-line summary. **If accumulating a review manifest** (see *Review manifest* below), also have the ice-carver report, for each hunk it authored, a `{tier, claim, intent}` line per [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md) — it knows its own intent, which a fresh classifier never could.
+When a phase has not passed full verification within three attempts, stop and escalate to the human caller: name the phase, summarize each attempt in one line (what was built and what the finale or verifier reported), and ask how to proceed. Never silently continue to later phases atop an unverified one.
 
-#### 4b. Run the verify finale (close the phase)
+## 7. Accumulate a review manifest (when wanted)
 
-Spawn the canonical `verify-finale` role in a one-shot isolated context and await its result. It closes the phase by verifying the change through a method declared in the application's verifiability matrix, **building a missing method** (and recording its matrix row) when none covers the change rather than running an ad-hoc LLM pass, and **fixing and re-verifying** until the method passes. Supply:
+Accumulate a review manifest only when it is wanted: the human caller asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention. Skip it for a small feature that fits in a glance — the manifest only earns its keep on changes big enough that a human would otherwise stop reading.
 
-1. **The isolated-role restrictions**.
-2. **Work-target path(s)** (absolute); for runtime verification, the base URL/port from `workspace:/context/project/project-setup.md` or the env's computed vars (`winter env <env>`) — ask the human caller if neither yields them.
-3. **Phase context** — the phase goal and the ice-carver's reported change, so the finale knows what behavior to assert.
-4. **What to do** — verify the phase through the verifiability matrix, building and recording a missing method before verifying, then fix what verification surfaces and re-verify until it passes.
+Accumulate the manifest while building rather than fresh-classifying at the end: intent captured while fresh yields a higher-fidelity manifest than any after-the-fact classification. Accumulation follows [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md):
 
-The finale both verifies and fixes, so you do not separately route its findings to an ice-carver. **The one seam it can't drive:** when its runtime capabilities cannot perform a declared browser-driven matrix method, spawn the canonical `frontend-verifier` role in a one-shot isolated context for that method (isolated-role restrictions + work-target path(s) + the base URL/port from `workspace:/context/project/project-setup.md` or `winter env <env>` + the declared browser exercise) and let the finale close everything else.
+- Each ice-carver additionally reports a `{tier, claim, intent}` line for every hunk it authored, because the builder knows its own intent in a way no fresh classifier can.
+- After each phase, append that phase's ice-carver-reported entries to the manifest's JSON facts at its retained `<manifests-dir>/<date>-<slug>.json` path.
+- The verify finale also authors hunks — its fixes and any verification method or matrix row it builds — but reports no tier line; those hunks are classified at the manifest's close against the settled diff, where total-coverage enforcement catches them.
 
-If services aren't running and verification needs them, the finale should say so rather than guess — glacier does not start services. Tell the human caller to run `./up` (or the project equivalent per `workspace:/context/project/project-setup.md`) and rerun the process.
+## 8. Completion review
 
-#### 4c. Gate and cap
+When every phase has passed, run the completion review automatically — without waiting for the human caller to ask and without using the pre-push binding, because glacier's work is deliberately uncommitted: execute [`../../delivery/review/process.md`](../../delivery/review/process.md) with scope `uncommitted` and mode `blocking`.
 
-A phase passes only when its verification passes in full — the verify finale, **and** any `frontend-verifier` split off for a browser-driven method (4b). Branch on the combined result:
+On blocking findings, spawn a fresh isolated ice-carver with workhorse model intent to resolve them without committing, rerun the verification methods affected by its edits, then rerun the same uncommitted delivery review, repeating until no blocking findings remain. When a finding cannot be resolved without a human decision, or an environment capability is unavailable, stop and escalate with the finding ids and the blocker — do not claim the definition of done. Preserve consider findings and any review gaps in the final summary; neither blocks completion.
 
-- **Verification passes** (the finale passed, and any split-off `frontend-verifier` also passed) → advance to the next phase, or to step 5 if this was the last phase.
-- **Verification fails** — the finale escalates (a failure it can't resolve in its own retries, or a gap only the human caller can decide), **or** a split-off `frontend-verifier` reports a failure (it verifies only; it cannot fix what it finds) → re-task the same phase: spawn a fresh `ice-carver` (attempt + 1) with the failing report folded into the attempt history (the finale's escalation and/or the `frontend-verifier`'s findings), then re-run 4b. Don't re-spawn the finale or verifier blindly on the same build.
-- **Cap** — if a phase hasn't passed its full verification in three attempts, **stop and escalate to the human caller**: name the phase, summarize each attempt in one line (what was built, what the finale or verifier reported), and ask how to proceed. Do not silently continue to later phases on an unverified one.
+An accumulated review manifest is closed only after the blocking-finding loop settles: bind the authored entries to the settled diff, enforce total coverage, run the adversarial manifest-auditor over the cheap tiers, and render the markdown document, all per the close-the-manifest section of [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md); surface the manifest's `.md` path alongside the completion-review summary so the human caller has both the findings and the tiered review order.
 
-### Review manifest (optional — capture intent while building)
+Glacier never commits or pushes. Once blocking findings are resolved, return the implementation, verification evidence, completion-review summary, and any advisory findings and gaps to the human caller.
 
-When a review manifest is wanted for this feature — the human caller asked for one, or the change is large or mechanical-heavy enough that a tiered review order will save a human real attention — **accumulate it as you build** rather than fresh-classifying at the end. The builder knows *why* each hunk exists; capturing that intent while it is fresh produces a higher-fidelity manifest than any after-the-fact classification.
+## 9. Retrospective
 
-Follow [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md): each phase's `ice-carver` reports the `{tier, claim, intent}` for the hunks it authored (step 4a, item 7); after each phase you append those entries to the manifest's JSON facts at its retained `<manifests-dir>/<date>-<slug>.json` path. The verify finale also authors hunks (its fixes, and any verification method or matrix row it builds) but reports no tier line — those are classified at the **close** step against the settled diff, where total-coverage enforcement catches them. You **close** the manifest at step 5 (below). Skip all of this for a small feature that fits in a glance — the manifest earns its keep only on a change big enough that a human would otherwise stop reading.
+Write a retrospective once the work is delivered or the human caller calls it done: a markdown document titled "Glacier Retrospective — \<feature\>" carrying the date, a one-line feature statement, and the sections **What Went Well**, **What Didn't Go Well**, **Harness / Context Improvements**, and **What We Skipped**.
 
-### 5. Completion review
+Harness / Context Improvements is the point of the retrospective: concrete, actionable changes to the harness, tooling, agent docs, or conventions that would make the next glacier run faster, more accurate, or more autonomous — including noting any doc corrected mid-session. What We Skipped records untested paths, deferred work, and known gaps.
 
-When every phase has passed, review the work automatically — do not wait for the human caller to ask and do not use the pre-push binding. Glacier's work is deliberately uncommitted, so execute [`../../delivery/review/process.md`](../../delivery/review/process.md) with `scope: uncommitted` and `mode: blocking`.
-
-If the result contains blocking findings, spawn a fresh isolated `ice-carver` with workhorse model intent to resolve them without committing, rerun the verification methods affected by its edits, then rerun the same uncommitted delivery review. Continue until the review returns no blocking findings. If a finding cannot be resolved without a human decision or an environment capability is unavailable, stop and escalate with the finding ids and blocker; do not claim the Definition of Done. Preserve `consider` findings and any gaps in the final summary; neither blocks completion.
-
-**If you accumulated a review manifest** (above), **close it only after the blocking-finding loop settles**: bind the authored entries to the settled diff, enforce total coverage, run the adversarial `manifest-auditor` over the cheap tiers, and render the markdown document — all per [`../../review/manifest/build-time.md`](../../review/manifest/build-time.md) §"Close the manifest". Surface the manifest's `.md` path alongside the completion-review summary, so the human caller has both the cross-axis findings and the tiered review order.
-
-Do not commit or push. Once blocking findings are resolved, return the implementation, verification evidence, completion-review summary, and any advisory findings and gaps to the human caller.
-
-### 6. Retrospective
-
-Once the work is delivered (or the human caller calls it done), write a retrospective. When a planning framework supplied the documentation root, write it there as `<documentation-root>/retrospective.md`. Otherwise resolve `<retrospectives-dir>` under [`../../artifact-storage.md`](../../artifact-storage.md) and write `<retrospectives-dir>/<yyyy-mm-dd>-<name>.md` (same `<name>` as the workflow doc). Either way the structure is:
-
-```markdown
-# Glacier Retrospective — <feature>
-## Date: YYYY-MM-DD
-## Feature: <one line>
-
-## What Went Well
-
-## What Didn't Go Well
-
-## Harness / Context Improvements
-<concrete, actionable changes to the harness, tooling, agent docs, or conventions
-that would make the next glacier run faster, more accurate, or more autonomous —
-e.g. a stale doc you corrected, a verification probe that should be documented, a
-missing convention. This section is the point of the retrospective.>
-
-## What We Skipped
-<untested paths, deferred work, known gaps>
-```
-
-Keep it honest and specific — the **Harness / Context Improvements** section is what feeds the next run. If you corrected a doc mid-session, note it here too.
+When a planning framework supplied the documentation root, the retrospective lives at `<documentation-root>/retrospective.md`; otherwise resolve `<retrospectives-dir>` per [`../../artifact-storage.md`](../../artifact-storage.md) and write `<retrospectives-dir>/<yyyy-mm-dd>-<name>.md`, using the same `<name>` as the workflow document.
