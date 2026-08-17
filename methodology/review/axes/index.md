@@ -1,21 +1,20 @@
 # Review axes
 
-Each axis is a caller-neutral review methodology. The shared review process selects one axis and supplies its semantic inputs; both inline executors and isolated reviewer runtimes execute the same axis document.
+The registry of review axes. Each axis is a caller-neutral review methodology document: the shared review process at [../process.md](../process.md) selects one axis and supplies that axis's semantic inputs, and every axis reports through the shared contract at [../reporting.md](../reporting.md). The identical axis document is executed regardless of runtime — inline executors and isolated reviewer runtimes both run the same file.
 
-| Axis | Methodology | Concern |
-|------|-------------|---------|
-| `code` | [Code review](./code.md) | correctness, architectural quality, and design-principle adherence in one pass |
-| `correctness` | [Correctness review](./correctness.md) | broken behavior, broken neighbors, and false claims |
-| `architecture` | [Architecture review](./architecture.md) | conformance to the target's declared code-shape principles — layers, boundaries, abstractions |
-| `qualities` | [Quality attribute review](./qualities.md) | the change against the target's declared software-quality trade-offs and their magnitudes |
-| `tests` | [Test review](./tests.md) | the change's tests against the target's declared testing requirements |
-| `context` | [Context review](./context.md) | agent-facing markdown against documented authoring conventions |
-| `harness` | [Harness review](./harness.md) | the application-to-agentic-harness seam |
-| `documentation` | [Documentation review](./documentation.md) | external-facing public documentation |
-| `plan` | [Plan review](./plan.md) | an implementation plan, before building |
+| Axis | Concern |
+|------|---------|
+| [`code`](./code.md) | A source-code change reviewed in one generalist pass |
+| [`correctness`](./correctness.md) | Broken behavior, broken neighbors, and false claims |
+| [`architecture`](./architecture.md) | Conformance to the target's declared code-shape principles — layers, boundaries, abstractions |
+| [`qualities`](./qualities.md) | The change measured against the target's declared software-quality trade-offs and their magnitudes |
+| [`tests`](./tests.md) | The change's tests measured against the target's declared testing requirements |
+| [`context`](./context.md) | Agent-facing markdown measured against documented authoring conventions |
+| [`harness`](./harness.md) | The application-to-agentic-harness seam |
+| [`documentation`](./documentation.md) | External-facing public documentation |
+| [`plan`](./plan.md) | An implementation plan, reviewed before building |
 
-`code` is the single-pass generalist; `correctness`, `architecture`, `qualities`, and `tests` decompose its ground into focused axes so each reviewer holds one concern — run the generalist or the decomposition over a change-set, not both.
+## Selection rules
 
-`harness` and `plan` are not selectable as faceted facets — `harness` needs evidence inputs only the shared review process's scaffold constructs, and `plan` reviews a current-state plan artifact rather than the change-set; invoke both through the shared review process.
-
-All axes use the shared [reporting contract](../reporting.md).
+- `code` is the single-pass generalist; `correctness`, `architecture`, `qualities`, and `tests` decompose the same ground into focused single-concern axes. Over one change-set, run either the `code` generalist or its four-axis decomposition, never both.
+- `harness` and `plan` are not selectable as facets of a faceted review; invoke both only through the shared review process.
