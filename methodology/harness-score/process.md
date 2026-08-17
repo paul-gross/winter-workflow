@@ -1,126 +1,90 @@
 # Harness score — process
 
-A **codebase-scoped** maturity scoring procedure: gather evidence, apply the frozen rubric at [`./rubric.md`](./rubric.md), and emit an HTML report plus a JSON sidecar into the winter space's `scores` directory ([`../artifact-storage.md`](../artifact-storage.md)). If a prior report exists for the same project at the same rubric version, the new report includes a deltas section so weekly runs can track movement. Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
+A codebase-scoped maturity scoring procedure: gather evidence, apply the frozen rubric, and emit an HTML report plus a JSON sidecar. Any agent may execute it, as a standalone operation or as a substep — the caller supplies the target path; this document owns the reusable procedure.
 
-Designed to be executed by any agent that wants scoring as a standalone operation or substep. Callers supply the target path; this document owns the reusable procedure.
+Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
 
 ## Where this fits
 
-| Method | Scope | Question |
-|--------|-------|----------|
-| [Code review axis](../review/axes/code.md) | Diff | Is the code architecturally sound? |
-| [Harness review axis](../review/axes/harness.md) | Diff | Does the harness keep pace with the change? |
-| `harness-score` (this process) | Whole codebase | Where on the maturity matrix is this codebase **today**? |
+| Method | Question |
+|--------|----------|
+| `harness-score` (this process) | Where does the codebase sit on the maturity matrix today, over the whole codebase? |
+| [Code review axis](../review/axes/code.md) | Is this diff architecturally sound? |
+| [Harness review axis](../review/axes/harness.md) | Does the harness keep pace with this diff? |
 
 ## Input
 
-- `target_path` — the absolute path to the existing codebase directory to score.
+The single input is **`target_path`** — the absolute path of the existing codebase directory to score.
 
-The executor's working directory does not select the target. Target-scoped commands may run with `target_path` as their working directory or use absolute paths rooted there.
+The executor's working directory never selects the target: target-scoped commands either run with `target_path` as their working directory or use absolute paths rooted there.
 
-## Process
+## The rubric
 
-### 1. Resolve identity and report directory
+The rubric lives at [`./rubric.md`](./rubric.md), frozen at the version recorded in its own header. Its [scoring rules](./rubric.md#scoring-rules) are the single source of truth — read them there as part of applying the rubric; never paraphrase, tighten, or improvise on them at scoring time. If the rubric fits the target poorly, that is material for a deliberate future rubric edit with a version bump, never something to adjust during a scoring run.
 
-Set `<project>` to the basename of `target_path`. Resolve `<scores-dir>` once through the artifact-directory runtime operation and ensure it exists, following [`../artifact-storage.md`](../artifact-storage.md). Stop if resolution fails or is empty before searching for prior reports; otherwise an empty directory value could broaden the lookup outside the artifact store. Record `<date-stamp>` as the current `YYYY-MM-DD` date.
+## Steps
 
-### 2. Find the prior report (if any)
+### 1. Resolve the scores directory
 
-Look for `<scores-dir>/*-<project>.json` and pick the most recent **of the same rubric version** as this run. Sort by filename (the date prefix sorts chronologically). If none exist, skip the deltas section entirely. If older reports exist at a different rubric version, ignore them for delta purposes and note the version-bump in the report's deltas section.
+Reports land in the winter space's `scores` artifact directory. Resolve it exactly once through the artifact-directory runtime operation and ensure it exists, following [`../artifact-storage.md`](../artifact-storage.md) — that file owns artifact kinds, naming, and consumer policy. If resolution fails or returns an empty value, stop before searching for prior reports: an empty directory value would broaden the prior-report lookup outside the artifact store.
 
-### 3. Load the rubric
+### 2. Find the prior report
 
-Read [`./rubric.md`](./rubric.md). It is **frozen** at the version recorded in its header. Do not improvise dimensions or stage criteria — score against what is written. If the rubric does not fit the target well, that is a v2 conversation (a deliberate edit + version bump in a future change), not a scoring-run conversation.
+The prior report for delta purposes is the most recent JSON file matching `<scores-dir>/*-<project>.json` whose rubric version equals this run's rubric version; recency is decided by sorting filenames, since the date prefix sorts chronologically. Prior reports at a different rubric version are ignored for delta computation.
 
-### 4. Run an `arctic-explorer` for evidence
+### 3. Gather the evidence
 
-Spawn the canonical `arctic-explorer` role in a one-shot isolated context. Its job is **evidence gathering, not scoring**. The current executor does the scoring.
+Spawn the canonical `arctic-explorer` role in a one-shot isolated context. Its job is evidence gathering only — the current executor does the scoring itself from the returned inventory plus the conversation. The invocation must direct the role to:
 
-Require the role to run without resident peers or a shared assignment queue; return one evidence inventory through the isolated-result channel; perform no follow-on coordination; and stop when the inventory is complete. This invocation is read-only evidence gathering: it must not write or edit documentation, request a follow-up context review, or apply any default documentation-integration behavior from the role.
+- read the rubric file itself and walk each dimension's diagnostic questions and evidence-to-look-for lists;
+- produce an inventory of evidence — file paths, command outputs, doc references — for each of the rubric's 10 dimensions, explicitly not stages and not scores;
+- scope itself to `target_path`: run target-scoped commands from that directory and search the target's repository content, configuration, documentation surfaces, and git history as each dimension warrants, without inspecting the executor's working directory unless that is the same path;
+- stay read-only: no writing or editing documentation, no requesting a follow-up context review, no applying any default documentation-integration behavior it otherwise carries;
+- run without resident peers or a shared assignment queue, return one evidence inventory through the isolated-result channel, perform no follow-on coordination, and stop when the inventory is complete;
+- return a short bullet list of evidence per dimension with file paths or git-log outputs, calling out explicitly any dimension with no evidence.
 
-The role-specific content must include:
+### 4. Score every dimension
 
-1. **Goal** — produce an inventory of **evidence** (file paths, command outputs, doc references) for each of the 10 dimensions in the rubric. Not stages, not scores. Evidence.
-2. **The full rubric** — read [`./rubric.md`](./rubric.md) and walk each dimension's diagnostic questions and "evidence to look for" lists.
-3. **Scope** — the target is `target_path`. Run target-scoped commands from that directory and search its repository content, configuration, documentation surfaces, and git history as appropriate for each rubric dimension. Do not inspect the executor's working directory unless it is the same path.
-4. **Output shape** — for each dimension, a short bullet list of evidence with file paths or `git log` outputs. If a dimension has no evidence, say so explicitly.
-5. **Stop** — do not propose stages. Scoring is the main agent's job.
+Assign every one of the 10 dimensions four things: a stage, evidence citations, a rationale, and a next-stage suggestion.
 
-Await the inventory before scoring.
+- **Evidence** — one to three citations drawn from the arctic-explorer inventory, each a file path plus a one-sentence description of what it shows.
+- **Rationale** — one to two sentences explaining the stage choice given the evidence.
+- **Next-stage suggestion** — a single concrete change (one file, one tool, one PR) the target project's maintainer could act on in an afternoon, never something vague like "improve documentation".
 
-### 5. Apply the rubric
+Fresh-context isolation deliberately does not apply to this step: fresh code and harness reviews isolate to avoid absorbing author framing of a diff, but harness scoring judges a whole codebase and benefits from the caller's framing of why they care — only the evidence-gathering arctic-explorer is one-shot and self-contained. A fully fresh score, if wanted, is obtained by running the whole process in a fresh session.
 
-For each of the 10 dimensions, decide:
+### 5. Compute deltas
 
-- **Stage** — 1 to 5. Half-stages (e.g., 3.5) are allowed when evidence straddles two stages. When in doubt, pick the lower stage and explain.
-- **Evidence** — 1 to 3 citations from the arctic-explorer's inventory. Each citation is a file path + a one-sentence description of what it shows. If you cannot point at a file (or a command output), the evidence does not exist for scoring purposes.
-- **Rationale** — 1 to 2 sentences explaining the stage choice given the evidence.
-- **Next-stage suggestion** — one concrete change: one file, one tool, one PR. Not "improve documentation"; write something the target project's maintainer could act on in an afternoon.
+When a prior report at the same rubric version exists:
 
-Follow the rubric's scoring rules verbatim (see [`./rubric.md#scoring-rules`](./rubric.md#scoring-rules)). They are the single source of truth — do not paraphrase or tighten them here.
+- Record per-dimension stage movement as prior stage to new stage, marked ↑, ↓, or =.
+- Classify each prior evidence citation as still valid (its file path still exists and still contains the cited content) or gone stale (path gone or content substantially changed), and list the stale citations so the reader can see what shifted underneath the old score.
 
-### 6. Compute deltas (if a prior report exists)
+The deltas section exists so that weekly runs can track movement over time for the same project. When prior reports exist only at an older rubric version, the deltas section notes the rubric-version bump. When no prior sidecar at the same rubric version exists at all, the report has no deltas section and its header instead notes "baseline run; no prior report".
 
-If step 2 found a prior JSON sidecar at the same rubric version, compare:
+### 6. Emit the report and sidecar
 
-- **Per-dimension stage movement** — `prior_stage → new_stage`. Mark `↑`, `↓`, or `=`.
-- **Evidence still valid** — citations whose file paths still exist and still contain the cited content.
-- **Evidence gone stale** — citations whose file paths no longer exist or whose content has changed substantially. List them so the reader can see what shifted underneath the old score.
+Artifact filenames use `<date-stamp>-<project>`: the current date in `YYYY-MM-DD` form plus the basename of `target_path`. One report per project per day — a same-day rerun overwrites the same `YYYY-MM-DD-<project>.html` and `.json` files, and a same-day duplicate that must coexist uses the `YYYY-MM-DD-HHMM-<project>` form per the [naming rules](../html-report.md#naming).
 
-If no prior report exists, the report has no deltas section — note "baseline run; no prior report" in the header instead.
+**HTML report** — written to `<scores-dir>/<date-stamp>-<project>.html`, rendered by following [`./report.md`](./report.md), the harness-score HTML guide that layers the harness-score specifics onto the generic standard in [`../html-report.md`](../html-report.md).
 
-### 7. Render the HTML report
+**JSON sidecar** — written to `<scores-dir>/<date-stamp>-<project>.json`, with exactly these top-level keys:
 
-Render the report following [`./report.md`](./report.md) — the harness-score HTML guide, which applies the generic standard in [`../html-report.md`](../html-report.md) and adds the harness specifics (Tailwind config, cluster colors, score-color bands, and the sidebar / profile-table / per-dimension-card structure).
+| Key | Value |
+|-----|-------|
+| `schema_version` | The integer `1` |
+| `rubric_version` | e.g. `"v1"` |
+| `skill_version` | e.g. `"v1"` |
+| `target` | The `target_path` |
+| `project` | The basename |
+| `generated_at` | ISO-8601 UTC timestamp, date-only or full |
+| `prior_report` | The filename of the prior JSON, or `null` |
+| `scores` | An array |
 
-Write to `<scores-dir>/<date-stamp>-<project>.html`.
+Each entry of the `scores` array carries exactly: `dimension_index` (integer), `dimension` (the dimension name, e.g. `"Context Engineering"`), `cluster` (e.g. `"Foundation"`), `stage` (a number such as `3.0`), `evidence` (an array of objects each with `path` and `note` keys), `rationale` (a sentence or two), and `next_stage` (the concrete suggestion).
 
-### 8. Write the JSON sidecar
+Keys, their ordering, and their types must stay stable across runs at a given rubric version — the next run reads the sidecar to find the prior report and compute deltas. The `rubric_version` value must equal the rubric's actual version: the next run filters prior reports by it, and a mismatch breaks delta computation. If this cannot be satisfied, fail loudly rather than emit a sidecar at the wrong version.
 
-Write to `<scores-dir>/<date-stamp>-<project>.json`. Schema (stable across runs at this rubric version):
+### 7. Tell the caller
 
-```json
-{
-  "schema_version": 1,
-  "rubric_version": "v1",
-  "skill_version": "v1",
-  "target": "<target_path>",
-  "project": "<basename>",
-  "generated_at": "<ISO-8601 timestamp, UTC, date-only or full>",
-  "prior_report": "<filename of prior JSON or null>",
-  "scores": [
-    {
-      "dimension_index": 1,
-      "dimension": "Context Engineering",
-      "cluster": "Foundation",
-      "stage": 3.0,
-      "evidence": [
-        {"path": "CLAUDE.md", "note": "single root index, last touched 2026-05-19"}
-      ],
-      "rationale": "Human-maintained index with manual loading; no progressive disclosure structure yet.",
-      "next_stage": "Add a per-cluster doc directory and link it from CLAUDE.md."
-    }
-  ]
-}
-```
-
-The sidecar is what the next run reads in step 2 to compute deltas. Keep keys, ordering, and types stable.
-
-### 9. Report the path
-
-Tell the caller (the user, or the agent that invoked this process) the report path in one sentence. Example:
-
-> Report written to `<scores-dir>/2026-05-25-winter-workflow.html` (sidecar JSON alongside).
-
-Do not summarize the findings inline — the report **is** the answer. If the caller asks for a verbal summary, give one then; do not pre-empt their attention with a wall of text.
-
-## Operational rules
-
-The **scoring rules** (evidence-required, no averaging, half-stages, concrete next-stage suggestions, frozen rubric, documented-but-unenforced does not exceed stage 3) live in [`./rubric.md#scoring-rules`](./rubric.md#scoring-rules). Read them there as part of step 5. The rules below are **operational** rules specific to running this process.
-
-- **One report per run per day.** Re-running on the same day overwrites the same `YYYY-MM-DD-<project>.{html,json}` files. For same-day duplicates, use the `YYYY-MM-DD-HHMM-<project>` suffix per [`../html-report.md#naming`](../html-report.md#naming).
-- **Sidecar `rubric_version` must equal this rubric's version.** Step 8's JSON `rubric_version` is read by step 2 of the next run to filter prior reports. Mismatches break delta computation; if you cannot satisfy this, fail loudly rather than emit a sidecar at the wrong version.
-
-## Why "fresh" doesn't apply here
-
-Fresh code and harness reviews use isolated roles with no session memory specifically to avoid absorbing author framing. Harness scoring is different — it scores a codebase, not a diff, and the scoring step itself is a deliberate exercise in judgment that benefits from the caller's framing of why they care. The arctic-explorer that gathers evidence is one-shot and self-contained; the current executor scores from its inventory plus the conversation. If a fully fresh score is wanted, run the process in a fresh session.
+End by telling the caller (user or invoking agent) the report path in one sentence. Findings are not summarized inline — the report is the answer; give a verbal summary only if the caller asks afterward.
