@@ -1,6 +1,6 @@
 ---
 description: Rewrite existing markdown — agent-facing or human-facing — into its smallest current form, preserving every load-bearing fact while cutting accreted bloat, stale claims, and hand-holding a modern agent doesn't need. Use when asked to condense, distill, or de-bloat existing docs; not for reviewing them (context-review) or authoring new ones.
-argument-hint: "[paths | directory | repo]"
+argument-hint: "[file | paths | directory | glob]"
 allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 ---
 
