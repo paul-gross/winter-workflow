@@ -1,18 +1,12 @@
-# Change-set scope — reviewing a feature env as one change
+# Change-set discovery
 
-A logical change often spans **several repos in one feature env**. Review the *change-set*, not a single repo: each discovers every in-scope repo in the env and hands the whole set to **one reviewer per axis**, so a change in one repo that contradicts something left stale in another is caught by a reviewer that holds both at once.
+This document owns change-set discovery: how a review scope fans out across every repository of one feature environment so the whole set reaches one reviewer per axis. It is the single source for the discovery steps, consumed by the [review process](./process.md) and the [multi-axis delivery review](../delivery/review/process.md); the steps must not be re-derived anywhere else. A logical change often spans several repos in one feature environment, and only a reviewer holding all of them at once can catch a change in one repo that contradicts something left stale in another.
 
-This doc is the single source for that discovery, used by the review process ([`./process.md`](./process.md)) and the [multi-axis delivery review](../delivery/review/process.md); do not re-derive the steps elsewhere. It governs the **env-wide** scopes only — branch-vs-base, uncommitted, and unpushed. The review process's **explicit** scopes (an arbitrary git `<ref|range>` or a `<paths>` set) name their own target in the current repo and skip the env fan-out below.
+It governs only the env-wide scopes — branch-vs-base, uncommitted, and unpushed. The review process's explicit scopes skip the env fan-out entirely; their target semantics are owned by the [review process's scope-semantics table](./process.md#scope-semantics). Env fan-out applies only inside a feature environment, meaning a per-repo worktree under `<workspace>/<env>/`; run from a standalone repo or a source checkout there is no env to fan out over and the executing process uses its single-repository path.
 
-For `unpushed`, the caller also supplies semantic `pinned_scope: exclude|include|only`. These values correspond respectively to non-pinned worktrees, both pinned and non-pinned worktrees, or pinned worktrees only. An omitted `pinned_scope` defaults to `include` — the project-worktree scope of `winter ws push --include-pinned`; `exclude` corresponds to bare default push and `only` to a pinned-only push. This is the single owner of that default. The caller may also supply a documented, verified explicit review base for a worktree whose delivery upstream cannot be diffed; that base permits review but never removes a delivery blocker.
+## Feature-env detection
 
-## When this applies
-
-Only inside a **feature environment** (a per-repo worktree under `<workspace>/<env>/`). Run from a standalone repo or a source checkout, the executing process uses its single-repository path — there is no env to fan out over. Detection and the collapse rule below make that automatic.
-
-## Step 1 — Detect the feature env
-
-From the repo worktree you were invoked in:
+Detection plus the small-set collapse rule below make the env-versus-single-repo choice automatic rather than caller-supplied. Detection starts from the repo worktree the process was invoked in:
 
 ```bash
 toplevel="$(git rev-parse --show-toplevel)"
@@ -20,77 +14,73 @@ envdir="$(dirname "$toplevel")"
 name="$(basename "$envdir")"
 ```
 
-- `$envdir/.winter/config.toml` exists → `$toplevel` is a standalone repo at the workspace root — **not in a feature env.** Skip the rest of this doc; the change-set is the current repo alone, and the skill proceeds on its single-repo path.
-- Otherwise run `winter ws status "$name" --json`. Success, with an `environments` array naming `<name>` → you are in feature env `<name>`, and you already hold the Step 2 output. An error (`No worktrees match`) → **not in a feature env** — same single-repo path as above.
+- If `$envdir/.winter/config.toml` exists, the toplevel is a standalone repo at the workspace root, not a feature env, and the change-set is the current repo alone on the single-repo path.
+- When that config probe fails and `winter ws status "$name" --json` succeeds with an `environments` array naming `$name`, you are in that feature env, and the same output already serves the repo-listing step.
+- When the status call instead errors with `No worktrees match`, you are not in a feature env and the single-repo path applies.
 
-No env marker file exists on disk — env identity derives from the directory layout and is confirmed by the read-only status call; runtime vars are computed and injected at dispatch time, never written to a file (see `workspace:/context/workspace-layout.md`).
+No env marker file exists on disk: env identity derives from the directory layout and is confirmed by the read-only status call, and runtime variables are computed and injected at dispatch time rather than written to files — owned by `workspace:/context/workspace-layout.md`.
 
-## Step 2 — List the in-scope repos via the CLI
+## Repo listing
 
-Run the read-only status command and read its JSON directly (Step 1's detection already ran it — reuse that output) — do not hand-roll `git rev-list` loops across repos:
+Repo listing reads the JSON of the read-only `winter ws status <name> --json` directly, reusing the detection call's output, and never hand-rolls `git rev-list` loops across repos. The status argument is a `<env>/<repo>` glob pattern and a bare env name expands to `<name>/*`, so a bare name scopes the call to the whole env and `environments` comes back as a one-element array. Iterate `environments[0].worktrees[]`, where each entry is one repo in the env; the per-field schema (`WorktreeSnapshot`) is owned by `workspace:/context/winter-cli/usage/ws/status.md` — read field meanings there and reuse those fields rather than deriving counts independently.
 
-```bash
-winter ws status <name> --json
-```
+The worktree filesystem path is not carried as a status field; derive it as `<workspace.root_path>/<env.name>/<repo>`, an absolute path the reviewer can `cd` into.
 
-The argument is a `<env>/<repo>` glob pattern (a bare `<name>` expands to `<name>/*`), so a bare env name scopes to that whole env. When scoped to one env this way, `environments` is a one-element array. Iterate `environments[0].worktrees[]` — each entry is one repo in the env; the per-field schema (`WorktreeSnapshot`) is owned by `workspace:/context/winter-cli/usage/ws/status.md` — read the field meanings there rather than re-deriving them.
+## branch-vs-base
 
-The worktree filesystem path is not carried as a field; derive it as `<workspace.root_path>/<env.name>/<repo>` — an absolute path the reviewer can `cd` into.
+Branch-vs-base answers how the branch differs from the target's mainline and is independent of push configuration. A repo is in scope when `ahead > 0`, and its per-repo diff base is the integration base resolved inside that worktree.
 
-Select the in-scope set by the caller's semantic scope:
+For branch-vs-base only, resolve the integration base inside each in-scope worktree as the first ref that exists in the ladder `origin/master`, `origin/main`, `master`, `main`, each probed with `git rev-parse --verify`. Different repos may resolve different integration refs; resolve per repo and never assume one base for the whole env.
 
-| Mode | Repo is in scope when | Per-repo diff base |
-|------|-----------------------|--------------------|
-| **branch-vs-base** | `ahead > 0` | the repo's integration base resolved in step 3 |
-| **uncommitted** | `dirty > 0` | working tree vs `HEAD`, including untracked files |
-| **unpushed** | after applying `pinned_scope`: `upstream` is non-empty, `tracking_ref_present` is true, and `tracking_ahead > 0`; a missing or unresolved upstream with `ahead > 0` is a delivery blocker, not an ordinary target | the worktree's configured `upstream`, handled in step 4 |
+## uncommitted
 
-For `unpushed`, apply `pinned_scope` before the predicate: `exclude` selects non-pinned worktrees, `include` selects both, and `only` selects pinned worktrees. These are semantic equivalents of Winter push's pinned scopes; `workspace:/context/winter-cli/usage/ws/push.md` and `workspace:/context/winter-cli/usage/ws/patterns.md` own the live command behavior. Within that explicit pinned scope, include a worktree with non-empty `upstream` and `tracking_ref_present: true` only when `tracking_ahead > 0`. Do not OR `ahead > 0` into that predicate: a feature branch can remain ahead of its integration base after all of its commits have been pushed to its configured upstream. Reuse the status fields defined by `workspace:/context/winter-cli/usage/ws/status.md` rather than deriving counts independently.
+A repo is in scope when `dirty > 0`, and its material is the working tree against `HEAD` including untracked files; this scope resolves no base of its own (kind `head`). The status `dirty` count already includes untracked files, so the in-scope predicate needs no adjustment for them.
 
-For worktrees admitted by `pinned_scope` whose `upstream` is empty or whose `tracking_ref_present` is false, use `ahead > 0` only to detect a **delivery blocker**. Name the repo and do not describe it as pushable or include it as an ordinary configured-upstream target. It becomes reviewable only if the caller supplies and records an explicit verified review base; the missing- or unresolved-upstream blocker remains until the delivery upstream resolves.
+The uncommitted change-set includes untracked, non-ignored files, not only tracked modifications: a new file the author has not yet staged is uncommitted work that must be reviewed, yet `git diff HEAD` omits it. A reviewer on this scope therefore reads `git diff HEAD` plus the files listed by `git ls-files --others --exclude-standard` — as their current content for a prose review, or rendered as `git diff --no-index /dev/null <file>` whole-file additions where a unified diff is needed. One consumer that needs untracked files rendered as whole-file diff additions is the review manifest's hunk enumeration, at [./manifest/format.md#computing-diff_sha](./manifest/format.md#computing-diff_sha).
 
-The **uncommitted** change-set includes **untracked, non-ignored files**, not only tracked modifications: a new file the author has not yet `git add`ed is uncommitted work and must be reviewed, but `git diff HEAD` omits it. A reviewer on the uncommitted scope reads `git diff HEAD` **and** the untracked files (`git ls-files --others --exclude-standard`) — as their current content for a prose review, or as `git diff --no-index /dev/null <file>` whole-file additions where a unified diff is needed (e.g. the review manifest's hunk enumeration; see [`./manifest/format.md#computing-diff_sha`](./manifest/format.md#computing-diff_sha)). `dirty` already counts untracked files, so the in-scope predicate needs no change.
+## unpushed
 
-## Step 3 — Resolve branch-vs-base integration refs
+The caller supplies a semantic `pinned_scope` of `exclude`, `include`, or `only`. An omitted `pinned_scope` defaults to `include`, the project-worktree scope of `winter ws push --include-pinned`, and this document is the single owner of that default. `pinned_scope: exclude` corresponds to a bare default `winter ws push` and `only` to a pinned-only push; the live pinned-push command behavior is owned by `workspace:/context/winter-cli/usage/ws/push.md` and `workspace:/context/winter-cli/usage/ws/patterns.md`.
 
-For **branch-vs-base** only, resolve the integration base *inside each in-scope worktree* with the standard ladder (the first ref that exists is `<base>`):
+Apply `pinned_scope` before the unpushed predicate:
 
-```bash
-git rev-parse --verify origin/master 2>/dev/null \
-  || git rev-parse --verify origin/main 2>/dev/null \
-  || git rev-parse --verify master 2>/dev/null \
-  || git rev-parse --verify main
-```
+| `pinned_scope` | Selects |
+|----------------|---------|
+| `exclude` | non-pinned worktrees |
+| `include` | both pinned and non-pinned worktrees |
+| `only` | pinned worktrees only |
 
-Different repos may resolve to different integration refs; resolve per repo, never assume one base for the whole env. This scope answers how the branch differs from the target's mainline and is independent of push configuration. **Uncommitted** mode needs no base.
+After applying it, a repo is an ordinary target when `upstream` is non-empty, `tracking_ref_present` is true, and `tracking_ahead > 0`; its diff base is the worktree's configured upstream. Never OR `ahead > 0` into the unpushed in-scope predicate: a feature branch can remain ahead of its integration base after all of its commits have been pushed to its configured upstream.
 
-## Step 4 — Resolve unpushed delivery refs
+For unpushed only, each selected worktree's base is that worktree's own non-empty `upstream` field; verify the exact ref inside that worktree and retain it in the returned target entry. A configured, resolvable upstream is reviewed as `<upstream>...HEAD`. Never substitute `origin/<main>`, the integration-ref ladder, an env-wide feature branch, or a sibling repository's upstream for a worktree's configured upstream.
 
-For **unpushed** only, use each selected worktree's non-empty `upstream` field as that worktree's base. Verify the exact ref in that worktree and retain it in the returned target entry. Never substitute `origin/<main>`, the branch-vs-base ladder, an env-wide feature branch, or a sibling repository's upstream.
+On the single-repository path, resolve the repository's configured upstream directly from its branch tracking configuration and apply the same unpushed rules; environment discovery and pinned filtering do not change what unpushed means for the current repository.
 
-On the single-repository path, resolve that repository's configured upstream directly from its branch tracking configuration and apply the same rules below. Environment discovery and pinned filtering do not change what `unpushed` means for the current repository.
+### Delivery blockers and explicit review bases
 
-- Configured, resolvable upstream: review `<upstream>...HEAD`.
-- No configured upstream and local commits: return a delivery blocker. If the caller supplied a documented explicit review base, review against that base while labeling the target `review-base: explicit` and keeping the blocker. Without one, omit that target from diff review and report it as unreviewed.
-- Configured upstream whose ref does not yet resolve locally: do not silently fall back. Require and record an explicit verified review base before reviewing; label the target `review-base: explicit` so a first-push review is not mistaken for an upstream diff.
+For a worktree admitted by `pinned_scope` whose `upstream` is empty or whose `tracking_ref_present` is false, use `ahead > 0` only to detect a delivery blocker: name the repo, never describe it as pushable, and never include it as an ordinary configured-upstream target.
 
-The returned change-set therefore contains reviewable target entries plus any delivery blockers. A blocker is part of the result even when other repositories can still be reviewed.
+A repo with no configured upstream and local commits is a delivery blocker. A caller-supplied explicit review base — documented, verified, and recorded — permits review with the target labeled `review-base: explicit`, while the missing- or unresolved-upstream blocker persists until the delivery upstream resolves; without one, omit the target from diff review and report it as unreviewed.
 
-### Review-base kind per scope
+A configured upstream whose ref does not yet resolve locally gets no silent fallback: require and record an explicit verified review base before reviewing, and label the target `review-base: explicit` so a first-push review is not mistaken for an upstream diff.
 
-Every reviewable target carries the **kind** of base it was resolved against, not just the ref, so a consumer can tell a mainline comparison from a delivery diff without re-deriving it. This is the single owner of that vocabulary:
+## Review-base kinds
 
-| Scope | Kind | Base |
-|-------|------|------|
-| `branch-vs-base` | `integration` | the repo's integration ref resolved in step 3 |
-| `unpushed` | `upstream` | the worktree's configured upstream |
-| `unpushed` with a supplied review base | `explicit` | the caller's documented, verified ref, labeled per step 4 |
-| `uncommitted` | `head` | `HEAD`; the scope resolves no base of its own |
+Every reviewable target carries the kind of base it was resolved against, not just the ref, so a consumer can tell a mainline comparison from a delivery diff without re-deriving it; this document is the single owner of that kind vocabulary.
 
-A ref or range the caller supplies outside env discovery is `explicit` as well — the kind records where the base came from, and a caller-named base is explicit however the review reached it.
+| Kind | Base |
+|------|------|
+| `integration` | branch-vs-base — the repo's resolved integration ref |
+| `upstream` | unpushed — the configured upstream |
+| `explicit` | unpushed with a supplied review base |
+| `head` | uncommitted — `HEAD` |
 
-## Step 5 — Collapse to single-repo when the set is small
+A ref or range the caller supplies outside env discovery also has kind `explicit`: the kind records where the base came from, and a caller-named base is explicit however the review reached it.
 
-If the reviewable set has **0 repos** and there are no blockers, there is nothing to review — report it and stop. If blockers exist, return them even when no diff can be reviewed. If there is **exactly 1 reviewable repo**, there is no cross-repo dimension: review that one repo exactly as the single-repo path, with no union framing and no cross-repo consistency pass.
+## The returned change-set
 
-Only when **≥2 repos** are in scope does the change-set span the env: hand the union to one reviewer per axis, and let a multi-axis delivery review run its cross-repository consistency pass.
+The returned change-set contains the reviewable target entries plus any delivery blockers, and a blocker is part of the result even when other repositories can still be reviewed.
+
+- With zero reviewable repos and no blockers there is nothing to review — report that and stop; if blockers exist, return them even when no diff can be reviewed.
+- With exactly one reviewable repo there is no cross-repo dimension: review that repo exactly as the single-repo path, with no union framing and no cross-repo consistency pass.
+- Only with two or more in-scope repos does the change-set span the env: hand the union to one reviewer per axis and let a multi-axis delivery review run its cross-repository consistency pass.

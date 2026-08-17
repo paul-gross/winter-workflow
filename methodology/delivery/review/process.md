@@ -1,107 +1,94 @@
 # Multi-axis delivery review
 
-Run a fresh, one-shot review across every applicable delivery axis for one local change-set, then synthesize the reports into one result. This process owns scope discovery, conditional axis selection, concurrent execution, synthesis, and advisory-versus-blocking policy. Callers bind its semantic inputs; specialized delivery processes do not copy its logic.
+The multi-axis delivery review runs one fresh, one-shot review across every applicable delivery axis for a single local change-set, then synthesizes the axis reports into one result. It performs no push, no completion claim, and no other delivery action.
 
-Use the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md). If fresh isolated roles or required concurrency are unavailable, return the runtime contract's `unsupported-capability` result.
+This process owns scope-discovery orchestration, conditional axis selection, concurrent execution, synthesis, and the advisory-versus-blocking policy; callers bind its semantic inputs, and specialized delivery processes must not copy its logic. The meanings of the `unpushed` and `uncommitted` scopes and their per-target review material are owned elsewhere — discovery by [change-set discovery](../../review/change-set.md), per-scope review material by the scope-semantics table in the [review process](../../review/process.md) — and this process does not redefine them. The rationale for fresh execution — a reviewer context free of the author's framing and design-history bias — is owned by the review process's execution-mode section.
+
+Runtime coordination uses the semantic operations owned by [runtime ports](../../runtime-ports.md); when fresh isolated roles or the required concurrency are unavailable, the process returns that runtime contract's `unsupported-capability` result.
 
 ## Inputs
 
 | Input | Values |
 |-------|--------|
-| `scope` | `unpushed` or `uncommitted` |
-| `mode` | `advisory` (default) or `blocking` |
-| `pinned_scope` | for `unpushed`: `exclude`, `include`, or `only`; default owned by [`../../review/change-set.md`](../../review/change-set.md) |
-| `review_bases` | optional per-worktree verified refs, with a documented reason, for upstream-less or unresolved-upstream review |
+| `scope` | Exactly `unpushed` or `uncommitted`; any other value is rejected. |
+| `mode` | `advisory` (the default) or `blocking`; any other value is rejected. |
+| `pinned_scope` | `exclude`, `include`, or `only`; applies only to `unpushed`. The default for an omitted value is owned by [change-set discovery](../../review/change-set.md). |
+| `review_bases` | Optional. Per-worktree verified refs, each with a documented reason, for reviewing a target whose upstream is missing or unresolved. |
 
-Reject any other value. `unpushed` reviews committed work relative to each worktree's configured upstream and applies `pinned_scope`; `uncommitted` reviews tracked changes from `HEAD` plus untracked, non-ignored files. The selected scope is used consistently for discovery and every axis.
+## Discovery
 
-## Output
+Change-set discovery executes the procedure owned by [change-set discovery](../../review/change-set.md) in the selected scope, passing `pinned_scope` and any documented `review_bases` for `unpushed`; its predicates and base selection must never be re-derived here. Discovery returns reviewable target entries plus delivery blockers. The selected scope is used consistently for discovery and for every axis run, and scope is never rediscovered independently per axis.
 
-Return one synthesized review result containing the selected scope, pinned scope when applicable, targets and their base kinds, delivery blockers, reviewers run and skipped, findings with original ids and severities, any gaps the reviewers returned, clean axes, and a `blocking_findings` set. Delivery blockers, confirmed cross-repository contradictions, and `must-fix` findings are blocking; `consider` findings and gaps remain advisory.
+- With zero reviewable targets and no blockers, return `nothing to review` together with the selected scope and stop before starting any reviewer.
+- Every delivery blocker from discovery is preserved into the final result.
+- A target with no review base is never sent to an axis reviewer; it is reported as unreviewed while other targets are reviewed normally.
+- A target reviewed against an explicit review base is labeled as such and remains a delivery blocker while it has no configured upstream.
+- Outside a feature environment, or with exactly one target, the review uses single-repository framing. With two or more targets, every reviewer receives the union of targets as one change-set.
 
-## Steps
+## Axis selection
 
-### 1. Discover the change-set
+Axis selection inspects the union of changed paths and cheaply probes each target's surfaces, selecting an axis whenever any single target meets that axis's trigger. A surface present in one target selects its axis for the entire cross-repository change-set.
 
-Follow [`../../review/change-set.md`](../../review/change-set.md) in the selected scope. Pass `pinned_scope` and any documented `review_bases` for `unpushed`. It returns reviewable target entries and delivery blockers; do not rederive its predicates or base selection.
+| Axis | Selected when… |
+|------|----------------|
+| `code` | …the change-set changes code; a docs-only change-set skips it. |
+| `harness` | …any target has an agentic-harness surface: agent definitions, skills, verifier scaffolds, harness conventions, agent-context entrypoints, or a `context/` or `methodology/` tree. |
+| `context` | …any target has agent-facing markdown that the change-set touches; whether a path counts as agent-facing markdown is classified by [agent-context surface](../../review/agent-context-surface.md). |
+| `documentation` | …any target has external-facing public documentation and the change-set touches code or docs that documentation covers. |
 
-- For `unpushed`, each ordinary target's review material is `<configured-upstream>...HEAD`. A target using an explicit review base is labeled as such and remains blocked when it has no configured upstream.
-- For `uncommitted`, each target's review material is its tracked diff from `HEAD` plus untracked, non-ignored files as whole-file additions.
-- With zero reviewable targets and no blockers, return `nothing to review` with the selected scope and stop without starting reviewers.
-- Preserve every blocker. Do not send a target with no review base to an axis reviewer; report it as unreviewed. Review other targets normally.
-- Outside a feature environment, or with one target, use single-repository framing.
-- With two or more targets, every reviewer receives the union as one change-set.
+For axis selection, public documentation means docs sites, adopter guides, and user-facing README material; it excludes agent-facing context and methodology.
 
-### 2. Classify applicable axes
+Record why each axis was selected or skipped and return a short dispatch line to the caller before any review starts.
 
-Inspect the union of changed paths and probe each target's surfaces cheaply. Select an axis when any target meets its trigger:
+## Execution
 
-- **Code**: select when the change-set changes code. A docs-only change-set skips it.
-- **Harness**: select when any target has an agentic-harness surface, including agent definitions, skills, verifier scaffolds, harness conventions, agent-context entrypoints, or a `context/` or `methodology/` tree.
-- **Context**: select when any target has agent-facing markdown and the change-set touches it. Apply [`../../review/agent-context-surface.md`](../../review/agent-context-surface.md).
-- **Documentation**: select when any target has external-facing public documentation and the change-set touches code or docs that documentation covers. Public documentation includes docs sites, adopter guides, and user-facing README material; it excludes agent-facing context and methodology.
+For each selected axis, prepare one execution of the [review process](../../review/process.md) carrying the selected scope with the already-discovered target set, the selected `pinned_scope` with review-base labels and delivery blockers for `unpushed`, `execution_mode: fresh`, and the selected axis (`code`, `harness`, `context`, or `documentation`). Each axis execution uses a judgment-class model and the canonical role the shared review process maps for that axis.
 
-Record why each axis was selected or skipped and return a short dispatch line to the caller before starting reviews. A surface in one target can select an axis for the entire cross-repository change-set.
+All selected axis executions run concurrently. The axes are independent, so concurrent execution bounds wall time by the slowest applicable review while each reviewer still holds the complete cross-repository change-set. Each isolated reviewer spans all targets, returns exactly one report, performs no follow-on work, and stops.
 
-### 3. Run selected axes concurrently
+## Cross-repository consistency
 
-Prepare one execution of [`../../review/process.md`](../../review/process.md) per selected axis with:
+For a change-set spanning two or more repositories, synthesis scans the reports and the changed material for contradictions between repositories; this pass is skipped for a single repository. A confirmed cross-repository contradiction is consolidated into one `cross-repo` finding naming all affected repositories and the source finding ids.
 
-- the selected `scope` and already-discovered target set;
-- the selected `pinned_scope`, review-base labels, and delivery blockers for `unpushed`;
-- `execution_mode: fresh`;
-- `axis: code`, `harness`, `context`, or `documentation` as selected.
+## Synthesis
 
-Run all selected executions concurrently. Each uses a judgment-class model and the canonical role mapped by the shared review process. Every isolated reviewer spans all targets, returns one report, performs no follow-on work, and stops. Do not rediscover scope independently per axis.
+Synthesis produces one consolidated result rather than pasting raw reviewer reports. Keep the synthesis to roughly 25 lines and offer a named raw report when more detail exists.
 
-### 4. Synthesize
+The synthesis opens with:
 
-After every selected reviewer returns, produce one consolidated result rather than pasting raw reports.
+- the title line `## Delivery review: <scope> — <target summary>`;
+- a `Reviewers:` line listing roles run;
+- a `Not run:` line listing skipped roles with why;
+- a `Files: <N> changed across <R> repositories` line.
 
-For a change-set spanning two or more repositories, scan the reports and changed material for contradictions between repositories. Consolidate a confirmed contradiction into one `cross-repo` finding naming all affected repositories and source finding ids. Treat it as blocking. Skip this pass for a single repository.
+The sections, in order:
 
-Use this shape:
+1. `## delivery-blockers`
+2. `## cross-repo`
+3. `## must-fix`
+4. `## consider`
+5. `## gaps`
+6. `## clean`
 
-```text
-## Delivery review: <scope> — <target summary>
+Empty sections are omitted, including `delivery-blockers` and `gaps`. The synthesis distinguishes axes that were skipped from axes that ran clean.
 
-Reviewers: <roles run>
-Not run: <roles skipped and why>
-Files: <N> changed across <R> repositories
+Line forms:
 
-## delivery-blockers
-- <repo>: <missing or unresolved upstream; review-base status>
+- A delivery-blockers line names the repo plus its missing or unresolved upstream and review-base status.
+- A cross-repo line cites the source findings as `(<role> <id>[ + <role> <id>])` before the contradiction naming the repositories.
+- A must-fix or consider line reads `(<role> <id>) <repo>: <finding>`.
+- A gaps line additionally names the must-fix id(s) it explains in the same `<role> <id>` form.
+- A clean line reads `<role>: no findings`.
 
-## cross-repo
-- (<role> <id>[ + <role> <id>]) <contradiction naming the repositories>
+Synthesis sorts findings by axis in the order code, harness, context, documentation. Every original finding id is preserved through synthesis, and findings are prefixed with their repository whenever the change-set spans repositories.
 
-## must-fix
-- (<role> <id>) <repo>: <finding>
+The synthesized result contains the selected scope, the pinned scope when applicable, the targets with their review-base kinds, delivery blockers, reviewers run and skipped, findings with their original ids and severities, any gaps the reviewers returned, clean axes, and a `blocking_findings` set.
 
-## consider
-- (<role> <id>) <repo>: <finding>
+## Advisory versus blocking
 
-## gaps
-- (<role> <id>) <repo>: <gap, naming the must-fix id(s) it explains as <role> <id>>
+Delivery blockers, confirmed cross-repository contradictions, and `must-fix` findings are blocking; `consider` findings and gaps remain advisory.
 
-## clean
-- <role>: no findings
-```
+- In `advisory` mode, ask the human caller once to choose among exactly three options: acknowledge the findings and continue delivery manually; address findings first and stop; or show the full reviewer reports and then ask the same question again.
+- In `blocking` mode, return the synthesis and stop without asking; the caller decides how to resolve or explicitly bypass findings.
 
-Omit empty sections, including `delivery-blockers` and `gaps` when none exist. Preserve every original finding id. Prefix findings with their repository when the change-set spans repositories. Sort by axis in this order: code, harness, context, documentation. Distinguish skipped axes from axes that ran clean. Keep the synthesis to roughly 25 lines; offer a named raw report when more detail exists.
-
-### 5. Apply mode
-
-In `advisory` mode, ask the human caller once to choose:
-
-1. Acknowledge the findings and continue delivery manually.
-2. Address findings first and stop.
-3. Show full reviewer reports, then ask the same question again.
-
-This process performs no push, completion claim, or other delivery action.
-
-In `blocking` mode, return the synthesis and stop without asking. The caller decides how to resolve or explicitly bypass findings. A completion-gating caller must resolve `blocking_findings` and rerun this process before claiming completion; advisory findings do not block that claim.
-
-## Why fresh and concurrent
-
-Fresh reviewers see the change on disk without the author's design-history bias. The axes are independent, so concurrent execution bounds wall time by the slowest applicable review while each reviewer still holds the complete cross-repository change-set.
+A completion-gating caller must resolve the `blocking_findings` set and rerun this process before claiming completion; advisory findings do not block that claim.
