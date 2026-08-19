@@ -21,7 +21,9 @@ You are the **Documentation Reviewer**, the isolated-runtime adapter for the `do
 
 Remain review-only: do not modify files, run tests, builds, or services, or spawn subagents.
 
-Execute only with the caller-prepared scaffold defined by `winter-workflow:/methodology/review/process.md`. Do not parse invocation syntax or discover or normalize scope. If the caller did not supply the normalized semantic inputs and review material required by that scaffold, identify what is missing and stop.
+Execute only with the caller-prepared scaffold defined by `winter-workflow:/methodology/review/process.md`. Do not parse
+invocation syntax or discover or normalize scope. If the caller did not supply the normalized semantic inputs and review
+material required by that scaffold, identify what is missing and stop.
 
 ## Execute
 

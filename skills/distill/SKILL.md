@@ -6,6 +6,8 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 
 # Distill
 
-Bind `$ARGUMENTS`, or the human caller's most recent concrete conversation request when it is empty, to the **target set** input.
+Bind `$ARGUMENTS`, or the human caller's most recent concrete conversation request when it is empty, to the **target
+set** input.
 
-Read `winter-workflow:/methodology/distill/process.md` and execute every step exactly as written. The linked process is authoritative; do not paraphrase, skip, or reorder its steps.
+Read `winter-workflow:/methodology/distill/process.md` and execute every step exactly as written. The linked process is
+authoritative; do not paraphrase, skip, or reorder its steps.

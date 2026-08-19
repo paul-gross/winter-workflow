@@ -1,6 +1,7 @@
 # Agent-facing markdown — trigger paths
 
-The canonical classifier for "does this change touch agent-facing markdown?". Multi-axis delivery review applies this list — point here rather than copying it.
+The canonical classifier for "does this change touch agent-facing markdown?". Multi-axis delivery review applies this
+list — point here rather than copying it.
 
 A changed path is agent-facing markdown when it matches any of:
 
@@ -12,4 +13,7 @@ A changed path is agent-facing markdown when it matches any of:
 - Any `methodology/**/*.md`
 - An `index.md` or `README.md` written for agents (e.g. an extension's routing index)
 
-**Exclusions:** product/backlog content is not agent-facing configuration, even when it lives under a matching path — backlog plans, approaches, and product-centered initiatives describing future vision or roadmaps are reviewed by the user and downstream implementation agents, not the `context` axis. Test fixtures and external-facing public documentation are likewise out of scope.
+**Exclusions:** product/backlog content is not agent-facing configuration, even when it lives under a matching path —
+backlog plans, approaches, and product-centered initiatives describing future vision or roadmaps are reviewed by the
+user and downstream implementation agents, not the `context` axis. Test fixtures and external-facing public
+documentation are likewise out of scope.

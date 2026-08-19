@@ -6,6 +6,10 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
 
 # Glacier
 
-Bind `$ARGUMENTS`, or the human caller's most recent concrete conversation request when it is empty, to the **feature or plan** input. Bind any named environment, repository, workspace branch, path, or planning directory to the corresponding **work-target hint** or **documentation-root hint** input; leave unresolved inputs absent for the process to resolve with the human caller.
+Bind `$ARGUMENTS`, or the human caller's most recent concrete conversation request when it is empty, to the **feature or
+plan** input. Bind any named environment, repository, workspace branch, path, or planning directory to the corresponding
+**work-target hint** or **documentation-root hint** input; leave unresolved inputs absent for the process to resolve
+with the human caller.
 
-Read `winter-workflow:/methodology/build/glacier/process.md` and execute every step exactly as written. The linked process is authoritative; do not paraphrase, skip, or reorder its steps.
+Read `winter-workflow:/methodology/build/glacier/process.md` and execute every step exactly as written. The linked
+process is authoritative; do not paraphrase, skip, or reorder its steps.

@@ -10,7 +10,11 @@ The procedure for this skill is at `winter-workflow:/methodology/review/faceted/
 
 Translate `$ARGUMENTS` into `{facets, scope}` before reading the procedure:
 
-- The first token is required and binds `facets` to its comma-separated values. An empty invocation is invalid: stop and tell the caller the facets must be named, pointing at the facet registry the procedure declares; nothing runs without them.
-- Map the remainder to `scope`: an empty remainder to `branch-vs-base`, literal `uncommitted` to that scope, existing paths to `{paths: [<values>]}`, a forge PR/MR locator to `{remote: <locator>, feedback: default}`, and a verified git ref or range to `{range: <value>}`. Reject any other remainder.
+- The first token is required and binds `facets` to its comma-separated values. An empty invocation is invalid: stop and
+  tell the caller the facets must be named, pointing at the facet registry the procedure declares; nothing runs without
+  them.
+- Map the remainder to `scope`: an empty remainder to `branch-vs-base`, literal `uncommitted` to that scope, existing
+  paths to `{paths: [<values>]}`, a forge PR/MR locator to `{remote: <locator>, feedback: default}`, and a verified git
+  ref or range to `{range: <value>}`. Reject any other remainder.
 
 Read `winter-workflow:/methodology/review/faceted/process.md` and execute every step with those semantic inputs.

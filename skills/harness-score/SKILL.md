@@ -5,7 +5,8 @@ allowed-tools: Bash, Read, Glob, Grep, Write, Agent
 
 # Harness Score
 
-`harness-score` binds the reusable scoring process to the current working directory: it accepts no arguments, and its target is `$PWD`.
+`harness-score` binds the reusable scoring process to the current working directory: it accepts no arguments, and its
+target is `$PWD`.
 
 ## Execute
 

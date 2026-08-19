@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 
 # Flurry
 
-Bind `$ARGUMENTS` together with the human caller's conversation input to the **feature batch** input. Bind any named environments to the optional **environment pool** input, and preserve any stated task dependencies or target repositories in the batch description.
+Bind `$ARGUMENTS` together with the human caller's conversation input to the **feature batch** input. Bind any named
+environments to the optional **environment pool** input, and preserve any stated task dependencies or target
+repositories in the batch description.
 
-Read `winter-workflow:/methodology/build/flurry/process.md` and execute every step exactly as written. The linked process is authoritative; do not paraphrase, skip, or reorder its steps.
+Read `winter-workflow:/methodology/build/flurry/process.md` and execute every step exactly as written. The linked
+process is authoritative; do not paraphrase, skip, or reorder its steps.

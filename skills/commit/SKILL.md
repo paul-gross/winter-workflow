@@ -28,11 +28,13 @@ Check for project-specific commit conventions in this order (use the first one f
 
 1. `CONTRIBUTING.md` in the current worktree root
 2. `workspace:/context/project/contributing.md` (project-specific workspace config)
-3. [`winter-workflow:/methodology/delivery/commit/conventions.md`](winter-workflow:/methodology/delivery/commit/conventions.md) (workspace default fallback)
+3. [`winter-workflow:/methodology/delivery/commit/conventions.md`](winter-workflow:/methodology/delivery/commit/conventions.md)
+   (workspace default fallback)
 
 ## 4. Write the Commit Message
 
 Follow the conventions loaded in step 3. Write a commit message that:
+
 - Summarizes what changed and WHY based on the conversation context and the actual diff
 - Uses the format specified by the conventions
 - Includes a body with more detail if the changes are non-trivial
@@ -56,7 +58,8 @@ Instead of creating a new commit, amend the previous commit:
 
 1. Stage all changes: `git add -A`
 2. Read the existing commit message: `git log -1 --format=%B`
-3. Either append additional context to the bottom of the existing message, or rewrite the message entirely if the scope of changes has shifted significantly
+3. Either append additional context to the bottom of the existing message, or rewrite the message entirely if the scope
+   of changes has shifted significantly
 4. Amend: `git commit --amend -m "$(cat <<'EOF' ... EOF )"`
 
 ## 7. Verify

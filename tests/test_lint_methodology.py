@@ -187,6 +187,25 @@ class MethodologyLintTests(unittest.TestCase):
 
         self.assertEqual(self.run_lint(), [])
 
+    def test_marker_exempts_its_whole_block(self) -> None:
+        # `dprint` wraps prose, so the marker lands on the paragraph's last line
+        # while the illustration it exempts sits further up.
+        self.write_methodology(
+            "review/process.md",
+            "Example `$ARGUMENTS` and `../../agents/example.md` shown only to\n"
+            "illustrate the notation. <!-- winter-lint:example -->\n",
+        )
+
+        self.assertEqual(self.run_lint(), [])
+
+    def test_marker_does_not_reach_across_a_blank_line(self) -> None:
+        self.write_methodology(
+            "review/process.md",
+            "Illustration only. <!-- winter-lint:example -->\n\nRead `$ARGUMENTS`.\n",
+        )
+
+        self.assertNotEqual(self.run_lint(), [])
+
     def test_fences_close_only_with_matching_marker_and_opening_length(self) -> None:
         self.write_methodology(
             "review/process.md",

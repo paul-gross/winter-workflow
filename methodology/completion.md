@@ -1,20 +1,30 @@
 # Definition of done for feature work
 
-Feature work is not done when the code is written — it is done when the change is **tested** and its **documentation surfaces are updated**. Self-enforce this bar on conversational, top-level work: when you implement a change directly in a session without a build skill, meet it before reporting the work complete, rather than leaving the user to ask, turn after turn, whether it was tested and whether the docs were updated.
+Feature work is not done when the code is written — it is done when the change is **tested** and its **documentation
+surfaces are updated**. Self-enforce this bar on conversational, top-level work: when you implement a change directly in
+a session without a build skill, meet it before reporting the work complete, rather than leaving the user to ask, turn
+after turn, whether it was tested and whether the docs were updated.
 
 ## Tested
 
-Exercise the change using a verification method declared in the application's **verifiability matrix**: the catalog its own harness maintains of how that application's changes are asserted correct, each entry a runnable command or a named conceptual interaction. A green build or typecheck is not a test; run the real probe that distinguishes done from not-done.
+Exercise the change using a verification method declared in the application's **verifiability matrix**: the catalog its
+own harness maintains of how that application's changes are asserted correct, each entry a runnable command or a named
+conceptual interaction. A green build or typecheck is not a test; run the real probe that distinguishes done from
+not-done.
 
-When no declared method covers the change: build one — add or extend a durable verification method and add its row to the matrix — rather than running an ad-hoc LLM verification pass.
+When no declared method covers the change: build one — add or extend a durable verification method and add its row to
+the matrix — rather than running an ad-hoc LLM verification pass.
 
-When the application has no matrix yet: fall back to its documented test strategy (`context/testing/`, `methodology/testing/`, or equivalent) and treat the absence as a prompt to bootstrap the matrix.
+When the application has no matrix yet: fall back to its documented test strategy (`context/testing/`,
+`methodology/testing/`, or equivalent) and treat the absence as a prompt to bootstrap the matrix.
 
 ## Docs updated
 
 Reflect the change in each documentation surface it affects:
 
-- **Agent-facing methodology/context docs** — the conventions and references agents read (a repo's `context/` or `methodology/` tree, an extension `index.md`, `CLAUDE.md`).
-- **External-facing public docs** — the project's user- and adopter-facing documentation, where it has any (a rendered docs site, adopter guides, the user-facing README).
+- **Agent-facing methodology/context docs** — the conventions and references agents read (a repo's `context/` or
+  `methodology/` tree, an extension `index.md`, `CLAUDE.md`).
+- **External-facing public docs** — the project's user- and adopter-facing documentation, where it has any (a rendered
+  docs site, adopter guides, the user-facing README).
 
 A change owes only the surfaces it actually touches; a surface that doesn't apply is a noted N/A, not a silent skip.

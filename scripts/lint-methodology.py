@@ -39,6 +39,32 @@ _INLINE_CODE_RE = re.compile(
 )
 _FENCE_RE = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<rest>.*)$")
 _EXAMPLE_MARKER_RE = re.compile(r"<!--\s*winter-lint:\s*example\s*-->", re.IGNORECASE)
+
+
+def _exempt_lines(lines: list[str]) -> set[int]:
+    """1-based line numbers covered by an `<!-- winter-lint:example -->` marker.
+
+    The marker exempts the whole **block** it sits in, not just its own physical
+    line. `dprint` owns where lines break in this repo's markdown, so a marker
+    parked at the end of a wrapped paragraph has to cover the illustration
+    reflow pushed further up. A block is a run of non-blank lines — which is why
+    a table's marker belongs inside a cell, the formatter putting a blank line
+    between a table and any comment adjacent to it.
+    """
+    exempt: set[int] = set()
+    start = 0
+    marked = False
+    for index, line in enumerate(lines):
+        if line.strip():
+            marked = marked or bool(_EXAMPLE_MARKER_RE.search(line))
+            continue
+        if marked:
+            exempt.update(range(start + 1, index + 1))
+        start = index + 1
+        marked = False
+    if marked:
+        exempt.update(range(start + 1, len(lines) + 1))
+    return exempt
 _TARGET_TRIM = ".,;:!?)]}>\"'"
 
 
@@ -189,6 +215,7 @@ def _file_findings(file: Path, module_root: Path, rel: str) -> list[Finding]:
         ]
 
     findings: list[Finding] = []
+    exempt = _exempt_lines(lines)
     fence: tuple[str, int] | None = None
     for line_number, line in enumerate(lines, 1):
         fence_match = _FENCE_RE.match(line)
@@ -205,7 +232,7 @@ def _file_findings(file: Path, module_root: Path, rel: str) -> list[Finding]:
             marker = fence_match.group("marker")
             fence = (marker[0], len(marker))
             continue
-        if _EXAMPLE_MARKER_RE.search(line):
+        if line_number in exempt:
             continue
 
         violations: list[tuple[str, str]] = []

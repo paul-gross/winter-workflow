@@ -8,4 +8,6 @@ The procedure for this skill is at `winter-workflow:/methodology/review/manifest
 
 ## Execute
 
-Translate `$ARGUMENTS` into a semantic diff scope before reading the procedure: map an empty value to `branch-vs-base`, literal `uncommitted` to that scope, and a verified git ref or range to `{range: <value>}`. Reject any other value. Read `winter-workflow:/methodology/review/manifest/process.md` and execute every step with that scope.
+Translate `$ARGUMENTS` into a semantic diff scope before reading the procedure: map an empty value to `branch-vs-base`,
+literal `uncommitted` to that scope, and a verified git ref or range to `{range: <value>}`. Reject any other value. Read
+`winter-workflow:/methodology/review/manifest/process.md` and execute every step with that scope.
