@@ -32,7 +32,7 @@ agent).
 ## Canonical agent format
 
 Each file in `agents/*.md` is a canonical agent that `winter ws init` transforms into per-harness copies — edit the
-canonical file, never a generated copy. The installed `winter-harness` conventions own the frontmatter contract and the
+canonical file, never a generated copy. The installed `winter-context` conventions own the frontmatter contract and the
 cross-harness projection mechanics, at their `agent-context/index.md` entrypoint's writing-agent and projection
 references.
 

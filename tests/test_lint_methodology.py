@@ -166,7 +166,7 @@ class MethodologyLintTests(unittest.TestCase):
         self.write_methodology(
             "review/process.md",
             "Use [foreign](winter-product:/skills/triage/SKILL.md#usage).\n"
-            "@winter-harness:/agents/reviewer.md?raw=1\n"
+            "@winter-context:/agents/reviewer.md?raw=1\n"
             "Read `another-module:/skills/example/SKILL.md?raw=1#usage`.\n",
         )
 

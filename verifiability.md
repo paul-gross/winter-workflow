@@ -11,7 +11,7 @@ Run from the workspace root.
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `winter-workflow:lint`           | `winter lint winter-workflow` — the agent-frontmatter check (`scripts/lint-agents.py`) and the methodology-boundary check (`scripts/lint-methodology.py`), wired through the `lint` field in `winter-ext.toml`; fenced code and any block carrying `<!-- winter-lint:example -->` are treated as illustrative |
 | `winter-workflow:lint-tests`     | `python3 tests/test_lint_agents.py && python3 tests/test_lint_methodology.py` — exercises both checks with stdlib-only fixtures                                                                                                                                                                               |
-| `winter-workflow:markdown-style` | `dprint check` and `rumdl check .` from this repo's worktree — the mechanical markdown gates `dprint.json` and `.rumdl.toml` declare, contributed to `winter lint` by `winter-harness`. `dprint fmt` and `rumdl check . --fix` write the fixes. Needs both binaries on `PATH`                                 |
+| `winter-workflow:markdown-style` | `dprint check` and `rumdl check .` from this repo's worktree — the mechanical markdown gates `dprint.json` and `.rumdl.toml` declare, contributed to `winter lint` by `winter-context`. `dprint fmt` and `rumdl check . --fix` write the fixes. Needs both binaries on `PATH`                                 |
 
 ## Manual testing
 
