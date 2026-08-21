@@ -1,6 +1,7 @@
 ---
 description: "Score the current codebase through the reusable harness-maturity process. Use weekly to track progress or divergence."
 allowed-tools: Bash, Read, Glob, Grep, Write, Agent
+disable-model-invocation: true
 ---
 
 # Harness Score
