@@ -1,8 +1,6 @@
 ---
 name: diff-classifier
-description: |
-  Classifies every hunk of a diff into a review tier — mechanical, pattern, or novel — with a one-line claim each. Use
-  this agent to build a review manifest that partitions a change-set by how each hunk is verified.
+description: "N/A"
 model: opus
 tools:
   - Bash

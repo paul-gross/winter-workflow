@@ -1,8 +1,7 @@
 ---
 name: arctic-explorer
 description: |
-  Investigates unfamiliar or undocumented code, traces data flows, and produces AI-centric notes. Use this agent to
-  understand how an area works before changing it.
+  Investigates unfamiliar code and traces data flows. Use before changing an area you do not understand.
 model: sonnet
 tools:
   - Bash

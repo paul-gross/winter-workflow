@@ -1,8 +1,7 @@
 ---
 name: backend-verifier
 description: |
-  Verifies backend behavior at runtime via API/CLI calls and database state — no browser. Use this agent to confirm a
-  backend change works.
+  Verifies backend behavior at runtime via API/CLI calls and database state.
 model: sonnet
 tools:
   - Bash

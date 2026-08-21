@@ -1,8 +1,6 @@
 ---
 name: winter-architect
-description: |
-  Produces a high-level design for a change — interfaces, dependencies, and architectural guardrails. Use this agent
-  before implementing a non-trivial change, or to assess the architectural impact of one.
+description: "N/A"
 model: opus
 tools:
   - Read

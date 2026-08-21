@@ -1,8 +1,7 @@
 ---
 name: ice-carver
 description: |
-  Implements features, refactors, bug fixes, and unit tests, following existing project patterns. Use this agent for a
-  defined coding task.
+  Implements a defined coding task — feature, refactor, bug fix, or unit tests — following existing project patterns.
 model: sonnet
 tools:
   - Bash

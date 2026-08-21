@@ -1,9 +1,6 @@
 ---
 name: distiller
-description: |
-  Isolated-runtime adapter for the distill process — executes one of its passes (extraction or composition) from a
-  fresh context. Invoke through winter-workflow:/methodology/distill/process.md; a direct spawn is valid only when the
-  caller supplies that process's prompt contract for the named pass.
+description: "N/A"
 model: fable
 tools:
   - Bash
