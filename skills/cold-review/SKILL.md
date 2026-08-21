@@ -1,5 +1,5 @@
 ---
-description: Independent, fresh-context review of code changes for correctness, architecture, and design quality, by a cold-reviewer subagent with no session history. Use when asked to review a diff, PR, or branch, or to assess code quality.
+description: Independent, fresh-context review of code changes for correctness, architecture, and design quality. Use when asked to review a diff, PR, or branch, or to assess code quality.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---

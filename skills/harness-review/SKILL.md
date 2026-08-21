@@ -1,5 +1,5 @@
 ---
-description: Fresh-context review of the agentic harness against a change — agent context, verifier tooling, agent docs, recent agent mistakes — by a harness-reviewer subagent. Use when asked to review the harness.
+description: Fresh-context review of the agentic harness against a change — agent context, verifier tooling, agent docs, recent agent mistakes. Use when asked to review the harness.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---

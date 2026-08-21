@@ -1,5 +1,5 @@
 ---
-description: Fresh-context review of agent-facing markdown — agents, skills, commands, CLAUDE.md, context/ and methodology/ docs — against the workspace's authoring conventions, by a context-reviewer subagent. Use when asked to review the agent docs/context. Reviews the change-set by default; also takes uncommitted, a ref/range, or paths.
+description: Fresh-context review of agent-facing markdown — agents, skills, commands, CLAUDE.md, context/ and methodology/ docs — against the workspace's authoring conventions. Use when asked to review the agent docs or context.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---

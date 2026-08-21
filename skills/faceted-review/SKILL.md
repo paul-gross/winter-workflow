@@ -1,5 +1,5 @@
 ---
-description: Faceted review — one aggregated review of a change-set across the caller-named review facets, each judged in its own focused context. Use when asked for a faceted or multi-facet review of a change; the facets must be named.
+description: One aggregated review of a change-set across the review facets the caller names, each judged in its own focused context. Use when asked for a faceted or multi-facet review; the facets must be named.
 argument-hint: "<facet>[,<facet>...] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---

@@ -1,5 +1,5 @@
 ---
-description: Fresh-context review of an implementation plan before building, judged against the target application's declared verifiability matrix and architecture guidance plus the plan's own planning specs, by a plan-reviewer subagent. Use when asked to review or gate an implementation plan. Runs against a refined work item's plan directory, plan files, or a plan stated in the conversation.
+description: Fresh-context review of an implementation plan before building, judged against the target application's verifiability matrix and architecture guidance. Use when asked to review or gate a plan.
 argument-hint: "[inline] [<plan-dir-or-file>...]"
 allowed-tools: Bash, Read, Write, Agent, AskUserQuestion
 ---

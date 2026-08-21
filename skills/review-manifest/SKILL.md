@@ -1,5 +1,5 @@
 ---
-description: Produce a reading guide for a large diff — classify every hunk as mechanical, pattern, or novel and render a review order so attention lands on the decisions. Advisory; gates nothing. Use when asked to build a review manifest, or to guide review of a big or rename-heavy diff.
+description: Produce a reading guide for a large diff — every hunk classified by how it is verified, ordered so attention lands on the decisions. Use when asked for a review manifest or a reading order for a big or rename-heavy diff.
 argument-hint: "[uncommitted | <ref|range>]"
 allowed-tools: Bash, Read, Agent, Write
 ---

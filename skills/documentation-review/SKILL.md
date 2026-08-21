@@ -1,5 +1,5 @@
 ---
-description: Fresh-context review of external-facing public documentation — docs site, guides, the user-facing README — against the code it describes, by a documentation-reviewer subagent. Use when asked to review the docs.
+description: Fresh-context review of external-facing public documentation — docs site, guides, the user-facing README — against the code it describes. Use when asked to review the docs.
 argument-hint: "[inline] [uncommitted | <ref|range> | <paths> | <PR|MR>]"
 allowed-tools: Bash, Read, Agent
 ---
