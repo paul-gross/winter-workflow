@@ -125,6 +125,17 @@ the skills perform this preparation for normal interactive use.
   rewrite as a change ("previously X, now Y") instead of stating the current state. The coordinating session binds
   scope, spawns the passes, scrambles and installs between them, and routes review findings back through fresh spawns;
   it never authors content itself.
+- **Optimize context** (`optimize-context`) — audits a target's standing agent-context cost: per-skill and per-subagent
+  invocation counts mined from every session transcript on this machine (machine-global — every local project, not just
+  the target), joined against an inventory of the target's always-loaded surfaces — memory files, the extension hub,
+  agent definitions, skill descriptions (target-scoped) — to find what's never invoked, dated by when it was added so a
+  recently added skill reads as too new to judge rather than dead. Proposes `skillOverrides` entries for unused skills
+  and writes only the operator-approved subset into a `settings.json`'s `skillOverrides` key, defaulting to
+  `user-invocable-only`; hands every markdown-restructuring finding to `distill` or the context review axis rather than
+  rewriting anything itself. The measurement half — mining invocation counts and inventorying surfaces — runs through
+  [`scripts/context-usage.py`](scripts/context-usage.py), a deterministic, stdlib-only script; its `measure` subcommand
+  is read-only, and its `apply` subcommand performs the one write described above. Methodology at
+  [`methodology/optimize-context/process.md`](methodology/optimize-context/process.md).
 
 ### Support
 
@@ -162,7 +173,8 @@ url = "git@github.com:paul-gross/winter-workflow.git"
 Then run `winter ws init` (or `/ws-setup`). The `wf-` prefix is the default — it is workspace-configurable, so your
 install may differ.
 
-See [`index.md`](./index.md) for the skills, agents, and commands this extension makes available once installed.
+See the ✨ Features section above for the skills, agents, and commands this extension makes available once installed;
+[`index.md`](./index.md) routes to the reusable methodology behind each.
 
 ## License
 
