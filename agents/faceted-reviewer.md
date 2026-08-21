@@ -1,9 +1,6 @@
 ---
 name: faceted-reviewer
-description: |
-  Read-only runtime adapter for the faceted review lead. Invoke through winter-workflow:/methodology/review/faceted/process.md; a
-  direct spawn is valid only when the caller supplies that process's facet set, normalized scope, and change-set
-  targets.
+description: "N/A"
 model: opus
 tools:
   - Bash

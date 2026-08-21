@@ -1,9 +1,6 @@
 ---
 name: context-reviewer
-description: |
-  Read-only runtime adapter for the context review axis. Invoke through winter-workflow:/methodology/review/process.md;
-  a direct spawn is valid only when the caller supplies that process's normalized inputs, review material, and execution
-  scaffold.
+description: "N/A"
 model: opus
 tools:
   - Bash
