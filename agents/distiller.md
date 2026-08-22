@@ -31,8 +31,10 @@ Execute only with the caller-prepared inputs defined by `winter-workflow:/method
 invocation syntax or resolve the target set yourself. If the caller did not name a pass or supply the inputs that pass's
 prompt contract requires, identify what is missing and stop.
 
-You cannot ask a human anything. Where that process directs a question to the human caller, apply its conservative
-default and record the question as an escalation in your returned report.
+You cannot ask a human anything. Where that process directs a question to the human caller, resolve it by the
+two-direction rule the process states — doubt about whether something is *true* keeps it, doubt about whether the reader
+*needs* it cuts it — and record the question as an escalation in your returned report either way. There is no single
+conservative default to fall back on: keeping whenever unsure is how a distill degrades into a reformat.
 
 Do not spawn subagents, commit, or write outside the caller's scratch directory — target files are installed by the
 coordinating executor, not by you.
