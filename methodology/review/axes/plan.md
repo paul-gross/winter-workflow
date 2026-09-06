@@ -69,6 +69,11 @@ Run every gate over the plan; each unmet obligation is a finding.
 
 ## Severity
 
+The gate asks whether the plan is **buildable and verifiable**, not whether it is optimal. A plan that would produce
+correct, verified work of the right shape passes even where a better plan exists; every improvement that is not blocking
+belongs in `consider`. Do not hold a plan open for the last increment of polish — a plan is a disposable instrument, and
+a round spent perfecting one buys less than the building it delays.
+
 - **must-fix** — a planned change with no declared verification method and no scheduled build of one, a plan that
   violates the architecture guidance, a load-bearing plan assumption the target contradicts (including a declared check
   that fails when run), and a contradiction or omission that would misdirect building.
@@ -77,9 +82,33 @@ Run every gate over the plan; each unmet obligation is a finding.
 - **notes** — concise routing of an out-of-scope concern to another axis, and undeclared-ownership gaps — a missing
   matrix or guidance — not tied to a specific planned change.
 
+## Materiality
+
+Every must-fix additionally carries a materiality of `material` or `minor`, because a caller running a revision loop
+needs to know whether the correction is worth another gate round, and only this axis has read the plan closely enough to
+say.
+
+- **material** — applying the correction changes *what gets built*: the planned changes, their order or phase
+  boundaries, the scope, the structure the plan commits to, or the method by which a change is asserted correct. A
+  builder handed the corrected plan would do something different.
+- **minor** — applying the correction changes only the plan's *text*: an imprecise reference, a restated fact to delete,
+  a missing pointer, a claim to cut. A builder handed the corrected plan would build the same thing.
+
+Judge materiality from the correction's effect on the build alone. Do not weigh how many rounds have run, whether a
+revision is expected to follow, or what the caller will do with the verdict — a must-fix inflated to `material` to
+justify another round, or deflated to `minor` to end one, corrupts the only signal the caller has.
+
 ## Output
 
-The report is the gate verdict a caller consumes: no must-fix findings means the plan passes the gate. Output follows
-the shared reporting contract at [../reporting.md](../reporting.md); this axis's default remote feedback is `report`.
-For a remote target, fetch the material with the appropriate forge CLI and return findings to the caller unless the
-semantic inputs explicitly request remote inline comments.
+The report is the gate verdict a caller consumes. Open it with a `verdict:` line, then the findings:
+
+| Verdict           | Meaning                                                   |
+| ----------------- | --------------------------------------------------------- |
+| `pass`            | No must-fix findings. The plan clears the gate.           |
+| `revise-material` | At least one must-fix is `material`.                      |
+| `revise-minor`    | Must-fix findings exist and every one of them is `minor`. |
+
+Each must-fix line names its materiality alongside its id. Output otherwise follows the shared reporting contract at
+[../reporting.md](../reporting.md); this axis's default remote feedback is `report`. For a remote target, fetch the
+material with the appropriate forge CLI and return findings to the caller unless the semantic inputs explicitly request
+remote inline comments.

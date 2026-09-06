@@ -74,13 +74,26 @@ work-target path(s) as the axis's work target. A planning framework that declare
 precedence over the shipped plan axis; discover and invoke that gate from the runtime context rather than assuming a
 particular agent, command, or file layout.
 
-**Revise.** On must-fix findings, re-execute the planning process with `findings` set to the review report — its
-revision step owns the shape of the fix, deletion first — escalate to the human caller any finding that needs a product
-decision, then re-run the gate. Track per revision round the must-fix count and the plan's size: if the must-fix count
-ever fails to strictly decrease, or three revision rounds pass without a clean verdict, stop the loop and escalate to
-the human caller with the round history — counts, sizes, and unresolved findings. Rounds that produce plan mass instead
-of a shrinking finding count signal a plan at the wrong altitude or a needed product decision, not a need for more
-rounds.
+**Revise.** The gate's verdict — the plan axis's `pass`, `revise-material`, or `revise-minor`, owned by
+[`../../review/axes/plan.md`](../../review/axes/plan.md) — selects the next move. Whatever the verdict, escalate to the
+human caller any finding only a product decision can resolve.
+
+- `pass` — go to Approve.
+- `revise-minor` — every must-fix changes the plan's text without changing what gets built. Re-execute the planning
+  process with `findings` set to the review report, then go to Approve **without re-gating**. Re-reading a plan whose
+  build is unchanged only invites a fresh reviewer to find fresh text to improve; the human approval that follows is the
+  check that a text-only revision owes.
+- `revise-material` — at least one must-fix changes what gets built. Re-execute the planning process with `findings` set
+  to the review report — its revision step owns the shape of the fix, deletion first — then re-run the gate.
+
+A gate that emits no verdict — a planning framework's own gate, or an axis run that omitted the line — has its must-fix
+findings treated as `revise-material`.
+
+Two backstops end the loop, both escalating to the human caller with the round history — verdicts, must-fix counts, plan
+sizes, and unresolved findings. Track the must-fix count and the plan's size per round: stop if the must-fix count ever
+fails to strictly decrease, or if three `revise-material` rounds close without reaching `pass` or `revise-minor`. Rounds
+that produce plan mass instead of a shrinking finding count signal a plan at the wrong altitude or a needed product
+decision, not a need for more rounds.
 
 **Approve.** Present the gated plan to the human caller and obtain approval before building; record the approved plan at
 `<documentation-root>/00-plan.md`, superseding any pre-gate draft. Do not advance to building until the human caller

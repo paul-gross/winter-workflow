@@ -1,7 +1,7 @@
 # Faceted review
 
-Run one review over a change-set by fanning a single gathered context out across many review **facets** — one forked
-reviewer per facet, converged by the lead into one aggregated report.
+Run one review over a change-set by fanning a single gathered context out across many review **facets** — one reviewer
+per facet, converged by the lead into one aggregated report.
 
 A facet is any named review concern. Every registered review axis is a facet, and so is any concern a caller names that
 no methodology covers yet.
@@ -48,28 +48,34 @@ under the scope owner's semantics.
 
 ### 3. Place the facet lead
 
-The lead must be **cold** — the [shared review process's coldness property](../process.md#execution-mode) — and must sit
-where its runtime supports the [fork port](../../runtime-ports.md#fork-the-current-context) from within the lead's own
-context; resolve fork availability from the harness capability facts the fork port's adapter note names, never by
-assumption. Choose the placement that preserves the fork port:
+The lead must be **cold** — the [shared review process's coldness property](../process.md#execution-mode) — and must
+satisfy judgment model intent.
 
-- **The calling session is the lead** when it is cold, satisfies judgment model intent, and its runtime can fork from
-  its own context. It executes steps 4–7 in place.
-- **Spawn the lead** otherwise — including for a cold caller that lacks judgment model intent or fork capability: run
-  the canonical `faceted-reviewer` role in a fresh isolated context with judgment model intent, its task being steps 4–7
-  of this process. The spawned lead's task carries the facet set, the normalized scope, every change-set entry with its
-  absolute worktree path and base ref, all delivery blockers, and the path to this process document.
+- **Spawn the lead** by default: run the canonical `faceted-reviewer` role in a fresh isolated context with judgment
+  model intent, its task being steps 4–7 of this process. The spawned lead's task carries the facet set, the normalized
+  scope, every change-set entry with its absolute worktree path and base ref, all delivery blockers, and the path to
+  this process document.
+- **The calling session is the lead** only where it is *already* cold and satisfies judgment model intent — a session
+  whose first work is this review, or a worker session opened for it. It executes steps 4–7 in place. A caller carrying
+  conversation history behind it is not cold: spawn.
 
 In either placement the lead phase is review-only: modify nothing, run no builds, services, or test suites, and spawn
-nothing beyond the step 5 fan-out. Do not spawn an isolated lead whose runtime cannot fork when the calling session is
-itself a cold, judgment-class, fork-capable placement — that trades away the fork port to buy a coldness the caller
-already has.
+nothing beyond the step 5 fan-out.
 
-**Fallback.** If the lead's runtime cannot fork, this process permits the fork port's briefing fallback, executed by the
-lead itself: the same lead gathers (step 4), writes the orientation briefing from its gathered context, spawns one
-isolated reviewer per facet carrying the briefing and the step 5 charter, and aggregates (step 7). Only the fork
-mechanism is replaced — the gather and the aggregation stay with the lead. If the lead's runtime can neither fork nor
-spawn isolated roles, return `unsupported-capability`. A briefing-fallback run must be labeled in the final report.
+**Fan-out mechanism.** Step 5 gives each facet its own reviewer seeded with the lead's gathered context, by one of two
+mechanisms. Settle which one here rather than in step 5, resolving the lead's seat against the live capability
+declaration the [fork port](../../runtime-ports.md#fork-the-current-context) names — every seat resolves it the same
+way, and none assumes an answer from its placement:
+
+- **Fork** — where the declaration grants the lead's own context a fork, fork it once per facet. Each fork inherits the
+  gathered context whole rather than a written summary of it, so prefer fork wherever the seat has one.
+- **Briefing** — otherwise, the lead writes an orientation briefing from its gathered context and spawns one isolated
+  reviewer per facet carrying it.
+
+Briefing is this process's **declared standing mechanism** for a seat the declaration grants no fork, in the fork port's
+sense of that term: such a run is not a degraded execution and carries no degradation label. Only the fan-out differs
+between the two mechanisms; the gather and the aggregation stay with the lead either way. If the lead can neither fork
+nor spawn isolated roles, return `unsupported-capability`.
 
 ### 4. Gather the shared orientation
 
@@ -85,9 +91,10 @@ Close the phase by stating, in context, the change's intent and a per-repository
 orients; it does not judge. The lead records no findings in this phase and does not deep-dive — depth belongs to the
 facet reviewers, and a lead that exhausts its context investigating has failed the facets that inherit it.
 
-### 5. Fork one reviewer per facet
+### 5. Fan out one reviewer per facet
 
-Fork the lead's context once per facet in one concurrent group. Each fork's charter:
+Give each facet its own reviewer in one concurrent group, through the mechanism step 3 settled. Each reviewer's charter
+is the same under either mechanism:
 
 1. **Review-only restrictions** — do not modify files; do not run builds, services, or the target's test suite; no
    execution beyond the targeted probes the facet's methodology permits; spawn nothing; return one findings report and
@@ -104,13 +111,13 @@ Fork the lead's context once per facet in one concurrent group. Each fork's char
    generated artifacts. The inherited context is a starting point, not a boundary.
 6. **Return findings to the lead, never to a remote review** — substantiate every finding, then return one findings
    report per the [reporting contract](../reporting.md), followed by a coverage note of one line per area inspected.
-   Regardless of the scope's `feedback` value, a fork never posts remotely; remote feedback is the lead's job after
-   aggregation (step 7).
+   Regardless of the scope's `feedback` value, a facet reviewer never posts remotely; remote feedback is the lead's job
+   after aggregation (step 7).
 
 ### 6. Converge
 
-Await the full concurrent group. A fork that fails or cannot execute leaves its facet **unreviewed**; record it as such
-and never silently drop it.
+Await the full concurrent group. A facet reviewer that fails or cannot execute leaves its facet **unreviewed**; record
+it as such and never silently drop it.
 
 ### 7. Aggregate
 
@@ -135,5 +142,4 @@ Return the aggregated report as the lead's single result.
 ### 8. Relay
 
 The calling session relays the lead's report — its own aggregated report, when it was the lead — per the reporting
-contract's relay semantics, with a preamble naming the facet set, scope, and target count. Label a briefing-fallback
-execution in the preamble.
+contract's relay semantics, with a preamble naming the facet set, scope, and target count.

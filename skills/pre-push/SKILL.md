@@ -1,5 +1,5 @@
 ---
-description: Multi-axis review of committed, unpushed work — code, harness, context, and docs — against each selected worktree's upstream. Use before pushing.
+description: Multi-axis review of committed, unpushed work — code, context, and docs — against each selected worktree's upstream. Use before pushing.
 argument-hint: "[blocking] [exclude-pinned|include-pinned|only-pinned]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion
 ---

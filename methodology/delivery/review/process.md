@@ -51,12 +51,14 @@ cross-repository change-set.
 | Axis            | Selected when…                                                                                                                                                                                     |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `code`          | …the change-set changes code; a docs-only change-set skips it.                                                                                                                                     |
-| `harness`       | …any target has an agentic-harness surface: agent definitions, skills, verifier scaffolds, harness conventions, agent-context entrypoints, or a `context/` or `methodology/` tree.                 |
 | `context`       | …any target has agent-facing markdown that the change-set touches; whether a path counts as agent-facing markdown is classified by [agent-context surface](../../review/agent-context-surface.md). |
 | `documentation` | …any target has external-facing public documentation and the change-set touches code or docs that documentation covers.                                                                            |
 
 For axis selection, public documentation means docs sites, adopter guides, and user-facing README material; it excludes
 agent-facing context and methodology.
+
+The `harness` axis is not a delivery axis: this process never selects it. A caller wanting harness review on a delivery
+runs it as its own review, through the [review process](../../review/process.md) with `axis: harness`.
 
 Record why each axis was selected or skipped and return a short dispatch line to the caller before any review starts.
 
@@ -64,8 +66,8 @@ Record why each axis was selected or skipped and return a short dispatch line to
 
 For each selected axis, prepare one execution of the [review process](../../review/process.md) carrying the selected
 scope with the already-discovered target set, the selected `pinned_scope` with review-base labels and delivery blockers
-for `unpushed`, `execution_mode: fresh`, and the selected axis (`code`, `harness`, `context`, or `documentation`). Each
-axis execution uses a judgment-class model and the canonical role the shared review process maps for that axis.
+for `unpushed`, `execution_mode: fresh`, and the selected axis (`code`, `context`, or `documentation`). Each axis
+execution uses a judgment-class model and the canonical role the shared review process maps for that axis.
 
 All selected axis executions run concurrently. The axes are independent, so concurrent execution bounds wall time by the
 slowest applicable review while each reviewer still holds the complete cross-repository change-set. Each isolated
@@ -110,8 +112,8 @@ Line forms:
 - A gaps line additionally names the must-fix id(s) it explains in the same `<role> <id>` form.
 - A clean line reads `<role>: no findings`.
 
-Synthesis sorts findings by axis in the order code, harness, context, documentation. Every original finding id is
-preserved through synthesis, and findings are prefixed with their repository whenever the change-set spans repositories.
+Synthesis sorts findings by axis in the order code, context, documentation. Every original finding id is preserved
+through synthesis, and findings are prefixed with their repository whenever the change-set spans repositories.
 
 The synthesized result contains the selected scope, the pinned scope when applicable, the targets with their review-base
 kinds, delivery blockers, reviewers run and skipped, findings with their original ids and severities, any gaps the

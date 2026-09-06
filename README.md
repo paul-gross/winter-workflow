@@ -74,20 +74,23 @@ the skills perform this preparation for normal interactive use.
   conversation-stated plan is first persisted into the winter space's workflows directory so the review has an
   artifact), and is `glacier`'s default plan-review gate.
 - **Faceted review** (`faceted-review`) — one cold **facet lead** gathers the change-set context once (diffs across all
-  in-scope repos, commit messages, the adjacent agent-context needed to understand the change), then forks that context
-  once per review **facet** and aggregates the facet reports into a single deduped, re-ranked review. Facets are
-  open-ended: the registered review axes are facets, and any caller-named concern is too — an unregistered facet is
-  reviewed by discovering the target's declared conventions for it, with the missing methodology reported as a finding.
-  Methodology at [`methodology/review/faceted/process.md`](methodology/review/faceted/process.md).
+  in-scope repos, commit messages, the adjacent agent-context needed to understand the change), then seeds one reviewer
+  per review **facet** with it and aggregates the facet reports into a single deduped, re-ranked review. The lead is
+  normally a spawned `faceted-reviewer`, which seeds each facet reviewer with a written orientation briefing; where the
+  lead's own seat supports forking, it forks its gathered context per facet instead so each facet inherits it whole.
+  Facets are open-ended: the registered review axes are facets, and any caller-named concern is too — an unregistered
+  facet is reviewed by discovering the target's declared conventions for it, with the missing methodology reported as a
+  finding. Methodology at [`methodology/review/faceted/process.md`](methodology/review/faceted/process.md).
 - **Pre-push review** (`pre-push`) — fans out `cold-reviewer` plus, conditionally on the in-scope repos' surfaces,
-  `harness-reviewer`, `context-reviewer`, and `documentation-reviewer` in parallel over each worktree's
-  configured-upstream merge diff (`<upstream>...HEAD`), then synthesizes a single advisory summary. Reviews the whole
-  **change-set** together, filtered by the explicit pinned scope: a resolvable upstream is included only when
-  `tracking_ahead > 0`; `ahead > 0` only detects a delivery blocker when the upstream is missing or unresolved, so a
-  fully pushed feature branch is not included. A verified explicit review base can make a blocked target reviewable but
-  does not clear its delivery blocker. The cross-repo consistency pass catches a change in one repo contradicting
-  another. Deliberately decoupled from `/ws-push` — invoke before pushing to surface findings, then push (or not)
-  yourself.
+  `context-reviewer` and `documentation-reviewer` in parallel over each worktree's configured-upstream merge diff
+  (`<upstream>...HEAD`), then synthesizes a single advisory summary. Reviews the whole **change-set** together, filtered
+  by the explicit pinned scope: a resolvable upstream is included only when `tracking_ahead > 0`; `ahead > 0` only
+  detects a delivery blocker when the upstream is missing or unresolved, so a fully pushed feature branch is not
+  included. A verified explicit review base can make a blocked target reviewable but does not clear its delivery
+  blocker. The cross-repo consistency pass catches a change in one repo contradicting another. `harness-reviewer` is
+  deliberately not in the fan-out — its trigger fires on nearly every change-set in a harness-developing workspace, so
+  harness review is invoked on its own (`harness-review`) when you want it. Also deliberately decoupled from `/ws-push`
+  — invoke before pushing to surface findings, then push (or not) yourself.
 
 #### Agents
 

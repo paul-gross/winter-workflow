@@ -49,10 +49,14 @@ bounded charter and a declared result shape.
   **Spawn an isolated role** instead.
 - Forks run as a declared concurrent group, return one distilled result each through the harness's isolated-result
   channel, and stop; the parent awaits the group. A fork returns conclusions, not its investigation.
-- When the active harness cannot fork the current context and the process explicitly permits a fallback, degrade by
-  writing an orientation briefing from the parent context and spawning isolated roles that carry it. The briefing is
-  lossy; the process result must label the degraded execution. Without an explicit fallback permission, an unavailable
-  fork capability is an unsupported capability.
+- When a context cannot fork and the process explicitly permits a fallback, substitute an orientation briefing: the
+  parent writes one from its own context and spawns isolated roles carrying it. Without an explicit fallback permission,
+  an unavailable fork capability is an unsupported capability.
+- A briefing is lossy — the children inherit a summary the parent chose to write, not everything it read — so a result
+  says which mechanism produced it whenever the difference is material. A run that **fell back**, where the process's
+  placement expected a fork and the seat could not supply one, labels itself a degraded execution. A process that
+  instead **declares** briefing its standing mechanism for a placement owns that declaration, and a run executing it is
+  neither degraded nor labeled.
 - Whether a given context can fork — and through which native mechanism — is a harness capability fact, not a
   methodology fact: resolve it from the live capability declaration at `workspace:/context/harness-runtime-ports.md`
   before any placement decision that depends on it, and treat a harness or nesting depth with no declared fork support
