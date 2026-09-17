@@ -58,47 +58,75 @@ framework, resolve `<workflows-dir>` per [`../../artifact-storage.md`](../../art
 
 ## 4. Plan, gate, approve
 
-Glacier owns the plan loop — author, gate, revise until convergence, then approve — composing the planning process
-(which authors and revises the artifact) with the shared review process (which gates it). The plan axis owns what the
-gate checks; glacier owns when the gate runs and the revision loop around it.
+Glacier owns the plan loop — author, gate, revise until convergence, confirm, then approve — composing the planning
+process (which authors and revises the artifact) with the shared review process (which gates it). The plan axis owns
+what the gate checks; glacier owns when the gate runs and the revision loop around it.
+
+**Resident pair.** Glacier runs this loop on two resident workers rather than a fresh spawn per round: one
+`winter-architect` as the plan builder and one `plan-reviewer` as the gate, both created through
+[`../../runtime-ports.md`](../../runtime-ports.md#create-and-coordinate-resident-workers) and both living for the whole
+loop. Each keeps its codebase reading, its criteria discovery, and its prior rounds, so a round costs a delta instead of
+a re-derivation. Resolve the port against `workspace:/context/harness-runtime-ports.md` before starting; where it is
+unavailable, fall back to a fresh spawn per round and tell the human caller the loop is running unaccelerated. Glacier
+owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into building, where its
+plan-shaped context would bias an ice-carver.
 
 **Author.** Execute [`../../planning/process.md`](../../planning/process.md) with `feature_or_plan` set to the supplied
 feature or plan, `plan_root` set to `<documentation-root>/00-plan.md` (or the planning framework's own plan location
-when the framework supplied the documentation root), and `work_target` set to the recorded work-target path(s).
-Glacier's planning targets the application's verifiability matrix and architecture guidance and is gated on both; treat
-a missing matrix or missing guidance as a gap to surface to the human caller, never as something to invent around.
+when the framework supplied the documentation root), and `work_target` set to the recorded work-target path(s),
+declaring the resident `winter-architect` as its plan builder. Glacier's planning targets the application's
+verifiability matrix and architecture guidance and is gated on both; treat a missing matrix or missing guidance as a gap
+to surface to the human caller, never as something to invent around.
 
 **Gate.** Execute the shared review process at [`../../review/process.md`](../../review/process.md) with the plan axis
 ([`../../review/axes/plan.md`](../../review/axes/plan.md)), scoped to the plan's directory or file, supplying the
-work-target path(s) as the axis's work target. A planning framework that declares its own plan-review gate takes
-precedence over the shipped plan axis; discover and invoke that gate from the runtime context rather than assuming a
-particular agent, command, or file layout.
+work-target path(s) as the axis's work target, and `execution_mode: resident` bound to the loop's `plan-reviewer`. Every
+round after the first re-addresses that same worker with the re-resolved plan and a one-line statement of what the
+revision changed. A planning framework that declares its own plan-review gate takes precedence over the shipped plan
+axis; discover and invoke that gate from the runtime context rather than assuming a particular agent, command, or file
+layout, and run it resident only if it declares itself safe to re-address.
 
 **Revise.** The gate's verdict — the plan axis's `pass`, `revise-material`, or `revise-minor`, owned by
 [`../../review/axes/plan.md`](../../review/axes/plan.md) — selects the next move. Whatever the verdict, escalate to the
 human caller any finding only a product decision can resolve.
 
-- `pass` — go to Approve.
+- `pass` — go to Confirm.
 - `revise-minor` — every must-fix changes the plan's text without changing what gets built. Re-execute the planning
-  process with `findings` set to the review report, then go to Approve **without re-gating**. Re-reading a plan whose
-  build is unchanged only invites a fresh reviewer to find fresh text to improve; the human approval that follows is the
-  check that a text-only revision owes.
+  process with `findings` set to the review report, then go to Confirm **without re-gating**. Re-reading a plan whose
+  build is unchanged only invites fresh text to improve; the confirmation and human approval that follow are the checks
+  a text-only revision owes.
 - `revise-material` — at least one must-fix changes what gets built. Re-execute the planning process with `findings` set
   to the review report — its revision step owns the shape of the fix, deletion first — then re-run the gate.
 
 A gate that emits no verdict — a planning framework's own gate, or an axis run that omitted the line — has its must-fix
 findings treated as `revise-material`.
 
-Two backstops end the loop, both escalating to the human caller with the round history — verdicts, must-fix counts, plan
-sizes, and unresolved findings. Track the must-fix count and the plan's size per round: stop if the must-fix count ever
-fails to strictly decrease, or if three `revise-material` rounds close without reaching `pass` or `revise-minor`. Rounds
-that produce plan mass instead of a shrinking finding count signal a plan at the wrong altitude or a needed product
-decision, not a need for more rounds.
+**Confirm.** A resident gate reports against what it already said, so its `pass` is a statement that its own findings
+were resolved, not an independent reading of the plan. Before approval, spawn one **fresh** `plan-reviewer` in a
+one-shot isolated context — the isolated-role restrictions, the same plan scope, the same `work_target`, `axis: plan`,
+`execution_mode: fresh` — and take its verdict as the loop's real one. This runs once per plan loop, not once per round;
+it is what the resident loop trades rounds for, and it is the only reading in the loop that has not been steered.
 
-**Approve.** Present the gated plan to the human caller and obtain approval before building; record the approved plan at
-`<documentation-root>/00-plan.md`, superseding any pre-gate draft. Do not advance to building until the human caller
-approves the plan, and an approval-time adjustment that changes the planned changes goes back through the plan gate
-before building.
+- Fresh `pass` — go to Approve.
+- Fresh `revise-minor` — re-execute the planning process with those findings, then go to Approve.
+- Fresh `revise-material` — the resident gate converged on a plan a cold reader would not pass. Return to Revise with
+  the fresh report, and count this round against the backstops below. A second fresh `revise-material` ends the resident
+  loop: stop, hand the human caller both reports, and say the residency is not converging on this plan.
+
+**Backstops.** Two backstops end the loop, both escalating to the human caller with the round history — verdicts,
+must-fix counts, plan sizes, and unresolved findings. Track the plan's size per round and stop if it grows across two
+consecutive rounds without a finding that named misdirected building; stop if three `revise-material` rounds close
+without reaching `pass` or `revise-minor`. Rounds that produce plan mass instead of a settling plan signal a plan at the
+wrong altitude or a needed product decision, not a need for more rounds.
+
+The must-fix count is not a backstop here. A resident reviewer works off a list it wrote, so its count falls whether or
+not the plan improved; plan size and the Confirm verdict carry the signal instead.
+
+**Approve.** Present the gated and confirmed plan to the human caller and obtain approval before building; record the
+approved plan at `<documentation-root>/00-plan.md`, superseding any pre-gate draft. Stop the resident builder and
+resident gate once approval lands, whatever the outcome — including every escalation path above. Do not advance to
+building until the human caller approves the plan, and an approval-time adjustment that changes the planned changes goes
+back through the plan gate before building, on a freshly started resident pair.
 
 ## 5. Break into phases
 

@@ -34,21 +34,25 @@ to `plan_root` and treat that file as the candidate.
 [`./plan-shape.md`](./plan-shape.md) §Altitude — it selects which plan standards apply, from a one-liner to a phased
 epic decomposition. With a planning framework, run its **plan builder** in an isolated context. With no framework, spawn
 the canonical `winter-architect` role in a one-shot isolated context, carrying the
-[isolated-role default](../runtime-ports.md#spawn-an-isolated-role), the feature, and `work_target`. Ask it to read the
-relevant code and return an implementation approach — not code — conforming to [`./plan-shape.md`](./plan-shape.md) at
-the selected altitude. The approach names each change's verification method and architectural fit as far as the
-application's harness declares them, and surfaces a missing matrix or architecture guidance as a gap rather than
-inventing around it. Write the returned plan to `plan_root`. If the builder needs the codebase explored, spawn an
-isolated `arctic-explorer` with the research question and hand it the distilled finding rather than reading the code
-into the coordinating context.
+[isolated-role default](../runtime-ports.md#spawn-an-isolated-role), the feature, and `work_target`. A caller that
+explicitly declares a **resident builder** instead starts that worker here, through
+[`../runtime-ports.md`](../runtime-ports.md#create-and-coordinate-resident-workers), and owns its lifecycle; the
+authoring charter is otherwise identical. Ask it to read the relevant code and return an implementation approach — not
+code — conforming to [`./plan-shape.md`](./plan-shape.md) at the selected altitude. The approach names each change's
+verification method and architectural fit as far as the application's harness declares them, and surfaces a missing
+matrix or architecture guidance as a gap rather than inventing around it. Write the returned plan to `plan_root`. If the
+builder needs the codebase explored, spawn an isolated `arctic-explorer` with the research question and hand it the
+distilled finding rather than reading the code into the coordinating context.
 
 ## Revise
 
 When `findings` is supplied, it is a plan-review report against the plan at `plan_root`. Route it to the plan builder
-that owns the plan — the framework's builder, or a fresh `winter-architect` spawn carrying the findings, the plan's
-path, and `work_target` — to resolve each finding in the plan text. The one exception is a finding only a product
-decision can resolve: return it to the caller unresolved rather than answering it in prose. One rule shapes the
-revision:
+that owns the plan — the framework's builder, a fresh `winter-architect` spawn carrying the findings, the plan's path,
+and `work_target`, or the caller's resident builder re-addressed with the findings — to resolve each finding in the plan
+text. A resident builder already holds the codebase reading and the altitude selection behind the current draft, which
+is the point of keeping it; it does not hold a licence to defend that draft, and **deletion first** below binds it
+exactly as it binds a fresh spawn. The one exception is a finding only a product decision can resolve: return it to the
+caller unresolved rather than answering it in prose. One rule shapes the revision:
 
 **Deletion first.** Resolve a finding by removing or pointing before defending with new prose: cut the claim, the
 mechanism passage, the restated fact the finding attacks, or any detail that exceeds the plan's declared **altitude**

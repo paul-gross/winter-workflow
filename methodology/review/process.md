@@ -1,9 +1,9 @@
 # Review process
 
 Run one caller-neutral review over a change-set that may span several repositories. This process owns scope discovery,
-fresh-versus-inline execution, model intent, and the review-input scaffold. The selected
-[axis methodology](./axes/index.md) owns what to inspect and how to judge it; [reporting](./reporting.md) owns common
-output semantics. Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
+execution placement, model intent, and the review-input scaffold. The selected [axis methodology](./axes/index.md) owns
+what to inspect and how to judge it; [reporting](./reporting.md) owns common output semantics. Runtime operations follow
+[`../runtime-ports.md`](../runtime-ports.md).
 
 The unit of review is the **change-set**. One executor holds every in-scope repository at once so it can catch
 contradictions across repository boundaries. A standalone repository, or a feature environment with only one changed
@@ -17,7 +17,7 @@ Require callers to supply these normalized inputs rather than invocation-specifi
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `axis`           | any axis registered in [`./axes/index.md`](./axes/index.md)                                                                                                          |
 | `scope`          | `branch-vs-base`, `uncommitted`, `unpushed`, `{range: <verified-ref-or-range>}`, `{paths: [<existing-path>...]}`, or `{remote: <PR-or-MR-locator>, feedback: default |
-| `execution_mode` | `fresh` or `inline`                                                                                                                                                  |
+| `execution_mode` | `fresh`, `inline`, or `resident`                                                                                                                                     |
 | `pinned_scope`   | for `unpushed`: `exclude`, `include`, or `only`                                                                                                                      |
 | `review_bases`   | optional per-worktree verified refs, documented by the caller for an `unpushed` target whose upstream cannot be diffed                                               |
 | `work_target`    | required for `axis: plan`: absolute path(s) of the repository or repositories the plan is judged against                                                             |
@@ -35,9 +35,9 @@ slash-command arguments.
 ## Axes
 
 Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.md) owns the axis-to-methodology mapping.
-Runtime agent identifiers are ports for fresh execution only; they are not methodology owners.
+Runtime agent identifiers are ports for spawned execution — fresh or resident; they are not methodology owners.
 
-| Axis            | Fresh runtime port       |
+| Axis            | Spawned runtime port     |
 | --------------- | ------------------------ |
 | `code`          | `cold-reviewer`          |
 | `correctness`   | `cold-reviewer`          |
@@ -49,7 +49,8 @@ Runtime agent identifiers are ports for fresh execution only; they are not metho
 | `documentation` | `documentation-reviewer` |
 | `plan`          | `plan-reviewer`          |
 
-Both execution modes consume the same selected methodology file. Do not copy an axis checklist into a prompt or adapter.
+Every execution mode consumes the same selected methodology file. Do not copy an axis checklist into a prompt or
+adapter.
 
 ## Scope semantics
 
@@ -94,7 +95,8 @@ review metadata and diff. Do not silently substitute a local branch when remote 
 A review context is **cold** when it contains no authoring, planning, or steering of the change under review. Coldness
 is a property of the context, not of the spawn that created it: fresh execution guarantees it, and a process may exploit
 an already-cold invoking context where it declares its own placement rule (the
-[faceted review's lead placement](./faceted/process.md)).
+[faceted review's lead placement](./faceted/process.md)). Inline and resident execution both forfeit coldness, by
+different routes — inline inherits the caller's authoring, resident inherits the reviewer's own prior rounds.
 
 ### Fresh
 
@@ -112,10 +114,31 @@ invoking context that authored, planned, or steered the change — the common ca
 forfeits freshness; use it only when that bias is acceptable. It does not select a different checklist, evidence bar,
 severity rule, or report format.
 
+### Resident
+
+Re-address one worker of the selected canonical role across successive rounds through
+[`../runtime-ports.md`](../runtime-ports.md#create-and-coordinate-resident-workers), so it carries its earlier rounds
+into each new one. Resident execution is never a default and never inferred: only a calling process that explicitly
+declares it may select it, the caller owns the worker's lifecycle and tears it down when its loop ends, and delivery
+review never uses it. Resolve the port's availability from `workspace:/context/harness-runtime-ports.md` before
+selecting it; where it is unavailable, fall back to fresh and say so.
+
+A resident reviewer trades independence for continuity, and the caller owns that trade. It does not re-derive the axis's
+criteria each round, so it converges faster and reports against what it already said — and by the same mechanism it is
+anchored on its own prior findings, so a defect it missed in an early round tends to stay missed. It does not select a
+different checklist, evidence bar, severity rule, or report format. In particular, judge materiality by the rules in the
+axis, unchanged: a resident reviewer has read the rounds that came before and must still not weigh them.
+
+Because a resident reviewer's finding count partly reflects its own list being worked off rather than an independent
+re-read, a caller whose convergence backstop keys on that count owns re-establishing the signal some other way.
+
 ## Execution scaffold
 
 For fresh mode, construct a self-contained spawn prompt from the following parts. For inline mode, treat the same parts
-as self-instructions.
+as self-instructions. For resident mode, send the full scaffold on the worker's first round; on each later round send
+only what changed — the re-resolved review material and the caller's statement of what was revised — and require the
+worker to re-read the axis file and re-run every gate over the current material rather than diffing against its memory
+of the last round.
 
 1. **One-shot restrictions.** For fresh mode, require the isolated-role default declared by
    [`../runtime-ports.md`](../runtime-ports.md#spawn-an-isolated-role), returning one categorized report.
