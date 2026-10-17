@@ -252,6 +252,28 @@ def _check_tools(block: dict | None) -> str | None:
     return f"tools: {rule}"  # a bare scalar like `tools: Read`
 
 
+def _tool_items(block: dict | None) -> list[str]:
+    """The individual `tools` entries of a block or flow sequence, comments and quotes stripped."""
+    if block is None:
+        return []
+    inline = block["inline"]
+    if inline.startswith("[") and inline.endswith("]"):
+        return [x for x in (_strip_quotes(p).strip() for p in inline[1:-1].split(",")) if x]
+    items = []
+    for l in block["body"]:
+        l = l.lstrip()
+        if l == "-" or l.startswith("- "):
+            item = _strip_quotes(_strip_inline_comment(l[1:]).strip()).strip()
+            if item:
+                items.append(item)
+    return items
+
+
+def _per_tool_mcp_items(block: dict | None) -> list[str]:
+    """`mcp__<server>__<tool>` items — per-tool grants rather than server-level ones."""
+    return [i for i in _tool_items(block) if i.startswith("mcp__") and "__" in i[len("mcp__") :] and "*" not in i]
+
+
 def _override_block_findings(blocks: dict[str, dict], rel: str) -> list[Finding]:
     """Validate canonical-schema rules for per-vendor override blocks.
 
@@ -373,6 +395,16 @@ def _tools_findings(blocks: dict[str, dict], rel: str) -> list[Finding]:
     problem = _check_tools(tools_block)
     if problem is not None:
         out.append(Finding(status="fail", message=problem, file=rel))
+    for item in _per_tool_mcp_items(tools_block):
+        out.append(
+            Finding(
+                status="fail",
+                message=f"tools: '{item}' is a per-tool MCP grant; grant the server instead",
+                file=rel,
+                remediation="Replace per-tool `mcp__<server>__<tool>` items with the server-level `mcp__<server>` "
+                "entry (see agents/README.md, Convention: MCP tool grants).",
+            )
+        )
     if has_allowed:
         out.append(
             Finding(
