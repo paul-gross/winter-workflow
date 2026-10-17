@@ -94,11 +94,13 @@ def assert_warn(case: str, expected: str) -> None:
 
 assert_pass("valid", FIXTURES / "valid")
 assert_pass("wildcard-tools", FIXTURES / "wildcard-tools")
+assert_pass("mcp-server-tools", FIXTURES / "mcp-server-tools")
 
 assert_fail("missing-description", "description: missing or empty")
 assert_fail("empty-description", "description: missing or empty")
 assert_fail("missing-tools", "tools: missing")
 assert_fail("empty-tools", "tools: empty list")
+assert_fail("mcp-per-tool", "per-tool MCP grant")
 assert_fail("bad-tools-type", "tools: must be a non-empty list")
 assert_fail("missing-model", "model: missing")
 assert_fail("invalid-model", "model: 'gpt-4' invalid")

@@ -21,6 +21,14 @@ broadened trigger. Declare each behavioral expectation as a scenario, spawn a fr
 record `reached` and `behaved` per scenario. Only a session that can spawn cold subagents may run it; a non-spawning
 agent hands it up.
 
+`winter-workflow:mcp-grant-probe` — confirms a projected agent reaches an MCP server under each supported install. A
+spawning session renders the agent with the winter CLI's Claude projection from the worktree's canonical file — never a
+hand-edited copy, and never the workspace's separately installed winter-workflow clone, which sits on `master`. It
+spawns the agent headless and in the foreground from a scratch directory under the session tmpdir, once with the server
+declared in a project `--mcp-config` as `chrome-devtools` and once with the plugin via `--plugin-dir`. Its prompt names
+no tools: it asks the agent to open a page that logs a console error, snapshot it, and read the console. Pass: both
+installs report the page content and the console error, and the agent reports no Edit or Write tool.
+
 ## Tools
 
 `tool:eval-fixture` — a scratch directory of freshly written fixture prose exhibiting the anti-pattern under test, for

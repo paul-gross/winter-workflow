@@ -62,3 +62,19 @@ A new process that composes these agents decides which tools its mode allows and
 preamble; the agent definitions stay stable. Exact compositions, preambles, and execution contracts live with their
 processes under the routed procedures in [`../methodology/`](../methodology/index.md). Agent bodies retain only stable
 role behavior and runtime boundaries.
+
+## Convention: MCP tool grants
+
+An agent that consumes an MCP server grants the **server**, not its individual tools:
+
+- Grant the server, not its tools. A per-tool list is tied to one install's tool-name prefix and silently grants nothing
+  under another.
+- List every server name the supported installs produce. An entry that doesn't resolve is ignored while others resolve,
+  so listing all of them is safe. `frontend-verifier` lists `mcp__chrome-devtools` (a project `.mcp.json` server) and
+  `mcp__plugin_chrome-devtools-mcp_chrome-devtools` (the chrome-devtools-mcp plugin).
+- Never omit `tools` to reach MCP tools. An agent without a `tools` allowlist inherits every MCP server in the session,
+  including write-capable ones.
+
+Globs across servers (`mcp__*`) grant nothing. A project server registered under a name other than `chrome-devtools`
+still won't match; that limit is accepted rather than engineered around. A whole-server grant exposes more tools than a
+hand-picked list would — consistent with `tools:` being the permissive set.
