@@ -4,8 +4,8 @@ Winter-workflow produces generated artifacts that are not deliverables of the ta
 extension's artifact kinds, file naming, and producer/consumer policy.
 
 The Winter CLI owns the artifact-directory command, output contract, resolution rules, and defaults at
-`workspace:/context/winter-cli/usage/space.md`. Its configuration owner is
-`workspace:/context/winter-cli/configuration/space.md`. Consumers follow those live documents rather than copying their
+`workspace:/context/winter/cli/usage/space.md`. Its configuration owner is
+`workspace:/context/winter/cli/configuration/space.md`. Consumers follow those live documents rather than copying their
 syntax or configuration facts here.
 
 ## Artifact kinds and naming

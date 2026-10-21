@@ -42,7 +42,7 @@ repository, or the workspace branch itself. Target paths resolve as: feature env
 The human caller may name the target, imply it from an earlier instruction in the same stream, or leave it ambiguous;
 when it is ambiguous and matters, ask through the human-caller port rather than guessing. A feature environment's index
 is resolved with `winter ws index <name> --json` — index allocation is owned by
-`workspace:/context/winter-cli/usage/ws/init.md` — and an environment's existence is confirmed with
+`workspace:/context/winter/cli/usage/ws/init.md` — and an environment's existence is confirmed with
 `winter ws list --json` before pinning a teammate to it. Before dispatching, resolve each instruction to a target and an
 absolute path.
 
@@ -65,7 +65,7 @@ off-limits and never a fallback, while standalone repos and the workspace branch
   operation definitions. Start each worker as a resident concurrent operation so dispatch never blocks the conversation,
   and supply the role's declared model intent explicitly so the adapter can resolve the appropriate harness model tier.
 - A teammate can run the full local dev-verify cycle inside its own target, including bringing a feature environment's
-  services up with `winter service up <env>` — the run phase per `workspace:/context/environment-lifecycle.md`.
+  services up with `winter service up <env>` — the run phase per `workspace:/context/winter/environment-lifecycle.md`.
 
 ## Assignments
 

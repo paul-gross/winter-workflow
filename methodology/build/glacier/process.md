@@ -189,7 +189,7 @@ A phase passes only when its verification passes in full — the verify finale a
 browser-driven method. A green build or type-check never counts as a test; phases close against runtime behavior.
 Glacier does not start services: when verification needs services that are not running, the finale reports that
 condition rather than guessing, and glacier tells the human caller to run `winter service up <env>` — the run phase per
-`workspace:/context/environment-lifecycle.md` — and rerun the process.
+`workspace:/context/winter/environment-lifecycle.md` — and rerun the process.
 
 ### On failure
 

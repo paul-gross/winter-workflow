@@ -105,7 +105,8 @@ triggers the bail-out.
 
 When the verifier reports the service unreachable or a similar environment failure (services not running, port not
 open), stop the loop and tell the human caller: snowball does not start services. Suggest running
-`winter service up <env>` — the run phase per `workspace:/context/environment-lifecycle.md` — and rerunning the process.
+`winter service up <env>` — the run phase per `workspace:/context/winter/environment-lifecycle.md` — and rerunning the
+process.
 
 ## The bail-out
 

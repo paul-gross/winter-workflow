@@ -210,7 +210,7 @@ def _workspace_prefix_override(target: Path, ext_name: str | None) -> str | None
     """The per-`[[standalone_repository]]` `prefix` override for `ext_name` in
     the nearest `.winter/config.toml` above `target`, if any — this beats the
     extension's own `winter-ext.toml` default (see
-    `context/winter-cli/configuration/repositories.md`)."""
+    `context/winter/cli/configuration/repositories.md`)."""
     if not ext_name:
         return None
     cur = target

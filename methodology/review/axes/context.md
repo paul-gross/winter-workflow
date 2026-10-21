@@ -42,11 +42,11 @@ naming, tooling, or reference facts.
 - **Agents** are canonical source definitions projected into each harness's native artifact: review the canonical
   source, never a generated projection. A relative reference that assumes the canonical agent directory can break after
   projection. Use the live installation facts at
-  `workspace:/context/winter-cli/configuration/extensions.md#what-gets-symlinked` plus the active projected artifact for
+  `workspace:/context/winter/cli/configuration/extensions.md#what-gets-symlinked` plus the active projected artifact for
   harness-specific agent identity.
 - **Skills** use harness-dependent installation mechanisms under a workspace-configurable prefix: review the source
   skill, then resolve its references from the active harness's installed artifact according to the live facts at
-  `workspace:/context/winter-cli/configuration/extensions.md#what-gets-symlinked`.
+  `workspace:/context/winter/cli/configuration/extensions.md#what-gets-symlinked`.
 - **Commands** are simpler user-invocable prompts and still need precise scope and references.
 - Never assume every harness installs via symlink or that source-relative reference behavior is universal.
 - Cross-context references use the workspace's declared `<context>:<path>` notation and must survive installation and

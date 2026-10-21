@@ -9,10 +9,10 @@ methodology.
 Before executing a process, the session adapter must:
 
 1. Resolve a canonical role to the identity installed for the active harness. Follow the live agent installation and
-   prefix facts at `workspace:/context/winter-cli/configuration/extensions.md#what-gets-symlinked` and inspect the
+   prefix facts at `workspace:/context/winter/cli/configuration/extensions.md#what-gets-symlinked` and inspect the
    active projected artifact rather than assuming one harness's invocation identity.
 2. Resolve model intent through the active harness's model-tier projection at
-   `workspace:/context/winter-cli/configuration/agents.md`. A process names intent such as **workhorse** (Sonnet/Terra
+   `workspace:/context/winter/cli/configuration/agents.md`. A process names intent such as **workhorse** (Sonnet/Terra
    class) or **judgment** (Opus/Sol class), not a vendor model id.
 3. Map the semantic operations below to native session capabilities and preserve their isolation, concurrency,
    lifecycle, and return semantics.
@@ -70,7 +70,7 @@ available when the process requires a decision before continuing.
 ### Resolve a workflow artifact directory
 
 Resolve one winter-workflow artifact kind named by [`artifact-storage.md`](./artifact-storage.md) through the active
-Winter CLI contract. The adapter follows `workspace:/context/winter-cli/usage/space.md` for invocation and result
+Winter CLI contract. The adapter follows `workspace:/context/winter/cli/usage/space.md` for invocation and result
 handling; methodology receives only the resolved directory or a failure. Preserve the fail-closed consumer policy in
 `artifact-storage.md` and do not invent a fallback path.
 

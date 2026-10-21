@@ -32,7 +32,7 @@ name="$(basename "$envdir")"
 
 No env marker file exists on disk: env identity derives from the directory layout and is confirmed by the read-only
 status call, and runtime variables are computed and injected at dispatch time rather than written to files — owned by
-`workspace:/context/workspace-layout.md`.
+`workspace:/context/winter/workspace-layout.md`.
 
 ## Repo listing
 
@@ -40,7 +40,7 @@ Repo listing reads the JSON of the read-only `winter ws status <name> --json` di
 output, and never hand-rolls `git rev-list` loops across repos. The status argument is a `<env>/<repo>` glob pattern and
 a bare env name expands to `<name>/*`, so a bare name scopes the call to the whole env and `environments` comes back as
 a one-element array. Iterate `environments[0].worktrees[]`, where each entry is one repo in the env; the per-field
-schema (`WorktreeSnapshot`) is owned by `workspace:/context/winter-cli/usage/ws/status.md` — read field meanings there
+schema (`WorktreeSnapshot`) is owned by `workspace:/context/winter/cli/usage/ws/status.md` — read field meanings there
 and reuse those fields rather than deriving counts independently.
 
 The worktree filesystem path is not carried as a status field; derive it as `<workspace.root_path>/<env.name>/<repo>`,
@@ -73,8 +73,8 @@ hunk enumeration, at [./manifest/format.md#computing-diff_sha](./manifest/format
 The caller supplies a semantic `pinned_scope` of `exclude`, `include`, or `only`. An omitted `pinned_scope` defaults to
 `include`, the project-worktree scope of `winter ws push --include-pinned`, and this document is the single owner of
 that default. `pinned_scope: exclude` corresponds to a bare default `winter ws push` and `only` to a pinned-only push;
-the live pinned-push command behavior is owned by `workspace:/context/winter-cli/usage/ws/push.md` and
-`workspace:/context/winter-cli/usage/ws/patterns.md`.
+the live pinned-push command behavior is owned by `workspace:/context/winter/cli/usage/ws/push.md` and
+`workspace:/context/winter/cli/usage/ws/patterns.md`.
 
 Apply `pinned_scope` before the unpushed predicate:
 
