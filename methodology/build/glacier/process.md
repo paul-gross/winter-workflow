@@ -66,10 +66,10 @@ what the gate checks; glacier owns when the gate runs and the revision loop arou
 `winter-architect` as the plan builder and one `plan-reviewer` as the gate, both created through
 [`../../runtime-ports.md`](../../runtime-ports.md#create-and-coordinate-resident-workers) and both living for the whole
 loop. Each keeps its codebase reading, its criteria discovery, and its prior rounds, so a round costs a delta instead of
-a re-derivation. Resolve the port against `workspace:/context/harness-runtime-ports.md` before starting; where it is
-unavailable, fall back to a fresh spawn per round and tell the human caller the loop is running unaccelerated. Glacier
-owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into building, where its
-plan-shaped context would bias an ice-carver.
+a re-derivation. Resolve the port against `workspace:/context/project/harness-runtime-ports.md` before starting; where
+it is unavailable, fall back to a fresh spawn per round and tell the human caller the loop is running unaccelerated.
+Glacier owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into building, where
+its plan-shaped context would bias an ice-carver.
 
 **Author.** Execute [`../../planning/process.md`](../../planning/process.md) with `feature_or_plan` set to the supplied
 feature or plan, `plan_root` set to `<documentation-root>/00-plan.md` (or the planning framework's own plan location

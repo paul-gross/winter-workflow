@@ -120,7 +120,7 @@ Re-address one worker of the selected canonical role across successive rounds th
 [`../runtime-ports.md`](../runtime-ports.md#create-and-coordinate-resident-workers), so it carries its earlier rounds
 into each new one. Resident execution is never a default and never inferred: only a calling process that explicitly
 declares it may select it, the caller owns the worker's lifecycle and tears it down when its loop ends, and delivery
-review never uses it. Resolve the port's availability from `workspace:/context/harness-runtime-ports.md` before
+review never uses it. Resolve the port's availability from `workspace:/context/project/harness-runtime-ports.md` before
 selecting it; where it is unavailable, fall back to fresh and say so.
 
 A resident reviewer trades independence for continuity, and the caller owns that trade. It does not re-derive the axis's

@@ -58,9 +58,9 @@ bounded charter and a declared result shape.
   instead **declares** briefing its standing mechanism for a placement owns that declaration, and a run executing it is
   neither degraded nor labeled.
 - Whether a given context can fork — and through which native mechanism — is a harness capability fact, not a
-  methodology fact: resolve it from the live capability declaration at `workspace:/context/harness-runtime-ports.md`
-  before any placement decision that depends on it, and treat a harness or nesting depth with no declared fork support
-  as unable to fork.
+  methodology fact: resolve it from the live capability declaration at
+  `workspace:/context/project/harness-runtime-ports.md` before any placement decision that depends on it, and treat a
+  harness or nesting depth with no declared fork support as unable to fork.
 
 ### Ask the human caller
 
