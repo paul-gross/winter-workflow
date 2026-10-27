@@ -11,3 +11,10 @@ requires = ["winter-product"]
 # invocation syntax and adapter paths out of top-level methodology Markdown.
 # Paths are relative to this extension directory.
 lint = ["scripts/lint-agents.py", "scripts/lint-methodology.py"]
+
+# Artifact kinds this extension writes under the winter space (see
+# methodology/artifact-storage.md). `winter ws init` resolves each kind through
+# the workspace `[space]` config and excludes it locally, so adopting workspaces
+# need no hand-kept ignore entries. Keep in step with that file's kinds table.
+[excludes]
+space_kinds = ["scores", "manifests", "workflows", "retrospectives"]

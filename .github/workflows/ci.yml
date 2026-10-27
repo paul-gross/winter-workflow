@@ -30,4 +30,4 @@ jobs:
         with:
           python-version: "3.12"
       - name: Lint tests
-        run: python3 tests/test_lint_agents.py && python3 tests/test_lint_methodology.py && python3 tests/test_context_usage.py
+        run: python3 tests/test_lint_agents.py && python3 tests/test_lint_methodology.py && python3 tests/test_context_usage.py && python3 tests/test_artifact_kinds.py

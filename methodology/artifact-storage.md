@@ -28,6 +28,8 @@ When a same-day run must coexist with an existing artifact, insert `<HHMM>` afte
 - Stop if resolution fails or returns an empty value. Never substitute a relative, root, target-worktree, or other
   fallback path.
 - Ensure the resolved destination exists before writing. Artifact producers do not modify repository ignore rules or
-  treat generated artifacts as target deliverables.
+  treat generated artifacts as target deliverables. The extension instead declares its kinds in `winter-ext.toml`
+  `[excludes] space_kinds`, so `winter ws init` excludes them from the workspace repository; a kind added to the table
+  above is added to that declaration too.
 - Pass the resolved directory to downstream steps as a semantic path such as `<scores-dir>` or `<manifests-dir>`; do not
   make those steps resolve it again.
