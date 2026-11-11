@@ -36,9 +36,9 @@ During this mode:
   authorization; a stop request is not delivery authorization.
 
 This process replaces the ordinary [completion bar](../../completion.md) for the active mode only. Architecture,
-security, ownership, source-checkout restrictions, and the provision-before-run baseline still apply. If a higher-priority
-requirement cannot be reconciled with the mode, report the conflict rather than silently running hardening or weakening
-the requirement.
+security, ownership, source-checkout restrictions, and the provision-before-run baseline still apply. If a
+higher-priority requirement cannot be reconciled with the mode, report the conflict rather than silently running
+hardening or weakening the requirement.
 
 ## Start
 
@@ -53,10 +53,10 @@ the requirement.
    process, explicitly overriding ice-carver's routine workhorse default. Do not silently downgrade. If that tier is
    unavailable, ask whether to use an available tier or pause, and record any approved substitution.
 4. Confirm the adapter supports nonblocking worker dispatch and completion notifications while the conversation remains
-   available. Use resident workers if supported, or isolated background assignments returning one result each. The latter
-   is an intentional execution form here, not an emulation of iceberg's resident protocol. Do not poll or block awaiting
-   a worker. If no responsive dispatch mechanism exists, return `unsupported-capability` using the runtime contract;
-   offer to pause rather than silently implementing inline.
+   available. Use resident workers if supported, or isolated background assignments returning one result each. The
+   latter is an intentional execution form here, not an emulation of iceberg's resident protocol. Do not poll or block
+   awaiting a worker. If no responsive dispatch mechanism exists, return `unsupported-capability` using the runtime
+   contract; offer to pause rather than silently implementing inline.
 5. Open the caller-selected ledger. Without one, resolve the `workflows` artifact directory through
    [artifact storage](../../artifact-storage.md) and create a session directory using its naming convention, with
    `queue.md` inside. Announce its resolved location. Preserve an existing ledger and reconcile it before dispatch.
@@ -65,8 +65,8 @@ the requirement.
 
 ## Durable queue
 
-The coordinator is the ledger's only writer; workers report updates rather than editing it. Record each incoming
-request before acknowledging or dispatching it. Keep stable ids and the caller's intent when an ask changes.
+The coordinator is the ledger's only writer; workers report updates rather than editing it. Record each incoming request
+before acknowledging or dispatching it. Keep stable ids and the caller's intent when an ask changes.
 
 Each request entry carries:
 
@@ -97,8 +97,8 @@ The coordinator does not implement application changes. Delegate bounded increme
 - Treat unknown ownership as overlapping. Have a worker investigate within its reservation, then return a proposed file
   set; the coordinator grants any expansion before edits begin. Workers cannot claim extra paths themselves.
 - For a correction, persist a new request revision. Redirect a running worker only when the adapter can reliably deliver
-  the change; otherwise queue a follow-up behind its reservation. A cancelled or superseded worker retains its reservation
-  until it has acknowledged stopping or returned. Do not discard its edits.
+  the change; otherwise queue a follow-up behind its reservation. A cancelled or superseded worker retains its
+  reservation until it has acknowledged stopping or returned. Do not discard its edits.
 - Record stale-revision results as such; they cannot mark the caller's latest intent preview-ready. Schedule the missing
   delta after ownership is released.
 
@@ -128,7 +128,8 @@ Have the implementing worker use the existing HMR path and report where the call
 focused local UI interaction, screenshot, or API/CLI observation showing the requested behavior. Reuse evidence already
 gathered; do not launch a second verifier or require a separate build when HMR already exposes the change. If the worker
 cannot access the preview, report **implemented; preview unconfirmed** and ask the caller to look, without claiming
-preview-ready. Runtime recovery that needs another owner's files is blocked work for that owner, not an ownership bypass.
+preview-ready. Runtime recovery that needs another owner's files is blocked work for that owner, not an ownership
+bypass.
 
 On pause or stop, stop dispatching and coordinate running workers to a safe stop; preserve edits and reservations until
 workers confirm they are no longer writing. Persist the mode transition, unfinished requests, worker state, and deferred

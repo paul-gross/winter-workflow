@@ -6,9 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, SendMessage, TaskStop
 
 # Rapid iteration
 
-Bind `$ARGUMENTS` together with the human caller's conversation input to the **request stream**. Bind any named worktree,
-ledger path, preview URL, and external worker ownership to the corresponding process inputs; leave ambiguous targets
-unresolved.
+Bind `$ARGUMENTS` together with the human caller's conversation input to the **request stream**. Bind any named
+worktree, ledger path, preview URL, and external worker ownership to the corresponding process inputs; leave ambiguous
+targets unresolved.
 
 ## Execute
 

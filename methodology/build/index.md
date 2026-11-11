@@ -2,13 +2,13 @@
 
 Pick the process by the shape of the work and the caller's selected mode before executing one.
 
-| Process                           | Choose when…                                                                                                                                                                                                 |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [rapid-iteration](./rapid-iteration/process.md) | …the caller explicitly wants responsive interactive iteration with deferred hardening rather than a completion pipeline. |
-| [snowball](./snowball/process.md) | …the work is a small localized change to existing code — a bug fix, tweak, adjustment, or regression repair — confined to one worktree.                                                                      |
-| [glacier](./glacier/process.md)   | …the work is one feature built to a plan — mid-sized or large, net-new or multi-module, carrying a plan and/or acceptance criteria, workable as-is or as a discrete phase of a larger plan.                  |
-| [flurry](./flurry/process.md)     | …the work is a defined batch of several small, mostly independent feature asks delivered together, fanned out in parallel across multiple feature environments.                                              |
-| [iceberg](./iceberg/process.md)   | …the work is ad hoc — unplanned, unphased instructions arriving conversationally, especially several in flight across different work targets — and the default is delegation through a standing coordinator. |
+| Process                                         | Choose when…                                                                                                                                                                                                 |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [rapid-iteration](./rapid-iteration/process.md) | …the caller explicitly wants responsive interactive iteration with deferred hardening rather than a completion pipeline.                                                                                     |
+| [snowball](./snowball/process.md)               | …the work is a small localized change to existing code — a bug fix, tweak, adjustment, or regression repair — confined to one worktree.                                                                      |
+| [glacier](./glacier/process.md)                 | …the work is one feature built to a plan — mid-sized or large, net-new or multi-module, carrying a plan and/or acceptance criteria, workable as-is or as a discrete phase of a larger plan.                  |
+| [flurry](./flurry/process.md)                   | …the work is a defined batch of several small, mostly independent feature asks delivered together, fanned out in parallel across multiple feature environments.                                              |
+| [iceberg](./iceberg/process.md)                 | …the work is ad hoc — unplanned, unphased instructions arriving conversationally, especially several in flight across different work targets — and the default is delegation through a standing coordinator. |
 
 ## Close calls
 
