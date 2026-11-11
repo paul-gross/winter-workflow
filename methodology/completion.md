@@ -1,5 +1,9 @@
 # Definition of done for feature work
 
+For an explicitly active [rapid-iteration mode](./build/rapid-iteration/process.md#mode-boundary), use that process's
+preview-ready boundary and deferred-hardening ledger instead of this completion bar. It does not establish delivery
+readiness.
+
 Feature work is not done when the code is written — it is done when the change is **tested** and its **documentation
 surfaces are updated**. Self-enforce this bar on conversational, top-level work: when you implement a change directly in
 a session without a build skill, meet it before reporting the work complete, rather than leaving the user to ask, turn

@@ -9,6 +9,9 @@ workspace.
 
 ### Build
 
+- **Rapid iteration** (`rapid-iteration`) — keep an interactive local build moving with a responsive coordinator, durable
+  request queue, and fast preview feedback. Choose it explicitly when hardening should wait; see the
+  [process](methodology/build/rapid-iteration/process.md) for its mode and ownership contract.
 - **Iceberg foreman** (`iceberg`) — turn the session into a standing delegation foreman across *many* work targets at
   once (feature environments, standalone repos, or the workspace branch): the user feeds instructions conversationally,
   the foreman fans each out to a target-pinned teammate, parallelizes independent work (always across targets, and
