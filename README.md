@@ -18,6 +18,13 @@ workspace.
   within a target when files don't overlap), queues conflicts, and reports results back as a per-agent digest. Always a
   team; the foreman never edits code. Requires resident-worker coordination and returns `unsupported-capability` rather
   than substituting isolated runs when the active runtime lacks it.
+- **Ice age** (`ice-age`) — the monumental build: drive a whole *program* — many epics, hundreds of changes — from a
+  rough backlog to an integrated, verified result, asking you questions as they arise without idling. The program lead
+  audits the backlog against any reference implementation, settles the open decisions a charter-declared policy covers
+  and asks you the rest, writes shared contracts, specs, and slices, lays a foundation, then fans slices out across
+  feature environments in dependency-ordered waves — each built by an `ice-carver`, closed by `verify-finale`, reviewed,
+  and landed one at a time through a serialized integration gate. Checkpoints prove each milestone and catch drift; a
+  ledger on disk lets any later session resume; a register lists everything decided without you. Nothing is pushed.
 - **Glacier** (`glacier`) — drive a single feature — mid-sized or large, net-new or multi-module — to completion on one
   linear track of sequential subagent spawns, no team. Adopts or creates a plan put through the plan-review gate (with
   user approval), breaks it into ordered phases, and builds-and-verifies each phase one at a time (a phase's independent
