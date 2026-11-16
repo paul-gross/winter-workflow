@@ -48,15 +48,14 @@ hardening or weakening the requirement.
 2. Bind target paths, preview URL, provisioned state, and current service owners. Reuse the authorized HMR session. Do
    not re-provision, restart, or reconfigure a service another worker owns; queue a request to its owner instead. If a
    required environment is unprovisioned, arrange the documented provisioning with its owner before running it.
-3. Resolve projected agent identities and **judgment** model intent (Opus/Sol class) through the
-   [runtime adapter contract](../../runtime-ports.md). Use that intent for implementation workers by default in this
-   process, explicitly overriding ice-carver's routine workhorse default. Do not silently downgrade. If that tier is
-   unavailable, ask whether to use an available tier or pause, and record any approved substitution.
-4. Confirm the adapter supports nonblocking worker dispatch and completion notifications while the conversation remains
+3. Use **judgment** model intent (Opus/Sol class) for implementation workers by default in this process, explicitly
+   overriding ice-carver's routine workhorse default. Do not silently downgrade. If that tier is unavailable, ask
+   whether to use an available tier or pause, and record any approved substitution.
+4. Confirm the harness supports nonblocking worker dispatch and completion notifications while the conversation remains
    available. Use resident workers if supported, or isolated background assignments returning one result each. The
    latter is an intentional execution form here, not an emulation of iceberg's resident protocol. Do not poll or block
-   awaiting a worker. If no responsive dispatch mechanism exists, return `unsupported-capability` using the runtime
-   contract; offer to pause rather than silently implementing inline.
+   awaiting a worker. If no responsive dispatch mechanism exists, stop and tell the caller; offer to pause rather than
+   silently implementing inline.
 5. Open the caller-selected ledger. Without one, resolve the `workflows` artifact directory through
    [artifact storage](../../artifact-storage.md) and create a session directory using its naming convention, with
    `queue.md` inside. Announce its resolved location. Preserve an existing ledger and reconcile it before dispatch.
@@ -96,7 +95,7 @@ The coordinator does not implement application changes. Delegate bounded increme
   outputs, dependency manifests, migrations, build artifacts, service configuration, and runtime lifecycle operations.
 - Treat unknown ownership as overlapping. Have a worker investigate within its reservation, then return a proposed file
   set; the coordinator grants any expansion before edits begin. Workers cannot claim extra paths themselves.
-- For a correction, persist a new request revision. Redirect a running worker only when the adapter can reliably deliver
+- For a correction, persist a new request revision. Redirect a running worker only when the harness can reliably deliver
   the change; otherwise queue a follow-up behind its reservation. A cancelled or superseded worker retains its
   reservation until it has acknowledged stopping or returned. Do not discard its edits.
 - Record stale-revision results as such; they cannot mark the caller's latest intent preview-ready. Schedule the missing

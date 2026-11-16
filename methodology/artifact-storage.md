@@ -21,8 +21,9 @@ When a same-day run must coexist with an existing artifact, insert `<HHMM>` afte
 
 ## Consumer policy
 
-- Stop if resolution fails or returns an empty value. Never substitute a relative, root, target-worktree, or other
-  fallback path.
+- Resolve the kind's directory with the Winter CLI command that `workspace:/context/winter/cli/usage/space.md`
+  documents, and stop if it fails or returns an empty value. Never substitute a relative, root, target-worktree, or
+  other fallback path.
 - Ensure the resolved destination exists before writing. Artifact producers do not modify repository ignore rules or
   treat generated artifacts as target deliverables. The extension instead declares its kinds in `winter-ext.toml`
   `[excludes] space_kinds`, so `winter ws init` excludes them from the workspace repository; a kind added to the table

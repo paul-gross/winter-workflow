@@ -2,8 +2,7 @@
 
 Run one caller-neutral review over a change-set that may span several repositories. This process owns scope discovery,
 execution placement, model intent, and the review-input scaffold. The selected [axis methodology](./axes/index.md) owns
-what to inspect and how to judge it; [reporting](./reporting.md) owns common output semantics. Runtime operations follow
-[`../runtime-ports.md`](../runtime-ports.md).
+what to inspect and how to judge it; [reporting](./reporting.md) owns common output semantics.
 
 The unit of review is the **change-set**. One executor holds every in-scope repository at once so it can catch
 contradictions across repository boundaries. A standalone repository, or a feature environment with only one changed
@@ -29,15 +28,15 @@ invocation whose `work_target` is missing or names a nonexistent path — each w
 is reserved for a caller performing delivery review. A remote scope may identify GitHub, GitLab, Codeberg, or another
 forge target supported by an available CLI; its `feedback` member defaults according to the selected axis.
 
-Session adapters own translation from their invocation syntax into these inputs. This process never reads or parses
+The caller owns translation from its invocation syntax into these inputs. This process never reads or parses
 slash-command arguments.
 
 ## Axes
 
 Axis documents are the canonical methodology; [`./axes/index.md`](./axes/index.md) owns the axis-to-methodology mapping.
-Runtime agent identifiers are ports for spawned execution — fresh or resident; they are not methodology owners.
+The agent named for an axis is only where a spawned review — fresh or resident — runs; it is not a methodology owner.
 
-| Axis            | Spawned runtime port     |
+| Axis            | Spawned agent            |
 | --------------- | ------------------------ |
 | `code`          | `cold-reviewer`          |
 | `correctness`   | `cold-reviewer`          |
@@ -48,8 +47,8 @@ Runtime agent identifiers are ports for spawned execution — fresh or resident;
 | `documentation` | `documentation-reviewer` |
 | `plan`          | `plan-reviewer`          |
 
-Every execution mode consumes the same selected methodology file. Do not copy an axis checklist into a prompt or
-adapter.
+Every execution mode consumes the same selected methodology file. Do not copy an axis checklist into a prompt or an
+agent definition.
 
 ## Scope semantics
 
@@ -100,9 +99,8 @@ different routes — inline inherits the caller's authoring, resident inherits t
 ### Fresh
 
 Spawn the selected canonical role in a one-shot isolated context with **judgment model intent** (Opus/Sol class), supply
-the scaffold below, and await its result. The session adapter resolves the role's projected identity and model. Fresh
-execution has zero prior conversation context and is the default because it avoids the author's framing and
-design-history bias. Delivery review always uses fresh execution.
+the scaffold below, and await its result. Fresh execution has zero prior conversation context and is the default because
+it avoids the author's framing and design-history bias. Delivery review always uses fresh execution.
 
 Override to a cheaper model only for a deliberately trivial scope and state the downgrade to the caller.
 
@@ -115,12 +113,11 @@ severity rule, or report format.
 
 ### Resident
 
-Re-address one worker of the selected canonical role across successive rounds through
-[`../runtime-ports.md`](../runtime-ports.md#create-and-coordinate-resident-workers), so it carries its earlier rounds
-into each new one. Resident execution is never a default and never inferred: only a calling process that explicitly
-declares it may select it, the caller owns the worker's lifecycle and tears it down when its loop ends, and delivery
-review never uses it. Resolve the port's availability from `workspace:/context/project/harness-runtime-ports.md` before
-selecting it; where it is unavailable, fall back to fresh and say so.
+Re-address one worker of the selected canonical role across successive rounds, so it carries its earlier rounds into
+each new one. Resident execution is never a default and never inferred: only a calling process that explicitly declares
+it may select it, the caller owns the worker's lifecycle and tears it down when its loop ends, and delivery review never
+uses it. Check `workspace:/context/project/harness-runtime-ports.md` for whether the harness supports resident workers
+before selecting it; where it does not, fall back to fresh and say so.
 
 A resident reviewer trades independence for continuity, and the caller owns that trade. It does not re-derive the axis's
 criteria each round, so it converges faster and reports against what it already said — and by the same mechanism it is
@@ -139,8 +136,8 @@ only what changed — the re-resolved review material and the caller's statement
 worker to re-read the axis file and re-run every gate over the current material rather than diffing against its memory
 of the last round.
 
-1. **One-shot restrictions.** For fresh mode, require the isolated-role default declared by
-   [`../runtime-ports.md`](../runtime-ports.md#spawn-an-isolated-role), returning one categorized report.
+1. **One-shot instruction.** For fresh mode, tell the reviewer to return one categorized report and stop, with no
+   follow-on coordination.
 
 2. **Semantic inputs.** State the normalized `axis`, `scope`, and `execution_mode`. For `unpushed`, also state
    `pinned_scope`, every target's configured upstream or labeled explicit review base, and all delivery blockers. Name

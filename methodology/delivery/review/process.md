@@ -12,9 +12,8 @@ table in the [review process](../../review/process.md) — and this process does
 fresh execution — a reviewer context free of the author's framing and design-history bias — is owned by the review
 process's execution-mode section.
 
-Runtime coordination uses the semantic operations owned by [runtime ports](../../runtime-ports.md); when fresh isolated
-roles or the required concurrency are unavailable, the process returns that runtime contract's `unsupported-capability`
-result.
+When fresh isolated roles or the required concurrency are unavailable, stop and tell the caller which one the harness
+lacks rather than degrading the review.
 
 ## Inputs
 

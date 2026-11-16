@@ -7,12 +7,6 @@ retrospective. It meets the shared definition of done for feature work owned by
 half is carried by closing every phase with the verify finale, and the docs-updated half by the completion review, which
 spans the code, agent-facing, and public-docs axes over the uncommitted feature.
 
-Glacier executes its coordination through the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md);
-the executing session adapter resolves each operation for its harness. Every isolated-role invocation carries, before
-its role-specific task, the one-shot default declared at
-[`../../runtime-ports.md#spawn-an-isolated-role`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this glacier
-operation — the steps below call this "the isolated-role restrictions".
-
 ## Inputs
 
 - **Feature or plan** — a feature description, named plan, refined work item, or inline plan; may initially be absent
@@ -63,13 +57,12 @@ process (which authors and revises the artifact) with the shared review process 
 what the gate checks; glacier owns when the gate runs and the revision loop around it.
 
 **Resident pair.** Glacier runs this loop on two resident workers rather than a fresh spawn per round: one
-`winter-architect` as the plan builder and one `plan-reviewer` as the gate, both created through
-[`../../runtime-ports.md`](../../runtime-ports.md#create-and-coordinate-resident-workers) and both living for the whole
-loop. Each keeps its codebase reading, its criteria discovery, and its prior rounds, so a round costs a delta instead of
-a re-derivation. Resolve the port against `workspace:/context/project/harness-runtime-ports.md` before starting; where
-it is unavailable, fall back to a fresh spawn per round and tell the human caller the loop is running unaccelerated.
-Glacier owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into building, where
-its plan-shaped context would bias an ice-carver.
+`winter-architect` as the plan builder and one `plan-reviewer` as the gate, both living for the whole loop. Each keeps
+its codebase reading, its criteria discovery, and its prior rounds, so a round costs a delta instead of a re-derivation.
+Check `workspace:/context/project/harness-runtime-ports.md` for whether the harness supports resident workers before
+starting; where it does not, fall back to a fresh spawn per round and tell the human caller the loop is running
+unaccelerated. Glacier owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into
+building, where its plan-shaped context would bias an ice-carver.
 
 **Author.** Execute [`../../planning/process.md`](../../planning/process.md) with `feature_or_plan` set to the supplied
 feature or plan, `plan_root` set to `<documentation-root>/00-plan.md` (or the planning framework's own plan location
@@ -103,9 +96,9 @@ findings treated as `revise-material`.
 
 **Confirm.** A resident gate reports against what it already said, so its `pass` is a statement that its own findings
 were resolved, not an independent reading of the plan. Before approval, spawn one **fresh** `plan-reviewer` in a
-one-shot isolated context — the isolated-role restrictions, the same plan scope, the same `work_target`, `axis: plan`,
-`execution_mode: fresh` — and take its verdict as the loop's real one. This runs once per plan loop, not once per round;
-it is what the resident loop trades rounds for, and it is the only reading in the loop that has not been steered.
+one-shot isolated context — the instruction to report once and stop, the same plan scope, the same `work_target`, `axis:
+plan`, `execution_mode: fresh` — and take its verdict as the loop's real one. This runs once per plan loop, not once per
+round; it is what the resident loop trades rounds for, and it is the only reading in the loop that has not been steered.
 
 - Fresh `pass` — go to Approve.
 - Fresh `revise-minor` — re-execute the planning process with those findings, then go to Approve.
@@ -146,11 +139,12 @@ of three build-and-verify attempts per phase.
 
 ### Build
 
-Spawn the canonical `ice-carver` role in a one-shot isolated context with workhorse model intent and await its result;
-treat it as a full-stack engineer owning the phase's implementation across everything it touches, while runtime
-verification belongs to the verify finale rather than the ice-carver. Each prompt is self-contained and carries:
+Spawn the canonical `ice-carver` role in a one-shot isolated context with workhorse model intent (Sonnet/Terra class)
+and await its result; treat it as a full-stack engineer owning the phase's implementation across everything it touches,
+while runtime verification belongs to the verify finale rather than the ice-carver. Each prompt is self-contained and
+carries:
 
-- the isolated-role restrictions;
+- the instruction to report once and stop;
 - the absolute work-target path(s);
 - the phase goal plus a one-line feature framing;
 - the path to `00-plan.md` for the full approach;
@@ -172,7 +166,7 @@ records its matrix row) when none covers the change rather than running an ad-ho
 until the method passes. Because the finale both verifies and fixes, its findings are not separately routed to an
 ice-carver. Its prompt carries:
 
-- the isolated-role restrictions;
+- the instruction to report once and stop;
 - the absolute work-target path(s);
 - for runtime verification, the base URL and port from `workspace:/context/project/project-setup.md` or the
   environment's computed variables via `winter env <env>`, asking the human caller when neither yields them;
@@ -182,8 +176,8 @@ ice-carver. Its prompt carries:
 
 The one seam the finale cannot drive: when its runtime capabilities cannot perform a declared browser-driven matrix
 method, spawn the canonical `frontend-verifier` role in a one-shot isolated context for that method — carrying the
-isolated-role restrictions, the work-target path(s), the base URL/port, and the declared browser exercise — while the
-finale closes everything else.
+instruction to report once and stop, the work-target path(s), the base URL/port, and the declared browser exercise —
+while the finale closes everything else.
 
 A phase passes only when its verification passes in full — the verify finale and any frontend-verifier split off for a
 browser-driven method. A green build or type-check never counts as a test; phases close against runtime behavior.

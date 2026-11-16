@@ -3,19 +3,13 @@
 Snowball makes a small, focused change to existing code — fix a bug, tweak a behavior, adjust an existing function,
 restore a regression — as one packed throw at one spot, with no resident coordination and no phased plan. It composes
 arctic-explorer, then ice-carver, then a verifier into a tight investigate-change-verify loop: exactly three canonical
-roles, all used through the isolated-role port. Snowball creates no resident workers and no shared assignment queue,
-keeping it composable as a primitive that can run directly for a human caller or as another process's contained sub-step
-without nesting coordination contexts; every role invocation is a self-contained one-shot.
+roles, each spawned one-shot. Snowball creates no resident workers and no shared assignment queue, keeping it composable
+as a primitive that can run directly for a human caller or as another process's contained sub-step without nesting
+coordination contexts; every role invocation is a self-contained one-shot.
 
 Snowball meets the shared definition of done for feature work owned by [`../../completion.md`](../../completion.md) —
 the tested-and-docs-updated bar — through its runtime-verification step and the delivery-surfaces accounting in its
 final report.
-
-Snowball executes its coordination through the semantic operations in
-[`../../runtime-ports.md`](../../runtime-ports.md). Every isolated-role invocation carries, before its role-specific
-task, the one-shot default declared at
-[`../../runtime-ports.md#spawn-an-isolated-role`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this
-snowball operation — the steps below call this "the isolated-role restrictions".
 
 ## Inputs
 
@@ -46,7 +40,7 @@ must not leave it.
 ## 3. Investigate
 
 Spawn the canonical `arctic-explorer` role in a one-shot isolated context and await its result, supplying the
-isolated-role restrictions, the captured change request, and the absolute worktree path with the instruction to
+instruction to report once and stop, the captured change request, and the absolute worktree path with the instruction to
 investigate there. Its task: read the relevant code, logs, and tests; locate where the change belongs; trace bug-shaped
 requests to a root cause; identify the existing code to adjust for tweak-shaped requests; and keep the investigation
 tight, producing no broader documentation as a side effect, because snowball is for small localized work.
@@ -67,16 +61,16 @@ The arctic-explorer returns:
 ## 4. Pick the verifier
 
 Map the verifier kind: `backend` to the canonical `backend-verifier` role, `frontend` to the canonical
-`frontend-verifier` role; an ambiguous kind means asking the human caller to choose through the human-caller port.
+`frontend-verifier` role; an ambiguous kind means asking the human caller to choose.
 
 ## 5. Dev-verify loop
 
 The loop runs at most three iterations, each an ice-carver run followed by a verifier run.
 
 **Implement.** Each iteration spawns the canonical `ice-carver` role in a one-shot isolated context with workhorse model
-intent and awaits its result, supplying:
+intent (Sonnet/Terra class) and awaits its result, supplying:
 
-- the isolated-role restrictions;
+- the instruction to report once and stop;
 - the absolute worktree path;
 - the arctic-explorer's location and change sketch verbatim;
 - for iterations after the first, the previous verifier's failure report (status, expected versus observed, error
@@ -88,7 +82,7 @@ intent and awaits its result, supplying:
 **Verify.** Each iteration then spawns the selected verifier role in a one-shot isolated context and awaits its result,
 supplying:
 
-- the isolated-role restrictions;
+- the instruction to report once and stop;
 - the absolute worktree path;
 - for a backend verifier, the base URL and port pulled from `workspace:/context/project/project-setup.md` or the
   environment's computed variables via `winter env <env>`, asking the human caller when neither yields them;

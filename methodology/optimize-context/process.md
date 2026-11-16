@@ -5,8 +5,6 @@ loaded before any work begins, the agent definitions loaded when a subagent is s
 skill and subagent is actually invoked. It measures, classifies, and recommends; the only file it ever writes is a
 `settings.json`'s `skillOverrides` key, and only the subset the operator approves.
 
-Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
-
 ## Where this fits
 
 | Method                                       | Verb            | Scope                                   | Question                                                                    |
@@ -123,7 +121,7 @@ an entry entirely). Also confirm which settings file receives the merge: default
 `<target_path>/.claude/settings.json` when `<target_path>/.claude/` exists (a project-scoped install), otherwise
 `~/.claude/settings.json` (the user-level default) — but always state the resolved path and get it confirmed rather than
 writing silently, since this key can affect every session opened against that scope. If no human-caller channel is
-available, return `unsupported-capability` rather than writing anything.
+available, stop without writing anything and report that no one is available to approve the change.
 
 Stop here without writing anything if the human caller approves no entries, or defers the decision.
 

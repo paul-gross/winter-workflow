@@ -4,7 +4,6 @@
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Philosophy](./philosophy.md)                     | You need the hybrid harness/software-engineer identity and doc-first principles behind this extension.                                                                  |
 | [Completion](./completion.md)                     | You need the shared tested-and-docs-updated definition of done.                                                                                                         |
-| [Runtime ports](./runtime-ports.md)               | You need the semantic coordination contract that reusable processes use across execution harnesses.                                                                     |
 | [Orchestration](./orchestration.md)               | You are a worker inside an external agent-orchestration system (a blizzard fleet node-step) and need the methodology your node maps to.                                 |
 | [Planning](./planning/process.md)                 | You need to author or revise an implementation plan — or the plan-shape conventions that govern one.                                                                    |
 | [Build](./build/index.md)                         | You need to choose the build process that fits the work.                                                                                                                |

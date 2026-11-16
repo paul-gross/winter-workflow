@@ -4,8 +4,6 @@ A codebase-scoped maturity scoring procedure: gather evidence, apply the frozen 
 JSON sidecar. Any agent may execute it, as a standalone operation or as a substep — the caller supplies the target path;
 this document owns the reusable procedure.
 
-Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
-
 ## Where this fits
 
 | Method                                     | Question                                                                           |
@@ -56,8 +54,8 @@ the role to:
   executor's working directory unless that is the same path;
 - stay read-only: no writing or editing documentation, no requesting a follow-up context review, no applying any default
   documentation-integration behavior it otherwise carries;
-- run without resident peers or a shared assignment queue, return one evidence inventory through the isolated-result
-  channel, perform no follow-on coordination, and stop when the inventory is complete;
+- run without resident peers or a shared assignment queue, return one evidence inventory once, perform no follow-on
+  coordination, and stop when the inventory is complete;
 - return a short bullet list of evidence per dimension with file paths or git-log outputs, calling out explicitly any
   dimension with no evidence.
 

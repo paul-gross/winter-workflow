@@ -2,7 +2,7 @@
 """Methodology-to-adapter dependency-boundary lint for winter-workflow.
 
 Authored Markdown under this module's top-level ``methodology/`` directory may
-name runtime ports such as ``cold-reviewer``, but it must not depend on skill
+name canonical roles such as ``cold-reviewer``, but it must not depend on skill
 invocation syntax or refer back to the concrete adapters in ``skills/`` and
 ``agents/``. The adapters may depend on methodology; the reverse dependency
 would make the methodology runtime-specific.
@@ -255,7 +255,7 @@ def _file_findings(file: Path, module_root: Path, rel: str) -> list[Finding]:
             violations.append(
                 (
                     f"methodology must not depend on top-level {label} adapters in `{adapter}/`",
-                    f"Refer to methodology or name the runtime {label} port without linking to its adapter.",
+                    f"Refer to methodology or name the canonical {label} without linking to its definition.",
                 )
             )
         if violations:

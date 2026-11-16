@@ -23,11 +23,6 @@ report receives its path, not its text.
 Ice age meets the shared definition of done owned by [`../../completion.md`](../../completion.md) per slice — the tested
 half through the verify finale — and per segment, where the checkpoint carries the docs-updated half.
 
-Ice age executes its coordination through the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md).
-Every isolated-role invocation carries, before its role-specific task, the one-shot default declared at
-[`../../runtime-ports.md#spawn-an-isolated-role`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this ice-age
-operation — the steps below call this "the isolated-role restrictions".
-
 ## Inputs
 
 - **Program** — the goal and its backlog: a planning-repository project, a set of epics, or a bare description.
@@ -103,9 +98,9 @@ approves it; write the `Approved: <date>` line only after they answer. It states
 - **The gates** — three commands, each naming what it runs: a **bootstrap gate** (build plus whatever tests exist) used
   until the foundation's gate slice integrates; a **slice gate** of bounded runtime, run on every integration; and a
   **full gate**, run at checkpoints.
-- **The model policy** — the model intent for each role. The default is workhorse intent for `ice-carver` and judgment
-  intent for every other role; a policy binding one intent to every role, such as **frontier** (Fable/Astra class) for
-  the whole run, overrides each role's default at every spawn.
+- **The model policy** — the model intent for each role. The default is workhorse intent (Sonnet/Terra class) for
+  `ice-carver` and judgment intent for every other role; a policy binding one intent to every role, such as **frontier**
+  (Fable/Astra class) for the whole run, overrides each role's default at every spawn.
 - **Budgets** — the attempt cap per slice (default three), the revise cap per refinement gate (default two), the context
   budgets for a role and for the lead, and the halt conditions of [Halting](#halting).
 
@@ -206,10 +201,10 @@ nothing is pushed.
 
 ### Build
 
-Spawn the canonical `ice-carver` role in a one-shot isolated context. Its prompt carries the isolated-role restrictions;
-the environment pin, with the rule to work only inside that environment's worktrees; the slice file and the spec
-sections and contracts it cites, by path; for a later attempt, the path of the previous failing report; the commit rule
-above; and the reporting requirement — files changed, the commit, and which acceptance checks it believes it met.
+Spawn the canonical `ice-carver` role in a one-shot isolated context. Its prompt carries the instruction to report once
+and stop; the environment pin, with the rule to work only inside that environment's worktrees; the slice file and the
+spec sections and contracts it cites, by path; for a later attempt, the path of the previous failing report; the commit
+rule above; and the reporting requirement — files changed, the commit, and which acceptance checks it believes it met.
 
 A builder that finds the slice wrong — a contract that cannot be implemented as written, a missing dependency — reports
 that instead of improvising. Have the segment's author correct the backlog, commit it, and retry the slice against the
@@ -217,10 +212,10 @@ corrected text.
 
 ### Verify
 
-Spawn the canonical `verify-finale` role in a one-shot isolated context, carrying the isolated-role restrictions, the
-environment pin, the slice's acceptance checks, and the builder's report path. It verifies each acceptance check through
-a method the application's verifiability matrix declares — the differential method wherever the slice ports reference
-behavior — building and recording a missing method rather than improvising one.
+Spawn the canonical `verify-finale` role in a one-shot isolated context, carrying the instruction to report once and
+stop, the environment pin, the slice's acceptance checks, and the builder's report path. It verifies each acceptance
+check through a method the application's verifiability matrix declares — the differential method wherever the slice
+ports reference behavior — building and recording a missing method rather than improvising one.
 
 A slice is `verified` only when every acceptance check ran and passed. A check that could not run is a failed attempt,
 never a gap.

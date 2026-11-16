@@ -11,10 +11,9 @@ only what it needs to resolve target paths and sanity-check assignments, and rou
 Iceberg is light rather than ceremonial: no mandated activity logs and no retrospective; assignments are tracked in the
 executor's own context and reported as digests.
 
-Iceberg requires the resident-worker port declared in [`../../runtime-ports.md`](../../runtime-ports.md); when the
-active harness cannot create, communicate with, re-task, stop, and tear down resident workers while remaining receptive
-to the human caller, return `unsupported-capability` before dispatching rather than emulating iceberg with isolated
-runs.
+Iceberg requires resident workers: when the active harness cannot create, communicate with, re-task, stop, and tear down
+resident workers while remaining receptive to the human caller, stop before dispatching and tell the human caller,
+rather than emulating iceberg with isolated runs.
 
 ## Inputs
 
@@ -40,11 +39,10 @@ repository, or the workspace branch itself. Target paths resolve as: feature env
 `<workspace>/...`.
 
 The human caller may name the target, imply it from an earlier instruction in the same stream, or leave it ambiguous;
-when it is ambiguous and matters, ask through the human-caller port rather than guessing. A feature environment's index
-is resolved with `winter ws index <name> --json` — index allocation is owned by
-`workspace:/context/winter/cli/usage/ws/init.md` — and an environment's existence is confirmed with
-`winter ws list --json` before pinning a teammate to it. Before dispatching, resolve each instruction to a target and an
-absolute path.
+when it is ambiguous and matters, ask the human caller rather than guessing. A feature environment's index is resolved
+with `winter ws index <name> --json` — index allocation is owned by `workspace:/context/winter/cli/usage/ws/init.md` —
+and an environment's existence is confirmed with `winter ws list --json` before pinning a teammate to it. Before
+dispatching, resolve each instruction to a target and an absolute path.
 
 ## Workers
 
@@ -52,18 +50,17 @@ Every resident worker is pinned to exactly one work target. A teammate works onl
 changes directory out of it; for feature-environment work specifically, the repo's source checkout under `projects/` is
 off-limits and never a fallback, while standalone repos and the workspace branch are worked on directly.
 
-- Reuse the extension's canonical role-pure agents rather than redefining roles; the session adapter resolves each
-  canonical role to its projected harness identity. Match the teammate's role to the work: ice-carver for code,
-  verifiers for confirmation, arctic-explorer for investigation, cold-reviewer for review.
+- Reuse the extension's canonical role-pure agents rather than redefining roles. Match the teammate's role to the work:
+  ice-carver for code, verifiers for confirmation, arctic-explorer for investigation, cold-reviewer for review.
 - Workers are named `<target>-<role>` with the target first (such as `beta-dev`, `alpha-fe`, `winter-cli-dev`) so the
   working tree is the first thing read at a glance, using a short role tag such as `dev`, `fe`, `be`, `review`,
   `explore`, or `arch`. The name is only a display label; the worker itself is selected by canonical role (ice-carver,
-  frontend-verifier, and so on), which the session adapter resolves to the active harness's projected identity.
+  frontend-verifier, and so on).
 - One target can host multiple teammates when its work is independent, using numbered or area-distinct names such as
   `beta-dev-2` or `beta-dev-api` and `beta-dev-ui`.
 - Workers are always started from the workspace root so they inherit workspace instructions and the installed agent and
   operation definitions. Start each worker as a resident concurrent operation so dispatch never blocks the conversation,
-  and supply the role's declared model intent explicitly so the adapter can resolve the appropriate harness model tier.
+  and supply the role's declared model intent explicitly.
 - A teammate can run the full local dev-verify cycle inside its own target, including bringing a feature environment's
   services up with `winter service up <env>` — the run phase per `workspace:/context/winter/environment-lifecycle.md`.
 
@@ -116,20 +113,18 @@ accurate because it drives the queue-versus-parallel decision.
 
 ## Preflight and panes
 
-Preflight first performs the required resident-capability check from the runtime-port contract, then asks the session
-adapter whether it provides live resident-worker panes.
+Preflight first confirms the harness supports resident workers, then checks whether it provides live resident-worker
+panes.
 
-- When the session adapter supplies tmux-backed resident-worker panes and the session runs inside tmux, each worker is
-  watchable live in its own pane; the target-first worker naming exists so a glance at the panes shows who is working
-  where.
+- When the harness supplies tmux-backed resident-worker panes and the session runs inside tmux, each worker is watchable
+  live in its own pane; the target-first worker naming exists so a glance at the panes shows who is working where.
 - When the optional pane view is tmux-backed, check whether tmux is active by testing the `TMUX` environment variable
   (for example `[ -n "$TMUX" ]`). When the pane view is supported but tmux is not active, tell the human caller once up
   front that rerunning inside tmux provides a live pane per worker but resident coordination can proceed without that
   optional view; let them choose to restart or continue, and do not block on it.
 - On a harness without tmux-backed panes, use that harness's declared resident-worker observability and do not promise
-  panes it does not provide. When the adapter provides no live-pane view, state that once without implying tmux will
-  create one; this is not an unsupported-capability result, because panes are observational rather than required
-  coordination.
+  panes it does not provide. When the harness provides no live-pane view, state that once without implying tmux will
+  create one; this is no reason to stop, because panes are observational rather than required coordination.
 
 The team's worker panes are distinct from the winter-service-tmux session, which orchestrates a feature environment's
 application services (`./up`, `./down`, `./status`, session `<prefix>-<env>`): that session is the services of one
@@ -142,8 +137,7 @@ Execution starts by creating the resident coordination context, parsing the open
 work targets, and dispatching. In order:
 
 1. Run the preflight and note whether live panes are available.
-2. Create a resident coordination context through the runtime port with a short display name such as `iceberg` or
-   `coordination`.
+2. Create a resident coordination context with a short display name such as `iceberg` or `coordination`.
 3. Parse the opening instruction stream, resolving each instruction to a work target.
 4. Dispatch per the dispatch policy, starting resident workers concurrently so the conversation stays live.
 5. Loop — receiving worker reports and ongoing instructions, updating the ledger, dispatching or re-tasking, and
@@ -163,5 +157,5 @@ the human caller wants live play-by-play.
 
 Teardown happens when the human caller signals they are done, or all work is complete with no more coming: send each
 active worker a completion notice so it finishes its current assignment and stops; stop any worker that must halt
-mid-assignment through the resident coordination port; give a final per-agent digest of everything that landed; and
-delete the resident coordination context. Teardown stays light — no retrospective and no activity-log roundup.
+mid-assignment; give a final per-agent digest of everything that landed; and delete the resident coordination context.
+Teardown stays light — no retrospective and no activity-log roundup.

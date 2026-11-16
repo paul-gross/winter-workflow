@@ -14,11 +14,6 @@ Flurry meets the shared definition of done for feature work owned by [`../../com
 tested-and-docs-updated bar — through per-task runtime verification and the aggregated per-environment pre-push review
 phase.
 
-Flurry executes its coordination through the semantic operations in [`../../runtime-ports.md`](../../runtime-ports.md).
-Every isolated-role invocation carries, before its role-specific task, the one-shot default declared at
-[`../../runtime-ports.md#spawn-an-isolated-role`](../../runtime-ports.md#spawn-an-isolated-role), scoped to this flurry
-operation — the steps below call this "the isolated-role restrictions".
-
 ## Inputs
 
 - **Feature batch** — a defined set of small feature asks, including each ask's target repository and stated
@@ -59,7 +54,7 @@ pool, and then running the flurry.
 
 Enumerate the distinct features, capturing for each a one-line description, the repo(s) it touches, and any dependency
 on another ask. When the batch is ambiguous — where one ask ends and the next begins, or which repo an ask targets — ask
-the human caller once through the human-caller port rather than guessing the decomposition.
+the human caller once rather than guessing the decomposition.
 
 ## 2. Build and confirm the schedule
 
@@ -116,7 +111,7 @@ consumed as it becomes available. As each track's environment frees, dispatch an
 
 Each task ice-carver's invocation carries, in order:
 
-1. **The isolated-role restrictions.**
+1. **The instruction to report once and stop.**
 2. **The environment pin** — the environment name and the absolute worktree path(s) for the repo(s) the task touches
    (`<workspace>/<env>/<repo>`), with the hard rule to work only inside that environment's worktrees, never change
    directory out, and never fall back to a source checkout under `projects/`.
@@ -173,8 +168,8 @@ on one, and carry them into the final digest instead.
 
 ## 8. Fold
 
-For each environment with findings, spawn one isolated ice-carver with workhorse model intent, carrying the
-isolated-role restrictions, the environment pin, and the findings grouped by the commit SHA they belong to, running
+For each environment with findings, spawn one isolated ice-carver with workhorse model intent, carrying the instruction
+to report once and stop, the environment pin, and the findings grouped by the commit SHA they belong to, running
 independent environment invocations concurrently. An environment with no findings needs no fold, and a fully clean batch
 skips the fold entirely.
 

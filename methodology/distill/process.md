@@ -10,8 +10,6 @@ single-file distills, each rewritten in place from its own facts. Cross-file res
 a directory, moving facts between owners) is not performed here; where the work surfaces that need, it is returned as an
 escalation.
 
-Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
-
 ## Where this fits
 
 | Method                                                       | Verb    | Scope                                   | Question                                              |
@@ -38,8 +36,7 @@ seen, and the scramble removes the ordering hints extraction might otherwise smu
 the output free of retrospective framing: a spawn with no session history has no transition to narrate. Do not
 substitute an inline rewrite, a fork of the current context, or a single agent playing both passes.
 
-Every `distiller` invocation carries, before its pass-specific task, the one-shot default declared by
-[`../runtime-ports.md`](../runtime-ports.md#spawn-an-isolated-role), scoped to this distill operation.
+Every `distiller` invocation is one-shot: it reports once and stops, with no follow-on coordination.
 
 ## Inputs
 
@@ -168,7 +165,7 @@ prevent, and so is meeting the number by cutting protected material.
 
 Spawn the canonical `distiller` role in a one-shot isolated context and await its result. The prompt must include:
 
-1. **The isolated-role restrictions** from [Roles](#roles).
+1. **The one-shot instruction** from [Roles](#roles).
 2. **The target set** — absolute paths, with the exclusions already applied — and the scratch directory.
 3. **What to do** — execute the [Extraction pass](#extraction-pass) below against exactly those files.
 4. **What to return** — the extraction report that pass declares. The distiller cannot reach the human caller: where the
@@ -188,8 +185,8 @@ original for the audit trail. Only the scrambled copies go to the composition pa
 
 Spawn the `distiller` role again — fresh, one spawn for the whole batch — and await its result. The prompt must include:
 
-1. **The isolated-role restrictions** from [Roles](#roles), plus the pass's own prohibition: the original files are
-   off-limits — do not read, search for, or reconstruct them.
+1. **The one-shot instruction** from [Roles](#roles), plus the pass's own prohibition: the original files are off-limits
+   — do not read, search for, or reconstruct them.
 2. **Per target**: the scrambled fact file, the destination path the replacement will live at, and the
    consumption-surface classification from extraction.
 3. **The convention-owner paths** extraction discovered, and the scratch directory to write replacements into.

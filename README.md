@@ -16,8 +16,8 @@ workspace.
   once (feature environments, standalone repos, or the workspace branch): the user feeds instructions conversationally,
   the foreman fans each out to a target-pinned teammate, parallelizes independent work (always across targets, and
   within a target when files don't overlap), queues conflicts, and reports results back as a per-agent digest. Always a
-  team; the foreman never edits code. Requires resident-worker coordination and returns `unsupported-capability` rather
-  than substituting isolated runs when the active runtime lacks it.
+  team; the foreman never edits code. Requires resident-worker coordination and stops rather than substituting isolated
+  runs when the active harness lacks it.
 - **Ice age** (`ice-age`) — the monumental build: drive a whole *program* — many epics, hundreds of changes — from a
   rough backlog to an integrated, verified result, one segment at a time, asking you questions as they arise without
   idling. For each segment a handful of roles survey the reference implementation, correct the backlog, and cut slices
@@ -42,22 +42,21 @@ workspace.
 
 ### Review
 
-The five single-axis review skills below and `pre-push` share one **review engine** —
+The four single-axis review skills below and `pre-push` share one **review engine** —
 [`methodology/review/process.md`](methodology/review/process.md) — the single source for the scope vocabulary, how the
 change-set is discovered across a feature env, the reviewer prompt scaffold, judgment-class model selection, and
 inline-vs-subagent execution. The process selects judgment model intent and only deliberately downgrades a trivial
-scope, disclosing that downgrade to the caller; this is not a public model-input override unless an adapter actually
+scope, disclosing that downgrade to the caller; this is not a public model-input override unless a skill actually
 exposes one. Beyond the default branch-vs-base and `uncommitted` diffs it adds explicit `<ref|range>` and `<paths>`
 scopes, and the skills are thin pointers at it — so the harness can run an ad-hoc micro-review by following the engine
 directly, no skill load required.
 
-Cold, context, harness, and documentation review also accept a remote PR or MR locator supported by an available,
-authenticated forge CLI; a caller using the engine directly may hand the `plan` axis a remote scope as well. The skills
-bind axis defaults: remote code findings post inline, while context, harness, and documentation findings return as
-reports. A caller using the review engine's normalized semantic inputs directly may explicitly override `scope.feedback`
-to `report` or `inline`; the skills do not expose that override until their adapter syntax adds it. Retrieval and
-posting failures are surfaced to the caller and never silently replaced with a local-branch review or reported as
-successful feedback.
+Cold, context, and documentation review also accept a remote PR or MR locator supported by an available, authenticated
+forge CLI; a caller using the engine directly may hand the `plan` axis a remote scope as well. The skills bind axis
+defaults: remote code findings post inline, while context and documentation findings return as reports. A caller using
+the review engine's normalized semantic inputs directly may explicitly override `scope.feedback` to `report` or
+`inline`; the skills do not expose that override until their argument syntax adds it. Retrieval and posting failures are
+surfaced to the caller and never silently replaced with a local-branch review or reported as successful feedback.
 
 Direct reviewer-agent calls must use the engine's normalized axis, scope, and execution mode plus its shared prompt
 scaffold, resolved targets, and review material. An arbitrary standalone prompt does not satisfy the review contract;

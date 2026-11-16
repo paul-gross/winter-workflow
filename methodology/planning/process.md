@@ -4,9 +4,7 @@ Author or revise an implementation plan artifact. This process is caller-neutral
 build process executes it before its own plan-review gate; an orchestrated plan node executes it under its graph's
 charter, including on a re-entry after a failed gate; any session may run it standalone to produce a plan ready for
 review. Judging the plan belongs to the [`plan` review axis](../review/axes/plan.md) through the shared
-[review process](../review/process.md); the review loop, its convergence rules, and approval belong to the caller. The
-caller resolves runtime concerns — roles, models, human interaction — through
-[`../runtime-ports.md`](../runtime-ports.md).
+[review process](../review/process.md); the review loop, its convergence rules, and approval belong to the caller.
 
 A plan targets the two artifacts the application's harness declares — its **verifiability matrix** (how the
 application's changes are asserted correct) and its **architecture guidance** (how its code must be shaped) — and its
@@ -33,16 +31,14 @@ to `plan_root` and treat that file as the candidate.
 **Otherwise** author one. Pick the plan's **altitude** first, from what is being built, per
 [`./plan-shape.md`](./plan-shape.md) §Altitude — it selects which plan standards apply, from a one-liner to a phased
 epic decomposition. With a planning framework, run its **plan builder** in an isolated context. With no framework, spawn
-the canonical `winter-architect` role in a one-shot isolated context, carrying the
-[isolated-role default](../runtime-ports.md#spawn-an-isolated-role), the feature, and `work_target`. A caller that
-explicitly declares a **resident builder** instead starts that worker here, through
-[`../runtime-ports.md`](../runtime-ports.md#create-and-coordinate-resident-workers), and owns its lifecycle; the
-authoring charter is otherwise identical. Ask it to read the relevant code and return an implementation approach — not
-code — conforming to [`./plan-shape.md`](./plan-shape.md) at the selected altitude. The approach names each change's
-verification method and architectural fit as far as the application's harness declares them, and surfaces a missing
-matrix or architecture guidance as a gap rather than inventing around it. Write the returned plan to `plan_root`. If the
-builder needs the codebase explored, spawn an isolated `arctic-explorer` with the research question and hand it the
-distilled finding rather than reading the code into the coordinating context.
+the canonical `winter-architect` role in a one-shot isolated context, carrying the instruction to report once and stop,
+the feature, and `work_target`. A caller that explicitly declares a **resident builder** instead starts that worker here
+and owns its lifecycle; the authoring charter is otherwise identical. Ask it to read the relevant code and return an
+implementation approach — not code — conforming to [`./plan-shape.md`](./plan-shape.md) at the selected altitude. The
+approach names each change's verification method and architectural fit as far as the application's harness declares
+them, and surfaces a missing matrix or architecture guidance as a gap rather than inventing around it. Write the
+returned plan to `plan_root`. If the builder needs the codebase explored, spawn an isolated `arctic-explorer` with the
+research question and hand it the distilled finding rather than reading the code into the coordinating context.
 
 ## Revise
 

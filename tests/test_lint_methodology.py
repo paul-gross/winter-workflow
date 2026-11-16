@@ -243,8 +243,8 @@ class MethodologyLintTests(unittest.TestCase):
         self.assertIn("skill adapters", findings[0]["message"])
         self.assertIn("agent adapters", findings[0]["message"])
         self.assertIn("semantic inputs", findings[0]["remediation"])
-        self.assertIn("runtime skill port", findings[0]["remediation"])
-        self.assertIn("runtime agent port", findings[0]["remediation"])
+        self.assertIn("canonical skill", findings[0]["remediation"])
+        self.assertIn("canonical agent", findings[0]["remediation"])
 
     def test_real_methodology_tree_passes_clean(self) -> None:
         result = self.invoke_lint(
