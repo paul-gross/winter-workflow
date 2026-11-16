@@ -21,9 +21,6 @@ When a same-day run must coexist with an existing artifact, insert `<HHMM>` afte
 
 ## Consumer policy
 
-- Request the named kind through the
-  [artifact-directory runtime operation](./runtime-ports.md#resolve-a-workflow-artifact-directory); never hardcode a
-  harness-owned path or construct a kind path from an assumed root.
 - Stop if resolution fails or returns an empty value. Never substitute a relative, root, target-worktree, or other
   fallback path.
 - Ensure the resolved destination exists before writing. Artifact producers do not modify repository ignore rules or

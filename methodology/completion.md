@@ -19,6 +19,11 @@ not-done.
 When no declared method covers the change: build one — add or extend a durable verification method and add its row to
 the matrix — rather than running an ad-hoc LLM verification pass.
 
+When building is outside your role — a verification-only or review-only seat that may not change the target — do not
+build it and do not substitute an ad-hoc pass. Report the change as unverified, name the method that is missing, and
+route the recommendation to build it through the channel your caller declares for such findings, so whoever can build it
+does and the change can then be verified.
+
 When the application has no matrix yet: fall back to its documented test strategy (`context/testing/`,
 `methodology/testing/`, or equivalent) and treat the absence as a prompt to bootstrap the matrix.
 
