@@ -51,8 +51,8 @@ Each gap is written as a one-line claim naming the must-fix id(s) it explains, i
 2. **The method exists and ran but did not fire** — name why it missed, as in
    `G4: M1 escaped web:unit-test because jsdom does not evaluate container queries.`
 3. **No method exists** — name the missing verifiability-matrix row.
-4. **The escape is not verification-shaped** — route it to the [harness axis](./axes/harness.md) in one line instead of
-   naming a method, and take this form rather than inventing an aspirational matrix row.
+4. **The escape is not verification-shaped** — say what kind of escape it is in one line instead of naming a method, and
+   take this form rather than inventing an aspirational matrix row.
 
 Bounds:
 

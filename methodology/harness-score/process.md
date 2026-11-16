@@ -8,11 +8,10 @@ Runtime operations follow [`../runtime-ports.md`](../runtime-ports.md).
 
 ## Where this fits
 
-| Method                                           | Question                                                                           |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `harness-score` (this process)                   | Where does the codebase sit on the maturity matrix today, over the whole codebase? |
-| [Code review axis](../review/axes/code.md)       | Is this diff architecturally sound?                                                |
-| [Harness review axis](../review/axes/harness.md) | Does the harness keep pace with this diff?                                         |
+| Method                                     | Question                                                                           |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `harness-score` (this process)             | Where does the codebase sit on the maturity matrix today, over the whole codebase? |
+| [Code review axis](../review/axes/code.md) | Is this diff architecturally sound?                                                |
 
 ## Input
 
@@ -73,10 +72,10 @@ suggestion.
 - **Next-stage suggestion** — a single concrete change (one file, one tool, one PR) the target project's maintainer
   could act on in an afternoon, never something vague like "improve documentation".
 
-Fresh-context isolation deliberately does not apply to this step: fresh code and harness reviews isolate to avoid
-absorbing author framing of a diff, but harness scoring judges a whole codebase and benefits from the caller's framing
-of why they care — only the evidence-gathering arctic-explorer is one-shot and self-contained. A fully fresh score, if
-wanted, is obtained by running the whole process in a fresh session.
+Fresh-context isolation deliberately does not apply to this step: a fresh code review isolates to avoid absorbing author
+framing of a diff, but harness scoring judges a whole codebase and benefits from the caller's framing of why they care —
+only the evidence-gathering arctic-explorer is one-shot and self-contained. A fully fresh score, if wanted, is obtained
+by running the whole process in a fresh session.
 
 ### 5. Compute deltas
 

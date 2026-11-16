@@ -13,7 +13,6 @@ responsibility:
 | `documentation-reviewer.md` | Runtime adapter for the documentation review axis — public docs against the code                   |
 | `faceted-reviewer.md`       | Faceted review lead — gathers the change-set context, fans out per facet, aggregates               |
 | `frontend-verifier.md`      | Chrome DevTools browser verification                                                               |
-| `harness-reviewer.md`       | Runtime adapter for the harness review axis — the application↔harness seam                         |
 | `ice-carver.md`             | Code implementation, unit tests, refactoring                                                       |
 | `plan-reviewer.md`          | Runtime adapter for the plan review axis — reviews an implementation plan before building          |
 | `verify-finale.md`          | Verification finale — verify via the matrix, build a missing method, fix and re-verify             |

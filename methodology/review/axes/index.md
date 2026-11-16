@@ -13,7 +13,6 @@ the shared contract at [../reporting.md](../reporting.md). The identical axis do
 | [`qualities`](./qualities.md)         | The change measured against the target's declared software-quality trade-offs and their magnitudes |
 | [`tests`](./tests.md)                 | The change's tests measured against the target's declared testing requirements                     |
 | [`context`](./context.md)             | Agent-facing markdown measured against documented authoring conventions                            |
-| [`harness`](./harness.md)             | The application-to-agentic-harness seam                                                            |
 | [`documentation`](./documentation.md) | External-facing public documentation                                                               |
 | [`plan`](./plan.md)                   | An implementation plan, reviewed before building                                                   |
 
@@ -22,5 +21,4 @@ the shared contract at [../reporting.md](../reporting.md). The identical axis do
 - `code` is the single-pass generalist; `correctness`, `architecture`, `qualities`, and `tests` decompose the same
   ground into focused single-concern axes. Over one change-set, run either the `code` generalist or its four-axis
   decomposition, never both.
-- `harness` and `plan` are not selectable as facets of a faceted review; invoke both only through the shared review
-  process.
+- `plan` is not selectable as a facet of a faceted review; invoke it only through the shared review process.

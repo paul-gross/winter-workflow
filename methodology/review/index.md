@@ -8,4 +8,3 @@
 | [Reporting](./reporting.md)                         | You need shared severity buckets, finding ids, required finding fields, the gaps section, remote feedback, or relay semantics. |
 | [Change-set discovery](./change-set.md)             | You need to discover an env-wide review scope across repositories.                                                             |
 | [Agent-context surface](./agent-context-surface.md) | You need to classify whether a changed path is agent-facing markdown.                                                          |
-| [Transcript evidence](./transcript-evidence.md)     | You need the complete procedure for mining coding-session evidence across supported harnesses.                                 |

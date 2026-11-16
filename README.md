@@ -75,9 +75,6 @@ the skills perform this preparation for normal interactive use.
 - **Documentation review** (`documentation-review`) — independent review of external-facing public documentation
   (user/adopter guides, a rendered docs site, the user-facing README) against the code it documents. Fresh, one-shot
   `documentation-reviewer` subagent.
-- **Harness review** (`harness-review`) — independent review of whether the agentic harness (verifier tooling, agent
-  context, conventions) is keeping pace with application change, and whether the application is shaped for agent
-  productivity. Fresh, one-shot `harness-reviewer` subagent.
 - **Plan review** (`plan-review`) — independent review of an implementation plan before building, against the
   application's verifiability matrix and architecture guidance and the plan's own planning specs. Fresh, one-shot
   `plan-reviewer` subagent; runs standalone against a plan directory or a plan stated in the conversation (a
@@ -97,20 +94,18 @@ the skills perform this preparation for normal interactive use.
   by the explicit pinned scope: a resolvable upstream is included only when `tracking_ahead > 0`; `ahead > 0` only
   detects a delivery blocker when the upstream is missing or unresolved, so a fully pushed feature branch is not
   included. A verified explicit review base can make a blocked target reviewable but does not clear its delivery
-  blocker. The cross-repo consistency pass catches a change in one repo contradicting another. `harness-reviewer` is
-  deliberately not in the fan-out — its trigger fires on nearly every change-set in a harness-developing workspace, so
-  harness review is invoked on its own (`harness-review`) when you want it. Also deliberately decoupled from `/ws-push`
-  — invoke before pushing to surface findings, then push (or not) yourself.
+  blocker. The cross-repo consistency pass catches a change in one repo contradicting another. Deliberately decoupled
+  from `/ws-push` — invoke before pushing to surface findings, then push (or not) yourself.
 
 #### Agents
 
 - **Context Reviewer** (`context-reviewer` subagent) — reviews agent-facing markdown (agents, skills, CLAUDE.md,
   `context/` or `methodology/` docs) against the workspace's documented conventions for clarity, single-source-of-truth,
-  and non-duplication. Review-only; paired with `harness-reviewer`.
+  and non-duplication. Review-only.
 - **Documentation Reviewer** (`documentation-reviewer` subagent) — reviews external-facing public documentation
   (user/adopter guides, a rendered docs site, the user-facing README) for accuracy against the code it documents,
   completeness for a human audience, and single-source-of-truth against canonical sources. Review-only; explicitly
-  distinct from `context-reviewer` (agent-facing markdown) and `harness-reviewer` (the harness seam).
+  distinct from `context-reviewer` (agent-facing markdown).
 - **Plan Reviewer** (`plan-reviewer` subagent) — reviews an implementation plan against the application's verifiability
   matrix and architecture guidance, plus the plan's own planning specs, running the plainly read-only checks those specs
   declare. The gate for `glacier`'s planning step; its planning-spec conformance gate discovers the plan conventions a
@@ -121,7 +116,7 @@ the skills perform this preparation for normal interactive use.
 - **Harness score** (`harness-score`) — codebase-scoped maturity score against the harness-model 5-stage × 10-dimension
   matrix. Spawns `arctic-explorer` to gather evidence; the main agent applies the rubric and emits an HTML report (plus
   JSON sidecar) into the winter space's scores directory (`.winter/scores/` in the workspace by default).
-  Codebase-scoped counterpart to `cold-review` and `harness-review` (which are diff-scoped).
+  Codebase-scoped counterpart to `cold-review` (which is diff-scoped).
 
 ### Tend
 

@@ -14,7 +14,6 @@ Out of scope:
 
 - Source-code architecture — read code only to determine whether public documentation describes it accurately, and route
   structural concerns to the `code` axis.
-- Harness-specific content and the application-to-harness seam — route those concerns to the `harness` axis.
 - Agent-facing entrypoints, canonical agents, skills, commands, and `context/` or `methodology/` docs — route their side
   of a cross-surface duplication to the `context` axis.
 

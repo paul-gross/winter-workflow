@@ -57,9 +57,6 @@ cross-repository change-set.
 For axis selection, public documentation means docs sites, adopter guides, and user-facing README material; it excludes
 agent-facing context and methodology.
 
-The `harness` axis is not a delivery axis: this process never selects it. A caller wanting harness review on a delivery
-runs it as its own review, through the [review process](../../review/process.md) with `axis: harness`.
-
 Record why each axis was selected or skipped and return a short dispatch line to the caller before any review starts.
 
 ## Execution

@@ -45,7 +45,6 @@ Runtime agent identifiers are ports for spawned execution — fresh or resident;
 | `qualities`     | `cold-reviewer`          |
 | `tests`         | `cold-reviewer`          |
 | `context`       | `context-reviewer`       |
-| `harness`       | `harness-reviewer`       |
 | `documentation` | `documentation-reviewer` |
 | `plan`          | `plan-reviewer`          |
 
@@ -170,17 +169,8 @@ of the last round.
 5. **Axis execution.** Name the canonical axis file from [`./axes/index.md`](./axes/index.md) and direct the executor to
    read it and execute every step. Do not paraphrase its checklist or output rules.
 
-6. **Axis-specific inputs.** For the `harness` axis, also supply:
-
-   - Transcript candidate working directories: the workspace root, every in-scope worktree, and each target's project
-     source checkout.
-   - Evidence time window: since the base commit for diff scopes; approximately 30 days for uncommitted or current-state
-     paths.
-   - Changed paths and symbols extracted from the review material.
-   - For diff scopes, the commit list from base to reviewed head or across the normalized range.
-
-   For the `plan` axis, also supply the normalized `work_target` path(s), with cross-repository framing when the plan
-   spans repositories.
+6. **Axis-specific inputs.** For the `plan` axis, also supply the normalized `work_target` path(s), with
+   cross-repository framing when the plan spans repositories.
 
 7. **Output owner.** Direct the executor to follow [`./reporting.md`](./reporting.md) and all axis-specific additions.
    For remote scope, preserve the selected axis's default feedback behavior unless `scope.feedback` explicitly overrides
