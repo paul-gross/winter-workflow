@@ -121,8 +121,7 @@ it as such and never silently drop it.
 
 ### 7. Aggregate
 
-The lead is the closing gate — it converges the facet reports into one review the way a verify finale closes a build
-phase:
+The lead is the closing gate — it converges the facet reports into one review the way verification closes a build phase:
 
 - **Dedup across facets.** The same defect surfaced through two lenses becomes one finding citing both facets, at the
   highest severity either assigned.

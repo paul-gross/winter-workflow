@@ -15,7 +15,7 @@ responsibility:
 | `frontend-verifier.md`      | Chrome DevTools browser verification                                                               |
 | `ice-carver.md`             | Code implementation, unit tests, refactoring                                                       |
 | `plan-reviewer.md`          | Runtime adapter for the plan review axis — reviews an implementation plan before building          |
-| `verify-finale.md`          | Verification finale — verify via the matrix, build a missing method, fix and re-verify             |
+| `verification-engineer.md`  | Verification engineer — verify via the matrix, build a missing method, fix and re-verify           |
 | `winter-architect.md`       | High-level design, interfaces, dependencies                                                        |
 
 The reviewer files are isolated-runtime adapters, not methodology owners: their canonical methods live under

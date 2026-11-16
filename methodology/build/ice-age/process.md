@@ -21,7 +21,7 @@ returns its report as its result, and the lead saves it there unread beyond the 
 report receives its path, not its text.
 
 Ice age meets the shared definition of done owned by [`../../completion.md`](../../completion.md) per slice — the tested
-half through the verify finale — and per segment, where the checkpoint carries the docs-updated half.
+half through verification — and per segment, where the checkpoint carries the docs-updated half.
 
 ## Inputs
 
@@ -196,7 +196,7 @@ work the run does not own: withdraw it from the pool and record it rather than r
 **The slice's commit** is the single commit on the environment's branch above the integration line's tip, in each target
 repository the slice changes. Its message follows
 [`../../delivery/commit/conventions.md`](../../delivery/commit/conventions.md) and ends with a `Slice: <id>` trailer.
-Every later role in the loop — a retry, the verify finale, a review fix — amends that commit rather than adding one, and
+Every later role in the loop — a retry, verification, a review fix — amends that commit rather than adding one, and
 nothing is pushed.
 
 ### Build
@@ -212,8 +212,8 @@ corrected text.
 
 ### Verify
 
-Spawn the canonical `verify-finale` role in a one-shot isolated context, carrying the instruction to report once and
-stop, the environment pin, the slice's acceptance checks, and the builder's report path. It verifies each acceptance
+Spawn the canonical `verification-engineer` role in a one-shot isolated context, carrying the instruction to report once
+and stop, the environment pin, the slice's acceptance checks, and the builder's report path. It verifies each acceptance
 check through a method the application's verifiability matrix declares — the differential method wherever the slice
 ports reference behavior — building and recording a missing method rather than improvising one.
 

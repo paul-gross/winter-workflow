@@ -21,28 +21,28 @@ workspace.
 - **Ice age** (`ice-age`) — the monumental build: drive a whole *program* — many epics, hundreds of changes — from a
   rough backlog to an integrated, verified result, one segment at a time, asking you questions as they arise without
   idling. For each segment a handful of roles survey the reference implementation, correct the backlog, and cut slices
-  just before building; each slice is built by an `ice-carver`, closed by `verify-finale`, reviewed, and landed through
-  a serialized integration gate; a checkpoint proves the segment and measures what it cost before the next begins. A
-  concurrency cap bounds the roles in flight, a ledger on disk lets any later session resume, and a register lists
-  everything decided without you. Nothing is pushed.
+  just before building; each slice is built by an `ice-carver`, closed by `verification-engineer`, reviewed, and landed
+  through a serialized integration gate; a checkpoint proves the segment and measures what it cost before the next
+  begins. A concurrency cap bounds the roles in flight, a ledger on disk lets any later session resume, and a register
+  lists everything decided without you. Nothing is pushed.
 - **Glacier** (`glacier`) — drive a single feature — mid-sized or large, net-new or multi-module — to completion on one
   linear track of sequential subagent spawns, no team. Adopts or creates a plan put through the plan-review gate (with
   user approval), breaks it into ordered phases, and builds-and-verifies each phase one at a time (a phase's independent
-  slices parallelized inside it) — an `ice-carver` implements it and the tool-building `verify-finale` closes it through
-  the application's verifiability matrix; finishes with a blocking multi-axis completion review over uncommitted work
-  and a retrospective.
+  slices parallelized inside it) — an `ice-carver` implements it and the tool-building `verification-engineer` closes it
+  through the application's verifiability matrix; finishes with a blocking multi-axis completion review over uncommitted
+  work and a retrospective.
 - **Snowball** (`snowball`) — focused investigate-change-verify loop for small, localized changes to existing code (bug
   fix, tweak, adjustment, regression repair). Composes arctic-explorer → ice-carver → verifier, each spawned standalone
   (no team coordination), with a hard iteration cap; bails to `glacier` when the work is bigger than a snowball.
 - **Flurry** (`flurry`) — fan a *batch* of small, mostly-independent feature asks out across *multiple* feature
   environments in parallel, no team. The flurry lead schedules the asks (parallel vs. sequential), pins each parallel
   track to its own environment, and dispatches a fresh one-shot `ice-carver` per task that implements, verifies at
-  runtime, and lands exactly one commit; finishes with one concurrent `pre-push` invocation per environment, aggregates
-  the findings into one batch review phase, and folds each finding back into the commit that produced it.
+  runtime, and lands exactly one commit; finishes with one concurrent `pre-release` invocation per environment,
+  aggregates the findings into one batch review phase, and folds each finding back into the commit that produced it.
 
 ### Review
 
-The four single-axis review skills below and `pre-push` share one **review engine** —
+The four single-axis review skills below and `pre-release` share one **review engine** —
 [`methodology/review/process.md`](methodology/review/process.md) — the single source for the scope vocabulary, how the
 change-set is discovered across a feature env, the reviewer prompt scaffold, judgment-class model selection, and
 inline-vs-subagent execution. The process selects judgment model intent and only deliberately downgrades a trivial
@@ -87,14 +87,14 @@ the skills perform this preparation for normal interactive use.
   Facets are open-ended: the registered review axes are facets, and any caller-named concern is too — an unregistered
   facet is reviewed by discovering the target's declared conventions for it, with the missing methodology reported as a
   finding. Methodology at [`methodology/review/faceted/process.md`](methodology/review/faceted/process.md).
-- **Pre-push review** (`pre-push`) — fans out `cold-reviewer` plus, conditionally on the in-scope repos' surfaces,
+- **Pre-release review** (`pre-release`) — fans out `cold-reviewer` plus, conditionally on the in-scope repos' surfaces,
   `context-reviewer` and `documentation-reviewer` in parallel over each worktree's configured-upstream merge diff
   (`<upstream>...HEAD`), then synthesizes a single advisory summary. Reviews the whole **change-set** together, filtered
   by the explicit pinned scope: a resolvable upstream is included only when `tracking_ahead > 0`; `ahead > 0` only
   detects a delivery blocker when the upstream is missing or unresolved, so a fully pushed feature branch is not
   included. A verified explicit review base can make a blocked target reviewable but does not clear its delivery
   blocker. The cross-repo consistency pass catches a change in one repo contradicting another. Deliberately decoupled
-  from `/ws-push` — invoke before pushing to surface findings, then push (or not) yourself.
+  from `/ws-push` — invoke before releasing to surface findings, then push (or not) yourself.
 
 #### Agents
 

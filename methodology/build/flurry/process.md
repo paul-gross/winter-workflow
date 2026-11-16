@@ -11,8 +11,8 @@ inspect version-control state, and map findings to commits. It digests rather th
 role's report and never echoes raw output. Flurry parallelizes by default and serializes only on a real dependency.
 
 Flurry meets the shared definition of done for feature work owned by [`../../completion.md`](../../completion.md) — the
-tested-and-docs-updated bar — through per-task runtime verification and the aggregated per-environment pre-push review
-phase.
+tested-and-docs-updated bar — through per-task runtime verification and the aggregated per-environment pre-release
+review phase.
 
 ## Inputs
 
@@ -154,8 +154,8 @@ needs retry to success.
 
 For each environment holding successful batch commits — including commits produced before the track later failed or
 stopped — use any repo worktree of that environment as the working directory so the review detects the environment, and
-execute [`../../delivery/pre-push/process.md`](../../delivery/pre-push/process.md) in blocking mode, consuming the
-findings programmatically rather than through the advisory prompt. Each pre-push execution reviews every repo in its
+execute [`../../delivery/pre-release/process.md`](../../delivery/pre-release/process.md) in blocking mode, consuming the
+findings programmatically rather than through the advisory prompt. Each pre-release execution reviews every repo in its
 environment ahead of upstream as one change-set; the environments are independent, so run their reviews concurrently and
 pool every finding into one batch-wide list, treating the batch as a unit for the fold and the report.
 
@@ -181,8 +181,8 @@ rewritten commit SHAs and what it re-ran.
 ## 9. Final report
 
 The final report is a per-environment digest: for each environment, the tasks and their commit SHAs, how each successful
-task was verified, the pre-push outcome for successful commits, which findings were folded into which commits, and any
-gaps the review returned. Keep it tight: one block per environment, one line per task.
+task was verified, the pre-release outcome for successful commits, which findings were folded into which commits, and
+any gaps the review returned. Keep it tight: one block per environment, one line per task.
 
 Include every failed or stopped track with its terminal reason, attempt summary, successful commits if any, and tasks
 not completed, presented plainly rather than as a success and without requiring repair before reporting. State clearly

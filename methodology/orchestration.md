@@ -1,7 +1,7 @@
 # Orchestrated execution — blizzard fleet node-steps
 
 How to use this extension when an **orchestrator** — not you — drives the feature process. In a blizzard fleet, the work
-graph owns the spine the build skills normally drive (plan → plan-review → build → verify → review → pre-push →
+graph owns the spine the build skills normally drive (plan → plan-review → build → verify → review → pre-release →
 deliver); you execute **one node-step** of it. You are in this mode when your session opens as a fleet worker
 (`# Blizzard fleet worker`), your prompt names a chunk's node-step, and the `blizzard runner` CLI is on your path.
 
@@ -53,7 +53,7 @@ independent parallel work.
 
 ### `verify`
 
-Close through the **verify finale**: spawn the canonical `verify-finale` role to verify through a method the
+Close through **verification**: spawn the canonical `verification-engineer` role to verify through a method the
 application's verifiability matrix declares, building and recording a missing method rather than improvising an LLM
 pass. Spawn `frontend-verifier` / `backend-verifier` for runtime checks. A green build or type-check is not
 verification.
@@ -67,10 +67,14 @@ facet from your own context, by fork where your seat supports it.
 Name facets from the [axes registry](./review/axes/index.md) to cover the node's required axes and any registered axis
 whose concern the change-set touches; [reporting](./review/reporting.md) severities structure the findings asset.
 
-### `pre-push`
+### `pre-release`
 
 [Commit conventions](./delivery/commit/conventions.md) govern the rebased commits; where the node asks for review
 judgment on the integrated result, the [multi-axis delivery review](./delivery/review/process.md) is the reusable core.
+
+### `pre-push`
+
+The earlier name for [`pre-release`](#pre-release); a node with this name maps identically.
 
 ### `resolve`
 

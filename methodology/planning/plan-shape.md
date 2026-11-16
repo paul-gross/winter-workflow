@@ -63,7 +63,7 @@ At any altitude:
 - **Defensive prose** — text addressed to a hypothetical reviewer rather than the builder: justifications, reassurances,
   and anticipated-objection clauses accreted across review rounds.
 - **Test enumerations** — lists of individual test cases beyond the phase acceptance criteria; case selection belongs to
-  the builder and the verify finale.
+  the builder and the verification engineer.
 
 ## The removability rule
 

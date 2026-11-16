@@ -25,7 +25,7 @@ feature request, an empty queue, or a worker finishing does not switch modes.
 During this mode:
 
 - Do not add, update, or run tests, test harnesses, lint, format sweeps, review gates, or broad verification.
-- Do not invoke glacier, snowball, flurry, verify-finale, or completion workflows that restore those gates.
+- Do not invoke glacier, snowball, flurry, verification-engineer, or completion workflows that restore those gates.
 - Do not perform unrelated cleanup, speculative refactors, documentation sweeps, or retrospectives.
 - Make only the focused implementation and minimal local runtime/UI checks needed to expose the requested value.
 - Repair blocking runtime/build failures only as far as needed to restore that feedback loop. A one-shot targeted build

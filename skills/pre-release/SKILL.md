@@ -1,10 +1,10 @@
 ---
-description: Multi-axis review of committed, unpushed work — code, context, and docs — against each selected worktree's upstream. Use before pushing.
+description: Multi-axis review of committed, unpushed work — code, context, and docs — against each selected worktree's upstream. Use before releasing or pushing.
 argument-hint: "[blocking] [exclude-pinned|include-pinned|only-pinned]"
 allowed-tools: Bash, Read, Agent, AskUserQuestion
 ---
 
-The procedure for this skill is at `winter-workflow:/methodology/delivery/pre-push/process.md`.
+The procedure for this skill is at `winter-workflow:/methodology/delivery/pre-release/process.md`.
 
 ## Execute
 
@@ -15,6 +15,6 @@ Translate `$ARGUMENTS` into semantic inputs, independent of token order:
   `pinned_scope: include`.
 - Reject unknown tokens, repeated tokens, or more than one pinned-scope token.
 
-Read `winter-workflow:/methodology/delivery/pre-push/process.md` and execute every step with those inputs. If an
+Read `winter-workflow:/methodology/delivery/pre-release/process.md` and execute every step with those inputs. If an
 upstream-less target needs an explicit review base, obtain and document it through the human-caller channel; do not
 infer one.

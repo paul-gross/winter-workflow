@@ -4,7 +4,7 @@ Glacier drives one feature to completion on a single linear track: adopt or prod
 phases, build and verify each phase one at a time, run a completion review over the uncommitted work, and write a
 retrospective. It meets the shared definition of done for feature work owned by
 [`../../completion.md`](../../completion.md) — the tested-and-docs-updated bar — for the feature it delivers: the tested
-half is carried by closing every phase with the verify finale, and the docs-updated half by the completion review, which
+half is carried by closing every phase with verification, and the docs-updated half by the completion review, which
 spans the code, agent-facing, and public-docs axes over the uncommitted feature.
 
 ## Inputs
@@ -134,15 +134,15 @@ reordered or run concurrently, and parallelism exists only inside a phase.
 
 ## 6. Build and verify each phase
 
-Each phase runs a build-then-verify loop — implement with an ice-carver, close with the verify finale — with a hard cap
-of three build-and-verify attempts per phase.
+Each phase runs a build-then-verify loop — implement with an ice-carver, close with verification — with a hard cap of
+three build-and-verify attempts per phase.
 
 ### Build
 
 Spawn the canonical `ice-carver` role in a one-shot isolated context with workhorse model intent (Sonnet/Terra class)
 and await its result; treat it as a full-stack engineer owning the phase's implementation across everything it touches,
-while runtime verification belongs to the verify finale rather than the ice-carver. Each prompt is self-contained and
-carries:
+while runtime verification belongs to the verification engineer rather than the ice-carver. Each prompt is
+self-contained and carries:
 
 - the instruction to report once and stop;
 - the absolute work-target path(s);
@@ -155,51 +155,51 @@ carries:
 
 When a phase's work divides into independent slices — disjoint files, no shared build artifact — you may spawn one
 isolated ice-carver per slice as a single concurrent group; sequence slices that overlap, and when in doubt use one
-ice-carver. A sliced phase still closes as one unit: await every slice's result, then run the verify finale once after
-all slices have landed.
+ice-carver. A sliced phase still closes as one unit: await every slice's result, then run verification once after all
+slices have landed.
 
 ### Verify
 
-To close a phase, spawn the canonical `verify-finale` role in a one-shot isolated context and await its result: it
-verifies the change through a method declared in the application's verifiability matrix, builds a missing method (and
+To close a phase, spawn the canonical `verification-engineer` role in a one-shot isolated context and await its result:
+it verifies the change through a method declared in the application's verifiability matrix, builds a missing method (and
 records its matrix row) when none covers the change rather than running an ad-hoc LLM pass, and fixes then re-verifies
-until the method passes. Because the finale both verifies and fixes, its findings are not separately routed to an
-ice-carver. Its prompt carries:
+until the method passes. Because the verification engineer both verifies and fixes, its findings are not separately
+routed to an ice-carver. Its prompt carries:
 
 - the instruction to report once and stop;
 - the absolute work-target path(s);
 - for runtime verification, the base URL and port from `workspace:/context/project/project-setup.md` or the
   environment's computed variables via `winter env <env>`, asking the human caller when neither yields them;
-- the phase goal and the ice-carver's reported change, so the finale knows what behavior to assert;
+- the phase goal and the ice-carver's reported change, so the verification engineer knows what behavior to assert;
 - the directive to verify through the matrix, build and record any missing method first, then fix what verification
   surfaces and re-verify until passing.
 
-The one seam the finale cannot drive: when its runtime capabilities cannot perform a declared browser-driven matrix
-method, spawn the canonical `frontend-verifier` role in a one-shot isolated context for that method — carrying the
-instruction to report once and stop, the work-target path(s), the base URL/port, and the declared browser exercise —
-while the finale closes everything else.
+The one seam the verification engineer cannot drive: when its runtime capabilities cannot perform a declared
+browser-driven matrix method, spawn the canonical `frontend-verifier` role in a one-shot isolated context for that
+method — carrying the instruction to report once and stop, the work-target path(s), the base URL/port, and the declared
+browser exercise — while the verification engineer closes everything else.
 
-A phase passes only when its verification passes in full — the verify finale and any frontend-verifier split off for a
-browser-driven method. A green build or type-check never counts as a test; phases close against runtime behavior.
-Glacier does not start services: when verification needs services that are not running, the finale reports that
-condition rather than guessing, and glacier tells the human caller to run `winter service up <env>` — the run phase per
-`workspace:/context/winter/environment-lifecycle.md` — and rerun the process.
+A phase passes only when its verification passes in full — the verification engineer and any frontend-verifier split off
+for a browser-driven method. A green build or type-check never counts as a test; phases close against runtime behavior.
+Glacier does not start services: when verification needs services that are not running, the verification engineer
+reports that condition rather than guessing, and glacier tells the human caller to run `winter service up <env>` — the
+run phase per `workspace:/context/winter/environment-lifecycle.md` — and rerun the process.
 
 ### On failure
 
-When the finale escalates something it cannot resolve in its own retries or that only the human can decide, or a
-split-off frontend-verifier reports a failure (it only verifies and cannot fix), re-task the same phase: spawn a fresh
-ice-carver at attempt plus one with the failing report folded into the attempt history, then re-run the finale. Do not
-blindly re-spawn the finale or verifier against the same build.
+When the verification engineer escalates something it cannot resolve in its own retries or that only the human can
+decide, or a split-off frontend-verifier reports a failure (it only verifies and cannot fix), re-task the same phase:
+spawn a fresh ice-carver at attempt plus one with the failing report folded into the attempt history, then re-run
+verification. Do not blindly re-spawn the verification engineer or verifier against the same build.
 
 When a phase has not passed full verification within three attempts, stop and escalate to the human caller: name the
-phase, summarize each attempt in one line (what was built and what the finale or verifier reported), and ask how to
-proceed. Never silently continue to later phases atop an unverified one.
+phase, summarize each attempt in one line (what was built and what the verification engineer or verifier reported), and
+ask how to proceed. Never silently continue to later phases atop an unverified one.
 
 ## 7. Completion review
 
 When every phase has passed, run the completion review automatically — without waiting for the human caller to ask and
-without using the pre-push binding, because glacier's work is deliberately uncommitted: execute
+without using the pre-release binding, because glacier's work is deliberately uncommitted: execute
 [`../../delivery/review/process.md`](../../delivery/review/process.md) with scope `uncommitted` and mode `blocking`.
 
 On blocking findings, spawn a fresh isolated ice-carver with workhorse model intent to resolve them without committing,
