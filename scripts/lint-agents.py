@@ -28,7 +28,7 @@ flags `allowed-tools`: a `fail` when it stands in for a missing `tools`, a
 
 SCOPE — winter-workflow's own agents only. The check walks WINTER_LINT_PATHS,
 keeps each `*.md` that lives directly under an `agents/` directory (excluding
-`README.md` and the `agents/docs/` prose), and then keeps only those whose
+any `README.md` and the `agents/docs/` prose), and then keeps only those whose
 owning module (nearest `winter-ext.toml`) is this module. Agents owned by other
 modules are silently skipped — enforcing the same rule elsewhere is out of scope.
 
@@ -402,7 +402,7 @@ def _tools_findings(blocks: dict[str, dict], rel: str) -> list[Finding]:
                 message=f"tools: '{item}' is a per-tool MCP grant; grant the server instead",
                 file=rel,
                 remediation="Replace per-tool `mcp__<server>__<tool>` items with the server-level `mcp__<server>` "
-                "entry (see agents/README.md, Convention: MCP tool grants).",
+                "entry — a per-tool name is tied to one install's prefix and grants nothing under another.",
             )
         )
     if has_allowed:

@@ -61,21 +61,20 @@ In either placement the lead phase is review-only: modify nothing, run no builds
 nothing beyond the step 5 fan-out.
 
 **Fan-out mechanism.** Step 5 gives each facet its own reviewer seeded with the lead's gathered context, by one of two
-mechanisms. Settle which one here rather than in step 5, resolving the lead's seat against the live capability
-declaration at `workspace:/context/project/harness-runtime-ports.md` — every seat resolves it the same way, none assumes
-an answer from its placement, and a harness or nesting depth with no declared fork support cannot fork:
+mechanisms. Settle which one here rather than in step 5, by whether the harness lets the lead fork its own context from
+the seat it holds — a seat that cannot fork, whether by harness or by nesting depth, briefs:
 
-- **Fork** — where the declaration grants the lead's own context a fork, fork it once per facet. Each fork inherits the
-  gathered context whole rather than a written summary of it, so prefer fork wherever the seat has one.
+- **Fork** — where the lead can fork its own context, fork it once per facet. Each fork inherits the gathered context
+  whole rather than a written summary of it, so prefer fork wherever the seat has one.
 - **Briefing** — otherwise, the lead writes an orientation briefing from its gathered context and spawns one isolated
   reviewer per facet carrying it.
 
-Briefing is this process's **declared standing mechanism** for a seat the declaration grants no fork. A briefing is
-lossy — each reviewer inherits the summary the lead chose to write, not everything it read — and is still a complete run
-of this process, not a fallback to report. Only the fan-out differs between the two mechanisms; the gather and the
-aggregation stay with the lead either way. A fork shares the lead's framing, which suits facet fan-out; a step whose
-value depends on independence from that framing spawns fresh instead. If the lead can neither fork nor spawn isolated
-roles, stop and tell the caller the harness cannot run a faceted review.
+Briefing is this process's **declared standing mechanism** for a seat that cannot fork. A briefing is lossy — each
+reviewer inherits the summary the lead chose to write, not everything it read — and is still a complete run of this
+process, not a fallback to report. Only the fan-out differs between the two mechanisms; the gather and the aggregation
+stay with the lead either way. A fork shares the lead's framing, which suits facet fan-out; a step whose value depends
+on independence from that framing spawns fresh instead. If the lead can neither fork nor spawn isolated roles, stop and
+tell the caller the harness cannot run a faceted review.
 
 ### 4. Gather the shared orientation
 

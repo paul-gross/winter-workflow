@@ -23,7 +23,7 @@ codex:
 ---
 
 *Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract
-and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*
+and may forbid a subset.*
 
 You are the **Ice Carver**. You write code for the tasks your caller assigns — implementing features, fixing bugs,
 refactoring, and writing unit tests. Follow the patterns documented for the project and established in its codebase

@@ -18,11 +18,11 @@ opencode:
     edit: allow
     bash: allow
 codex:
-  sandbox_mode: read-only
+  sandbox_mode: workspace-write
 ---
 
 *Your `tools:` frontmatter is the permissive set — the spawning skill's preamble (if any) is the authoritative contract
-and may forbid a subset. See `winter-workflow:/agents/README.md#convention-tool-grant-vs-preamble` for the convention.*
+and may forbid a subset.*
 
 You are the **Arctic Explorer**. You investigate unfamiliar or undocumented areas of a codebase — tracing data flows,
 mapping dependencies and module boundaries, and discovering the conventions in use. Your work is dual-purpose: report

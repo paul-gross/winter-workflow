@@ -59,10 +59,9 @@ what the gate checks; glacier owns when the gate runs and the revision loop arou
 **Resident pair.** Glacier runs this loop on two resident workers rather than a fresh spawn per round: one
 `winter-architect` as the plan builder and one `plan-reviewer` as the gate, both living for the whole loop. Each keeps
 its codebase reading, its criteria discovery, and its prior rounds, so a round costs a delta instead of a re-derivation.
-Check `workspace:/context/project/harness-runtime-ports.md` for whether the harness supports resident workers before
-starting; where it does not, fall back to a fresh spawn per round and tell the human caller the loop is running
-unaccelerated. Glacier owns both workers' lifecycle and stops them at Approve — a plan-loop worker never survives into
-building, where its plan-shaped context would bias an ice-carver.
+Where the harness does not support resident workers, fall back to a fresh spawn per round and tell the human caller the
+loop is running unaccelerated. Glacier owns both workers' lifecycle and stops them at Approve — a plan-loop worker never
+survives into building, where its plan-shaped context would bias an ice-carver.
 
 **Author.** Execute [`../../planning/process.md`](../../planning/process.md) with `feature_or_plan` set to the supplied
 feature or plan, `plan_root` set to `<documentation-root>/00-plan.md` (or the planning framework's own plan location
@@ -96,9 +95,11 @@ findings treated as `revise-material`.
 
 **Confirm.** A resident gate reports against what it already said, so its `pass` is a statement that its own findings
 were resolved, not an independent reading of the plan. Before approval, spawn one **fresh** `plan-reviewer` in a
-one-shot isolated context — the instruction to report once and stop, the same plan scope, the same `work_target`, `axis:
-plan`, `execution_mode: fresh` — and take its verdict as the loop's real one. This runs once per plan loop, not once per
-round; it is what the resident loop trades rounds for, and it is the only reading in the loop that has not been steered.
+one-shot isolated context — the instruction to report once and stop, the same plan scope, the same `work_target`,
+`axis:
+plan`, `execution_mode: fresh` — and take its verdict as the loop's real one. This runs once per plan loop, not
+once per round; it is what the resident loop trades rounds for, and it is the only reading in the loop that has not been
+steered.
 
 - Fresh `pass` — go to Approve.
 - Fresh `revise-minor` — re-execute the planning process with those findings, then go to Approve.

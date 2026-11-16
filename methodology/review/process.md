@@ -116,8 +116,7 @@ severity rule, or report format.
 Re-address one worker of the selected canonical role across successive rounds, so it carries its earlier rounds into
 each new one. Resident execution is never a default and never inferred: only a calling process that explicitly declares
 it may select it, the caller owns the worker's lifecycle and tears it down when its loop ends, and delivery review never
-uses it. Check `workspace:/context/project/harness-runtime-ports.md` for whether the harness supports resident workers
-before selecting it; where it does not, fall back to fresh and say so.
+uses it. Where the harness does not support resident workers, fall back to fresh and say so.
 
 A resident reviewer trades independence for continuity, and the caller owns that trade. It does not re-derive the axis's
 criteria each round, so it converges faster and reports against what it already said — and by the same mechanism it is
