@@ -15,14 +15,11 @@ Reject any other value.
 
 ## Steps
 
-1. Optionally generate a [review manifest](../../review/manifest/process.md) first with `scope: unpushed`, the selected
-   `pinned_scope`, and any `review_bases` when the change-set is large or mechanical-heavy. It is advisory and does not
-   replace review or clear a delivery blocker.
-2. Execute [`../review/process.md`](../review/process.md) with `scope: unpushed`, the selected `pinned_scope`, any
+1. Execute [`../review/process.md`](../review/process.md) with `scope: unpushed`, the selected `pinned_scope`, any
    `review_bases`, and the supplied `mode`.
-3. Return its synthesized result and decision outcome unchanged. If nothing is ahead of an upstream in the selected
+2. Return its synthesized result and decision outcome unchanged. If nothing is ahead of an upstream in the selected
    pinned scope and there are no blockers, report `nothing to review; nothing is ahead of upstream`.
-4. Do not push. Delivery remains the human caller's separate decision.
+3. Do not push. Delivery remains the human caller's separate decision.
 
 `unpushed` is intentional: a pre-push gate reviews only committed work relative to each worktree's delivery upstream
 because uncommitted work cannot be pushed. It remains distinct from `branch-vs-base`, which compares a feature branch

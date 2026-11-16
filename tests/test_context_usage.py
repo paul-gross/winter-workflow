@@ -502,13 +502,13 @@ def _apply_fixture():
 def test_merges_into_existing_settings_without_touching_other_keys() -> None:
     with _apply_fixture() as (settings_path, overrides_path):
         settings_path.write_text(json.dumps({"model": "claude-fable-5[1m]", "skillOverrides": {"kept-skill": "off"}}))
-        result = _apply(settings_path, overrides_path, {"review-manifest": "user-invocable-only"})
+        result = _apply(settings_path, overrides_path, {"unused-skill": "user-invocable-only"})
         assert result.returncode == 0, result.stderr
 
         written = json.loads(settings_path.read_text())
         assert written["model"] == "claude-fable-5[1m]"
         assert written["skillOverrides"]["kept-skill"] == "off"
-        assert written["skillOverrides"]["review-manifest"] == "user-invocable-only"
+        assert written["skillOverrides"]["unused-skill"] == "user-invocable-only"
 
 
 def test_creates_settings_file_when_absent() -> None:

@@ -28,7 +28,7 @@ operation — the steps below call this "the isolated-role restrictions".
 
 - The approved plan and phase record at `<documentation-root>/00-plan.md`.
 - The feature implementation with every phase verified, left uncommitted for the human caller to commit.
-- The automatic uncommitted delivery-review summary and, optionally, a closed review manifest.
+- The automatic uncommitted delivery-review summary.
 - A retrospective at the location the retrospective step selects.
 
 ## 1. Frame the feature
@@ -202,25 +202,7 @@ When a phase has not passed full verification within three attempts, stop and es
 phase, summarize each attempt in one line (what was built and what the finale or verifier reported), and ask how to
 proceed. Never silently continue to later phases atop an unverified one.
 
-## 7. Accumulate a review manifest (when wanted)
-
-Accumulate a review manifest only when it is wanted: the human caller asked for one, or the change is large or
-mechanical-heavy enough that a tiered review order will save a human real attention. Skip it for a small feature that
-fits in a glance — the manifest only earns its keep on changes big enough that a human would otherwise stop reading.
-
-Accumulate the manifest while building rather than fresh-classifying at the end: intent captured while fresh yields a
-higher-fidelity manifest than any after-the-fact classification. Accumulation follows
-[`../../review/manifest/build-time.md`](../../review/manifest/build-time.md):
-
-- Each ice-carver additionally reports a `{tier, claim, intent}` line for every hunk it authored, because the builder
-  knows its own intent in a way no fresh classifier can.
-- After each phase, append that phase's ice-carver-reported entries to the manifest's JSON facts at its retained
-  `<manifests-dir>/<date>-<slug>.json` path.
-- The verify finale also authors hunks — its fixes and any verification method or matrix row it builds — but reports no
-  tier line; those hunks are classified at the manifest's close against the settled diff, where total-coverage
-  enforcement catches them.
-
-## 8. Completion review
+## 7. Completion review
 
 When every phase has passed, run the completion review automatically — without waiting for the human caller to ask and
 without using the pre-push binding, because glacier's work is deliberately uncommitted: execute
@@ -232,16 +214,10 @@ no blocking findings remain. When a finding cannot be resolved without a human d
 unavailable, stop and escalate with the finding ids and the blocker — do not claim the definition of done. Preserve
 consider findings and any review gaps in the final summary; neither blocks completion.
 
-An accumulated review manifest is closed only after the blocking-finding loop settles: bind the authored entries to the
-settled diff, enforce total coverage, run the adversarial manifest-auditor over the cheap tiers, and render the markdown
-document, all per the close-the-manifest section of
-[`../../review/manifest/build-time.md`](../../review/manifest/build-time.md); surface the manifest's `.md` path
-alongside the completion-review summary so the human caller has both the findings and the tiered review order.
-
 Glacier never commits or pushes. Once blocking findings are resolved, return the implementation, verification evidence,
 completion-review summary, and any advisory findings and gaps to the human caller.
 
-## 9. Retrospective
+## 8. Retrospective
 
 Write a retrospective once the work is delivered or the human caller calls it done: a markdown document titled "Glacier
 Retrospective — \<feature\>" carrying the date, a one-line feature statement, and the sections **What Went Well**,

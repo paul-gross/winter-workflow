@@ -190,17 +190,3 @@ of the last round.
 
 Relay a completed single-axis report according to [`./reporting.md`](./reporting.md). A multi-axis caller may synthesize
 the reports under its own declared contract.
-
-If a [review manifest](./manifest/index.md) exists for the change-set, reconcile it after the review settles:
-
-- If fixes or other edits changed the diff, its freshness binding is stale; regenerate it rather than leaving a manifest
-  that describes an old diff.
-- If a finding proves a `mechanical` or `pattern` hunk carried a decision, promote that hunk in place under
-  [the amendment rule](./manifest/format.md#amending-a-rendered-manifest), or regenerate the manifest.
-- If the diff did not change and no finding contradicted a cheap tier, leave the manifest intact.
-
-## Optional attention ordering
-
-A [review manifest](./manifest/index.md) can partition a large or mechanical-heavy diff into `mechanical`, `pattern`,
-and `novel` tiers before review. It is optional, advisory, and not an axis. Skip it when the diff already fits in a
-glance.

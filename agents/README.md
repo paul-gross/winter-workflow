@@ -9,14 +9,12 @@ responsibility:
 | `backend-verifier.md`       | API/CLI/database verification                                                                      |
 | `cold-reviewer.md`          | Runtime adapter for the code-facing review axes                                                    |
 | `context-reviewer.md`       | Runtime adapter for the context review axis — agent-facing markdown against documented conventions |
-| `diff-classifier.md`        | Fresh, k-voted per-hunk tier classifier for a review manifest                                      |
 | `distiller.md`              | Cold rewrite of existing markdown into its smallest current form, via the distill process          |
 | `documentation-reviewer.md` | Runtime adapter for the documentation review axis — public docs against the code                   |
 | `faceted-reviewer.md`       | Faceted review lead — gathers the change-set context, fans out per facet, aggregates               |
 | `frontend-verifier.md`      | Chrome DevTools browser verification                                                               |
 | `harness-reviewer.md`       | Runtime adapter for the harness review axis — the application↔harness seam                         |
 | `ice-carver.md`             | Code implementation, unit tests, refactoring                                                       |
-| `manifest-auditor.md`       | Adversarially refutes a review manifest's cheap-tier claims                                        |
 | `plan-reviewer.md`          | Runtime adapter for the plan review axis — reviews an implementation plan before building          |
 | `verify-finale.md`          | Verification finale — verify via the matrix, build a missing method, fix and re-verify             |
 | `winter-architect.md`       | High-level design, interfaces, dependencies                                                        |

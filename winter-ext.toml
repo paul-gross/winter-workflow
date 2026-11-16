@@ -17,4 +17,4 @@ lint = ["scripts/lint-agents.py", "scripts/lint-methodology.py"]
 # the workspace `[space]` config and excludes it locally, so adopting workspaces
 # need no hand-kept ignore entries. Keep in step with that file's kinds table.
 [excludes]
-space_kinds = ["scores", "manifests", "workflows", "retrospectives"]
+space_kinds = ["scores", "workflows", "retrospectives"]

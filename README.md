@@ -150,22 +150,6 @@ the skills perform this preparation for normal interactive use.
   is read-only, and its `apply` subcommand performs the one write described above. Methodology at
   [`methodology/optimize-context/process.md`](methodology/optimize-context/process.md).
 
-### Support
-
-- **Review manifest** (`review-manifest`) — a **reading guide for a human reviewing a large diff**. It partitions every
-  hunk of a change-set into verification tiers (`mechanical` / `pattern` / `novel`) and renders a **review order** so
-  you spend full attention only on the hunks holding real decisions: `novel` first and in full, `pattern` collapsed
-  behind their claims, `mechanical` as a one-line list. Agents *build* it — a fresh-context `diff-classifier` k-fan-out
-  tiers each hunk (any disagreement fails closed to `novel`); a `manifest-auditor` adversarially refutes the cheap-tier
-  claims and promotes any hit to `novel` — but **you read it**. Two hard invariants — total coverage (every hunk gets
-  exactly one tier) and a diff-SHA freshness binding (a stale manifest is rejected). Advisory; gates nothing. Generate
-  it on a large or rename-heavy diff — on its own to guide your own review, or before `cold-review` / `pre-push` to also
-  focus an agent review. See [`methodology/review/manifest/index.md`](methodology/review/manifest/index.md).
-- **Diff Classifier & Manifest Auditor** (`diff-classifier`, `manifest-auditor` subagents) — the role-pure pair behind
-  the review manifest. `diff-classifier` is a fresh, k-voted per-hunk tier classifier (closed
-  `mechanical`/`pattern`/`novel` vocabulary); `manifest-auditor` is the skeptic that samples the cheap tiers and tries
-  to refute each claim. Both fail closed toward human review.
-
 ### Utility
 
 - **Conventional commits** (`commit`) — stages everything, infers the right type/scope from the diff and conversation,

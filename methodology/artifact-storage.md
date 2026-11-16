@@ -10,12 +10,11 @@ syntax or configuration facts here.
 
 ## Artifact kinds and naming
 
-| Kind             | What lands here                                    | Naming                               |
-| ---------------- | -------------------------------------------------- | ------------------------------------ |
-| `scores`         | `harness-score` HTML report and JSON sidecar       | `<YYYY-MM-DD>-<project>.{html,json}` |
-| `manifests`      | `review-manifest` markdown document and JSON facts | `<YYYY-MM-DD>-<slug>.{md,json}`      |
-| `workflows`      | per-session workflow documentation                 | `<YYYY-MM-DD>-<name>/` directory     |
-| `retrospectives` | session retrospective                              | `<YYYY-MM-DD>-<name>.md`             |
+| Kind             | What lands here                              | Naming                               |
+| ---------------- | -------------------------------------------- | ------------------------------------ |
+| `scores`         | `harness-score` HTML report and JSON sidecar | `<YYYY-MM-DD>-<project>.{html,json}` |
+| `workflows`      | per-session workflow documentation           | `<YYYY-MM-DD>-<name>/` directory     |
+| `retrospectives` | session retrospective                        | `<YYYY-MM-DD>-<name>.md`             |
 
 When a same-day run must coexist with an existing artifact, insert `<HHMM>` after the date:
 `<YYYY-MM-DD>-<HHMM>-<project-or-slug>` or `<YYYY-MM-DD>-<HHMM>-<name>`.
@@ -31,5 +30,5 @@ When a same-day run must coexist with an existing artifact, insert `<HHMM>` afte
   treat generated artifacts as target deliverables. The extension instead declares its kinds in `winter-ext.toml`
   `[excludes] space_kinds`, so `winter ws init` excludes them from the workspace repository; a kind added to the table
   above is added to that declaration too.
-- Pass the resolved directory to downstream steps as a semantic path such as `<scores-dir>` or `<manifests-dir>`; do not
-  make those steps resolve it again.
+- Pass the resolved directory to downstream steps as a semantic path such as `<scores-dir>`; do not make those steps
+  resolve it again.

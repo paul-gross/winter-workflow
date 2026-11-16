@@ -65,8 +65,7 @@ The uncommitted change-set includes untracked, non-ignored files, not only track
 has not yet staged is uncommitted work that must be reviewed, yet `git diff HEAD` omits it. A reviewer on this scope
 therefore reads `git diff HEAD` plus the files listed by `git ls-files --others --exclude-standard` — as their current
 content for a prose review, or rendered as `git diff --no-index /dev/null <file>` whole-file additions where a unified
-diff is needed. One consumer that needs untracked files rendered as whole-file diff additions is the review manifest's
-hunk enumeration, at [./manifest/format.md#computing-diff_sha](./manifest/format.md#computing-diff_sha).
+diff is needed.
 
 ## unpushed
 
