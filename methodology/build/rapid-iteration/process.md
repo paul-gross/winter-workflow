@@ -124,11 +124,11 @@ mention tests, architecture review, or broader verification.
 ## Fast feedback and stopping
 
 Have the implementing worker use the existing HMR path and report where the caller can see the increment. Prefer one
-focused local UI interaction, screenshot, or API/CLI observation showing the requested behavior. Reuse evidence already
-gathered; do not launch a second verifier or require a separate build when HMR already exposes the change. If the worker
-cannot access the preview, report **implemented; preview unconfirmed** and ask the caller to look, without claiming
-preview-ready. Runtime recovery that needs another owner's files is blocked work for that owner, not an ownership
-bypass.
+focused local UI interaction or API/CLI observation showing the requested behavior, reported in words. Reuse evidence
+already gathered; do not launch a second verifier or require a separate build when HMR already exposes the change. If
+the worker cannot access the preview, report **implemented; preview unconfirmed** and ask the caller to look, without
+claiming preview-ready. Runtime recovery that needs another owner's files is blocked work for that owner, not an
+ownership bypass.
 
 On pause or stop, stop dispatching and coordinate running workers to a safe stop; preserve edits and reservations until
 workers confirm they are no longer writing. Persist the mode transition, unfinished requests, worker state, and deferred
